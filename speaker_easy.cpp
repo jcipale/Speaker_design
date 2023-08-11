@@ -1,13 +1,31 @@
 /*--------------------------------------------------------------------------------------------*/
-/* speaker_easy.cpp - Primary code file than manages classes, methods and functions.          */
+/* speaker_easy.cpp - Primary code file that contains classes, methods and functions.         */
 /*--------------------------------------------------------------------------------------------*/
 /* Change log:                                                                                */
 /*--------------------------------------------------------------------------------------------*/
 /* 05/21/2023:                                                                                */
 /* Began code development of classes, methods and objects.                                    */
-/*                                                                                            */
+/*--------------------------------------------------------------------------------------------*/
+/* 06/10/2023:                                                                                */
+/* Finished build() function to allow user to enter speaker parameters from the data sheet.   */
+/*--------------------------------------------------------------------------------------------*/
+/* 06/15/2023:                                                                                */
+/* Finished parts_list() function to display readout of pointer structure.                    */
+/*--------------------------------------------------------------------------------------------*/
+/* 06/17/2023:                                                                                */
+/* Completed save_speaker() function to write speaker structure to the file system.           */
+/*--------------------------------------------------------------------------------------------*/
+/* 06/20/2023:                                                                                */
+/* Completed read_speaker() function to retrieve data from the file system.                   */
+/*--------------------------------------------------------------------------------------------*/
+/* 06/20/2023:                                                                                */
+/* Began work on vented_box_design() feature.                                                 */
+/*--------------------------------------------------------------------------------------------*/
+/* 07/06/2023:                                                                                */
+/* Revise data entry - use cin() in place of scanf().                                         */
 /*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -37,9 +55,12 @@ using std::endl;
 /*--------------------------------------------------------------------------------------------*/
 string drvr_dba = "";
 string drvr_lgth = "";
+string plot_data = "";
 
 /*--------------------------------------------------------------------------------------------*/
 /*                               Functions and Procedures                                     */
+/*--------------------------------------------------------------------------------------------*/
+void build(Speaker*& drvr)
 /*--------------------------------------------------------------------------------------------*/
 /* The build() function builds the list of available parts that the user can select from to   */
 /* design/build/simualte a speaker design with. The user is prompted to enter various part    */
@@ -47,7 +68,7 @@ string drvr_lgth = "";
 /* Input: Struct Speaker - passed by reference                                                */
 /*                         Adds multiple links if needed by user.                             */
 /*--------------------------------------------------------------------------------------------*/
-void build(Speaker*& drvr) {
+{
 	struct Speaker *temp, *ptr;
 
 	temp=(struct Speaker *)malloc(sizeof(struct Speaker));
@@ -61,60 +82,62 @@ void build(Speaker*& drvr) {
 	cout << "| Enter the speaker values as instructed below:             |" << endl;
 	cout << "+-----------------------------------------------------------+" << endl;
 	cout << "	Part Number            : ";
-	scanf("%s",&temp->Part_num);
-	cout << "	Vas (ft^3)             : ";
-	scanf("%f",&temp->Vas);
+	cin >> temp->Part_num;
+	cout << "	Vas (m^3)             : ";
+	cin >> temp->Vas;
 	cout << "	Compliance             : ";
-	scanf("%f",&temp->Cms);
+	cin >> temp->Cms;
 	cout << "	BL (Force Factor)      : ";
-	scanf("%f",&temp->Bl);
+	cin >> temp->Bl;
 	cout << "	Qts (Total Q factor)   : ";
-	scanf("%f",&temp->Qts);
+	cin >> temp->Qts;
 	cout << "	Qes (Electric Q factor): ";
-	scanf("%f",&temp->Qes);
+	cin >> temp->Qes;
 	cout << "	Qms (Mech Q factor)    : ";
-	scanf("%f",&temp->Qms);
-	cout << "	Freq_s                 : ";
-	scanf("%f",&temp->Freq_s);
+	cin >> temp->Qms;
+	cout << "	Fs                     : ";
+	cin >> temp->Fs;
 	cout << "	Re (ohms)              : ";
-	scanf("%f",&temp->Re);
-	cout << "	RMS (kg/s)             : ";
-	scanf("%f",&temp->Rms);
+	cin >> temp->Re;
+	cout << "	RMS (kg*s)             : ";
+	cin >> temp->Rms;
 	cout << "	Z_nom (Nom Impedance)  : ";
-	scanf("%f",&temp->Z_nom);
+	cin >> temp->Z_nom;
 	cout << "	Z_min (Min Impedance)  : ";
-	scanf("%f",&temp->Z_min);
+	cin >> temp->Z_min;
 	cout << "	Z_max (Max Impedance)  : ";
-	scanf("%f",&temp->Z_max);
+	cin >> temp->Z_max;
 	cout << "	Le (mH)                : ";
-	scanf("%f",&temp->Le);
+	cin >> temp->Le;
 	cout << "	Xmax (mm)              : ";
-	scanf("%f",&temp->Xmax);
-	cout << "	Diam (in)              : ";
-	scanf("%f",&temp->Diam);
+	cin >> temp->Xmax;
+	cout << "	Diam (mm)              : ";
+	cin >> temp->Diam;
 	cout << "	Nom_Pwr (W)            : ";
-	scanf("%f",&temp->Nom_Pwr);
+	cin >> temp->Nom_Pwr;
 	cout << "	Max_Pwr (W)            : ";
-	scanf("%f",&temp->Max_Pwr);
+	cin >> temp->Max_Pwr;
 	cout << "	Freq_Low (Hz)          : ";
-	scanf("%f",&temp->Freq_Low);
+	cin >> temp->Freq_Low;
 	cout << "	Freq_Hi (Hz)           : ";
-	scanf("%f",&temp->Freq_Hi);
+	cin >> temp->Freq_Hi;
 	cout << "	Sensitivity (db 1w/1m) : ";
-	scanf("%f",&temp->Sensitivity);
+	cin >> temp->Sensitivity;
 	cout << "	Vol_seal (m^3)         : ";
-	scanf("%f",&temp->Vol_seal);
+	cin >> temp->Vol_seal;
 	cout << "	Vol_vented (m^3)       : ";
-	scanf("%f",&temp->Vol_vent);
-	cout << "	F3_sealed (3db rolloff): ";
-	scanf("%f",&temp->F3_sealed);
-	cout << "	F3_vent (3db rolloff)  : ";
-	scanf("%f",&temp->F3_vent);
+	cin >> temp->Vol_vent;
+	cout << "	f3_sealed (3db rolloff): ";
+	cin >> temp->f3_sealed;
+	cout << "	f3_vent (3db rolloff)  : ";
+	cin >> temp->f3_vent;
 	temp->next = NULL;
 
 	drvr = temp;
 	ptr=drvr;
 }
+/*--------------------------------------------------------------------------------------------*/
+void parts_list(Speaker* drvr)
 /*--------------------------------------------------------------------------------------------*/
 /* The parts_list function simply traverse the current list in a one-way direction. The user  */
 /* has the option of saving changes to the list or closing out the application with no changes*/
@@ -123,8 +146,7 @@ void build(Speaker*& drvr) {
 /* Input: Struct Speaker - passed by value                                                    */
 /*                         Prints the complete list of driver elements.                       */
 /*--------------------------------------------------------------------------------------------*/
-void parts_list(Speaker* drvr) {
-
+{
 	struct Speaker *ptr;
 	struct Speaker *tail;
 
@@ -150,7 +172,7 @@ void parts_list(Speaker* drvr) {
 			cout << "Qts        : " << ptr->Qts << endl;
 			cout << "Qes        : " << ptr->Qes << endl;
 			cout << "Qms        : " << ptr->Qms << endl;
-			cout << "Freq_s     : " << ptr->Freq_s << endl;
+			cout << "Fs         : " << ptr->Fs << endl;
 			cout << "Re         : " << ptr->Re << endl;
 			cout << "Rms        : " << ptr->Rms << endl;
 			cout << "Z_nom      : " << ptr->Z_nom << endl;
@@ -166,8 +188,8 @@ void parts_list(Speaker* drvr) {
 			cout << "Sensitivity: " << ptr->Sensitivity << endl;
 			cout << "Vol Sealed : " << ptr->Vol_seal << endl;
 			cout << "Vol Vented : " << ptr->Vol_vent << endl;
-			cout << "F3_sealed  : " << ptr->F3_sealed << endl;
-			cout << "F3_vent    : " << ptr->F3_vent << endl;
+			cout << "f3_sealed  : " << ptr->f3_sealed << endl;
+			cout << "f3_vent    : " << ptr->f3_vent << endl;
 			ptr = ptr->next;
 			cout << "+-----------------------------" << endl;
 			
@@ -181,13 +203,206 @@ void closed_box_design() {
 	cout << "Design a closed box speaker..." << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
-void vented_box_design() {
+void vented_box_design(Speaker*& drvr)
+/*--------------------------------------------------------------------------------------------*/
+/* vented_box_design will take the stored Small/Thiele parameters, compute the necessary data */
+/* points then plot the resulting frequency plot. This function calls the functions:          */
+/*     freq_params()                                                                          */
+/*     freq_response()                                                                        */
+/*--------------------------------------------------------------------------------------------*/
+{
 	struct Speaker *ptr;
 
-	float Vb, Fb, Fh;
+	char l_cmd[8];
+	char d_cmd[8];
+
+	int flag;                      // Initial pass of cabinet design flag = 0
+	int vol_flg;                   // Initially set to '0', but one the user makes a first pass
+	                               // through the design process, then the flag will be toggled 
+								   // to '1'. The flag will be reset to '0' upon exit.
+	float alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
+	float Fsb;                     // Driver resonance freq mounted in enclosure
+	float Fb;                      // Enclosure resonance requency - not to be confused with Fsb
+	float Fn;                      // Normalized frequency ratio - f(req)/Fsb
+	float Vd;                      // Volume of air displacement
+	float Vb_v;                    // Volume of cabinet - meter^3
+	float Vb_i, Vb_u;              // Internal cabinet volumes - user supplied
+	float Rh;                      // Ripple response (in db)
+	float R;                       // decibel value for a given frequency(f)
+	float Par, Per;                // Displacement limited power ratings
+	float Dv, Lv, L_prime;         // Vent diameter, length in mm
+	float A, B, C, D;              // Intermediate place-holders
+	float a, b, c, d, e, f;        // value holders for frequency response measurement
+	float tmp_1, tmp_2, tmp_3;
+	float D_v{}, L_prm{}, l_v{};   // Values needed for Vent design
+	//int f;                         // frequency
+	int i;                         // frequency increment
+
+	ptr = drvr;
+	flag  = 0;
+	vol_flg = 0;
+	D_v = 50.0; // Set Vent diameter to 50mm by default;
 
 	system("clear");
 	cout << "Design a vented box speaker..." << endl;
+	sleep(3);
+	
+	while (!flag) {
+		freq_params(drvr, Vb_v, Fsb, Fb, Fn, Vd, Rh, Par, Per, Dv, Lv, L_prm, l_v, D_v, a, b, c, d, alpha);
+
+		//----------------------------
+		// Compute freq response here
+		//----------------------------
+
+		freq_response(drvr, Fsb, Fb, Fn, alpha);
+
+		cout << "Accept results (Y/y)? :" << endl;
+		cin >> l_cmd;
+
+		if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
+			cout << "Vented Design completed..." << endl;
+			flag = 1;
+			vol_flg = 0;
+		} else {
+			cout << "Specify new Enclosure Internal Volume - " << endl;
+			cout << "Enter value in cu meters: ";
+			cin >> ptr->Vol_vent;
+			cout << "Enter new Vent diameter (mm) > 50(mm) - default is 50 mm: ";
+			cin >> D_v;
+		}
+
+		sleep(5);
+	}
+}
+/*--------------------------------------------------------------------------------------------*/
+void freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha)
+/*--------------------------------------------------------------------------------------------*/
+/* freq_params() used to compute intermediate Thiel/Small values ised for vented box          */
+/* loudspeaker design. Ideally, the user could pass a single flag that would toggle between   */
+/* vented- and closed-speaker design.                                                         */
+/*--------------------------------------------------------------------------------------------*/
+{
+	struct Speaker *ptr;
+	ptr = drvr;
+
+	Vb_v = 20 * ptr->Vas * pow(ptr->Qts, 3.3);
+
+	// Cabinet resonance frequency
+	Fb = 1.5 * ptr->f3_vent * pow(ptr->Qts, 0.44);
+
+	// Driver resonance frequency - mounted
+	Fsb = ptr->f3_vent/(0.28 * pow(ptr->Qts, -1.4));
+
+	// Speaker displacement - cu meter
+	Vd = (M_PI * pow((ptr->Diam/2), 2) * ptr->Xmax/1000.00);
+
+	// 3db ripple ripple
+	Rh = 20 * log ((Fb * ptr->Qts)/(0.4 * ptr->Fs));
+	Rh = abs(Rh);
+
+	// Vent design
+	L_prm = 2350/(pow(Fb, 2) * (ptr->f3_vent));
+
+	l_v = L_prm * pow(D_v, 2) - (0.73 * D_v);
+	a = pow(0.85, 2);
+	b = 4 * L_prm * l_v;
+	c = a + b;
+
+	d = pow(c, 0.5);
+
+	Dv = (0.85 + pow((a + b), 0.5))/(2 * L_prm);
+
+	alpha = ptr->Vas/ptr->Vol_vent;
+
+	// Displacement limited power ratings
+	Par = (pow(ptr->f3_vent, 4)*pow(Vd, 2))/3e8;
+	Per = (1.2e6 * Par * ptr->Qts)/(pow(ptr->Fs, 3) * ptr->Vas);
+
+	cout << "Vented Box design values - flat alignment" << endl;
+	cout << "-----------------------------------------------------------" << endl;
+	cout << " Driver name               :    " << ptr->Part_num << endl;
+	cout << " Driver Resonance freq (Hz):    " << ptr->Fs  << endl;
+	cout << " Total Mechanical Q        :    " << ptr->Qts << endl;
+	cout << " Equivalent cabinet volume :    " << ptr->Vas << endl;
+	cout << " Enclosure Internal volume :    " << ptr->Vol_vent << endl;
+	cout << " Volume - air displacement :    " << Vd << endl;
+	cout << " -3db frequency rolloff    :    " << ptr->f3_vent << endl;
+	cout << " Enclosure resonance freq  :    " << Fb << endl;
+	cout << "-----------------------------------------------------------" << endl;
+	cout << " Ripple (in decibels)      :    " << Rh << endl;
+	cout << " Frequency range           :    " << ptr->Freq_Low << " - " << ptr->Freq_Hi << endl;
+	cout << " Minimum vent diameter     :    " << D_v << endl;
+	cout << " Vent length               :    " << l_v << endl;
+	cout << "-----------------------------------------------------------" << endl;
+	cout << "              Displacement Power Ratings                   " << endl;
+	cout << "-----------------------------------------------------------" << endl;
+	cout << " Limited Acoustic Power    :    " << Par << endl;
+	cout << " Limited Electrical Power  :    " << Per << endl;
+	cout << "-----------------------------------------------------------" << endl;
+		
+	sleep(5);
+}
+/*--------------------------------------------------------------------------------------------*/
+void freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha) 
+/*--------------------------------------------------------------------------------------------*/
+/* freq_response() is used to write the results of the frequency calculation to a CSV format  */
+/* text file. the fill will then be read by the GNUplot graphing utility and displayed.       */
+/*--------------------------------------------------------------------------------------------*/
+{
+
+	struct Speaker *ptr;
+	ptr = drvr;
+
+	float A, B, C, D;                            // Intermediate placeholders variables
+	float a, b, c, d;                            // Intermediate placeholders
+	
+	float R;                                     // Decibel value for plotting
+
+	int i;                                       // loop frequncy countrt
+
+	system("clear");
+
+	cout << "Specify speaker plot file: ";
+	cin >> plot_data;
+
+	plot_data = plot_data + ".gp";
+
+	ofstream outfile(plot_data);
+
+	//----------------------------
+	// Compute freq response here
+	//----------------------------
+
+	A = pow((Fb/Fsb), 2);
+	B = (A/ptr->Qts) + (Fb/(7 * Fsb));
+	C = 1 + A + alpha + Fb/(7 * Fsb * ptr->Qts);
+	D = (1/ptr->Qts) + Fsb/(7 * Fsb);
+
+	outfile << "Frequency (Hz), Amplitude (dB)" << endl;
+	cout << "\tfreq\t\tdecibels" << endl;
+	cout << "-------------------------------------" << endl;
+
+	for (i = ptr->Freq_Low; i <= ptr->Freq_Hi; i = i + 10) {
+
+		Fn = i/Fsb;
+
+		a = pow(Fn, 4);
+		b = pow(Fn, 2);
+
+		c = (a - (C * b) + A);
+		d = b * pow((D * b - B), 2);
+
+		R = 20 * log(a/(pow((c + d), 0.5)));
+		R = abs(R);
+
+		if (i <= 100) {
+			cout << "\t " << i << "\t\t\t" << R << endl;
+			outfile << i << "," << R << endl;
+		} else {
+			cout << "\t " << i << "\t\t" << R << endl;
+			outfile << i << "," << R << endl;
+		}
+	}
 }
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design() {
@@ -200,13 +415,14 @@ void graph_performance() {
 	cout << "Display graphical performance..." << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
+void save_speaker_data(Speaker* drvr)
+/*--------------------------------------------------------------------------------------------*/
 /* save_speaker_data is used to write the contents of the speaker list to a file on locally or*/
 /* on the network drive.                                                                      */
 /* Input: Struct Speaker - passed by value                                                    */
 /*                         Writes the complete list of driver elements.                       */
 /*--------------------------------------------------------------------------------------------*/
-void save_speaker_data(Speaker* drvr) {
-
+{
 	struct Speaker *ptr;
 
 	system("clear");
@@ -233,7 +449,7 @@ void save_speaker_data(Speaker* drvr) {
 			outfile << ptr->Qts << ";";
 			outfile << ptr->Qes << ";";
 			outfile << ptr->Qms << ";";
-			outfile << ptr->Freq_s << ";";
+			outfile << ptr->Fs << ";";
 			outfile << ptr->Re << ";";
 			outfile << ptr->Rms << ";";
 			outfile << ptr->Z_nom << ";"; 
@@ -249,8 +465,8 @@ void save_speaker_data(Speaker* drvr) {
 			outfile << ptr->Sensitivity << ";";
 			outfile << ptr->Vol_seal << ";";
 			outfile << ptr->Vol_vent << ";";
-			outfile << ptr->F3_sealed << ";";
-			outfile << ptr->F3_vent << ";";
+			outfile << ptr->f3_sealed << ";";
+			outfile << ptr->f3_vent << ";";
 			ptr = ptr->next;
 			
 			sleep(3);
@@ -258,13 +474,14 @@ void save_speaker_data(Speaker* drvr) {
 	}
 }
 /*--------------------------------------------------------------------------------------------*/
+void read_speaker_data(Speaker*& drvr)
+/*--------------------------------------------------------------------------------------------*/
 /* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
 /* on the network drive.                                                                      */
 /* Input: Struct Speaker - passed by reference                                                */
 /*                         reads the complete list of driver elements.                        */
 /*--------------------------------------------------------------------------------------------*/
-void read_speaker_data(Speaker*& drvr) {
-
+{
 	struct Speaker *temp, *ptr;
 
 	char line[64];
@@ -313,75 +530,54 @@ void read_speaker_data(Speaker*& drvr) {
 		cout << "Data: " << line << endl;
 		token = strtok(line, ";");
 		strcpy(temp->Part_num, token);
-		//cout << "DBG: Part_num    : " << temp->Part_num << endl;
 		token = strtok(NULL, ";");
 		temp->Vas = atof(token);
-		//cout << "DBG: Vas         : " << temp->Vas << endl;
 		token = strtok(NULL, ";");
 		temp->Cms = atof(token);
-		//cout << "DBG: Cms         : " << temp->Cms << endl;
 		token = strtok(NULL, ";");
 		temp->Bl = atof(token);
-		//cout << "DBG: Bl         : " << temp->Bl << endl;
 		token = strtok(NULL, ";");
 		temp->Qts = atof(token);
-		//cout << "DBG: Qts         : " << temp->Qts << endl;
 		token = strtok(NULL, ";");
 		temp->Qes = atof(token);
-		//cout << "DBG: Qes         : " << temp->Qes << endl;
 		token = strtok(NULL, ";");
 		temp->Qms = atof(token);
-		//cout << "DBG: Qms         : " << temp->Qms << endl;
 		token = strtok(NULL, ";");
-		temp->Freq_s = atof(token);
-		//cout << "DBG: Freq_s      : " << temp->Freq_s << endl;
+		temp->Fs = atof(token);
 		token = strtok(NULL, ";");
 		temp->Re = atof(token);
-		//cout << "DBG: Re          : " << temp->Re << endl;
 		token = strtok(NULL, ";");
 		temp->Rms = atof(token);
-		//cout << "DBG: Rms          : " << temp->Rms << endl;
 		token = strtok(NULL, ";");
 		temp->Z_nom = atof(token);
-		//cout << "DBG: Z_nom          : " << temp->Z_nom << endl;
 		token = strtok(NULL, ";");
 		temp->Z_min = atof(token);
-		//cout << "DBG: Z_min          : " << temp->Z_min << endl;
 		token = strtok(NULL, ";");
 		temp->Z_max = atof(token);
-		//cout << "DBG: Z_max          : " << temp->Z_max << endl;
 		token = strtok(NULL, ";");
 		temp->Le = atof(token);
-		//cout << "DBG: Le          : " << temp->Le << endl;
 		token = strtok(NULL, ";");
 		temp->Xmax = atof(token);
-		//cout << "DBG: Xmax        : " << temp->Xmax << endl;
 		token = strtok(NULL, ";");
 		temp->Diam = atof(token);
-		//cout << "DBG: Diam        : " << temp->Diam << endl;
 		token = strtok(NULL, ";");
 		temp->Nom_Pwr = atof(token);
-		//cout << "DBG: Nom_Pwr     : " << temp->Nom_Pwr << endl;
 		token = strtok(NULL, ";");
 		temp->Max_Pwr = atof(token);
-		//cout << "DBG: Max_Pwr     : " << temp->Max_Pwr << endl;
 		token = strtok(NULL, ";");
 		temp->Freq_Low = atof(token);
-		//cout << "DBG: Freq_Low    : " << temp->Freq_Low << endl;
 		token = strtok(NULL, ";");
 		temp->Freq_Hi = atof(token);
-		//cout << "DBG: Freq_Low    : " << temp->Freq_Low << endl;
 		token = strtok(NULL, ";");
 		temp->Sensitivity = atof(token);
-		//cout << "DBG: Sensitivity : " << temp->Sensitivity << endl;
 		token = strtok(NULL, ";");
 		temp->Vol_seal = atof(token);
 		token = strtok(NULL, ";");
 		temp->Vol_vent = atof(token);
 		token = strtok(NULL, ";");
-		temp->F3_sealed = atof(token);
+		temp->f3_sealed = atof(token);
 		token = strtok(NULL, ";");
-		temp->F3_vent = atof(token);
+		temp->f3_vent = atof(token);
 		temp->next = NULL;
 		
 		sleep(2);

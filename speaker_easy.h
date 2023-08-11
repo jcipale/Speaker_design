@@ -22,7 +22,7 @@ extern struct Speaker
 	float Qts;               // Total Q factor
 	float Qes;               // Electrical Q factor
 	float Qms;               // Mechanical Q factor
-	float Freq_s;            // Resonant Frequency
+	float Fs;                // Resonant Frequency
 	float Re;                // DC Resistance
 	float Rms;               // Mechanical resistance
 	float Z_nom;             // Nominal impedance (aka Impedance)
@@ -38,8 +38,8 @@ extern struct Speaker
 	float Sensitivity;       // Sensitivity
 	float Vol_seal;          // Sealed Volume (recommended)
 	float Vol_vent;          // Vented Volume (recommended)
-	float F3_sealed;         // 3db down point (rolloff)
-	float F3_vent;           // 3db down point (rolloff)
+	float f3_sealed;         // 3db down point (rolloff)
+	float f3_vent;           // 3db down point (rolloff)
 	Speaker *next;
 };
 /*--------------------------------------------------------------------------------------------*/
@@ -49,7 +49,11 @@ void parts_list(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_design();
 /*--------------------------------------------------------------------------------------------*/
-void vented_box_design();
+void vented_box_design(Speaker*& drvr);
+/*--------------------------------------------------------------------------------------------*/
+void freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha);
+/*--------------------------------------------------------------------------------------------*/
+void freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha);
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
