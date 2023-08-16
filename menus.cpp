@@ -6,6 +6,9 @@
 /* 05/16/2023:                                                                                */
 /* Begin initial header and code development                                                  */
 /*--------------------------------------------------------------------------------------------*/
+/* 05/30/2023:                                                                                */
+/* Finished implementing/testing/clean-up of menus, splash scren and exit screen.             */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <forward_list>
 #include <iostream>
@@ -52,6 +55,7 @@ void splash_screen()
 	cout << "	|         p                                                               |" << endl;
 	cout << "	|                                                                         |" << endl;
 	cout << "	+-------------------------------------------------------------------------+" << endl;
+	cout << "	SpeakEasy: ";
 }; /* end splash_screen*/
 /*--------------------------------------------------------------------------------------------*/
 void exit_screen()
@@ -64,9 +68,29 @@ void exit_screen()
     cout << "	+-------------------------------------------------------------------------+" << endl;
 	cout << "	|                                                                         |" << endl;
 	cout << "	|                                                                         |" << endl;
-	cout << "   |                 Thank you! For using Speak-Easy!                        |" << endl;
+	cout << "	|                 Thank you! For using Speak-Easy!                        |" << endl;
 	cout << "	|                                                                         |" << endl;
 	cout << "	|                                                                         |" << endl;
     cout << "	+-------------------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void menu_screen()
+{
+	system("clear");
+
+	cout << endl;
+	cout << "	+------------------------------------------+" << endl;
+	cout << "	|               Program Menu               |" << endl;
+	cout << "	+------------------------------------------+" << endl;
+	cout << "	|  1) Speaker Parameters                   |" << endl;
+	cout << "	|  2) List Speaker Parts                   |" << endl;
+	cout << "	|  3) Closed Box Design                    |" << endl;
+	cout << "	|  4) Vented Box Design                    |" << endl;
+	cout << "	|  5) Xover Design                         |" << endl;
+	cout << "	|  6) Graph Performance                    |" << endl;
+	cout << "	|  7) Write Speaker Data                   |" << endl;
+	cout << "	|  8) Read Speaker Data                    |" << endl;
+	cout << "	|  9) Exit                                 |" << endl;
+	cout << "	+------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/

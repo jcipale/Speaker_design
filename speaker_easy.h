@@ -47,13 +47,17 @@ void build(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
 void parts_list(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_design();
+void closed_box_design(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
-void freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha);
+void vented_freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha);
 /*--------------------------------------------------------------------------------------------*/
-void freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha);
+void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha);
+/*--------------------------------------------------------------------------------------------*/
+void closed_freq_params(Speaker* drvr);
+/*--------------------------------------------------------------------------------------------*/
+void closed_freq_response(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design();
 /*--------------------------------------------------------------------------------------------*/

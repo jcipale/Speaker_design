@@ -82,7 +82,7 @@ int main()
 
 		if ((strcmp(t_cmd, "C") == 0) || (strcmp(t_cmd, "c") == 0) || (strcmp(t_cmd, "3") == 0)) {
 			cout << "test menu 3 - Closed Box Design..." << endl;
-			closed_box_design();
+			closed_box_design(drvr);
 		}
 
 		if ((strcmp(t_cmd, "V") == 0) || (strcmp(t_cmd, "v") == 0) || (strcmp(t_cmd, "4") == 0)) {

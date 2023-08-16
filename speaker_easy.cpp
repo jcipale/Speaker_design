@@ -24,6 +24,10 @@
 /* 07/06/2023:                                                                                */
 /* Revise data entry - use cin() in place of scanf().                                         */
 /*--------------------------------------------------------------------------------------------*/
+/* 08/15/2023:                                                                                */
+/* Completed first pass of gnuplot testing. Work on plotting/displaying data from gnuplot     */
+/* data file created by program.                                                              */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -56,6 +60,7 @@ using std::endl;
 string drvr_dba = "";
 string drvr_lgth = "";
 string plot_data = "";
+string gnu_plot = "gnu_script.gp";
 
 /*--------------------------------------------------------------------------------------------*/
 /*                               Functions and Procedures                                     */
@@ -198,9 +203,71 @@ void parts_list(Speaker* drvr)
 	}
 }
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_design() {
+void closed_box_design(Speaker*& drvr) 
+/*--------------------------------------------------------------------------------------------*/
+/* closed_box_design will take the stored Small/Thiele parameters, compute the necessary data */
+/* points then plot the resulting frequency plot. This function calls the functions:          */
+/*     freq_params()                                                                          */
+/*     freq_response()                                                                        */
+/*--------------------------------------------------------------------------------------------*/
+{
+	struct Speaker *ptr;
+
+	char l_cmd[8];
+	char d_cmd[8];
+
+	int flag;                      // Initial pass of cabinet design flag = 0
+	int vol_flg;                   // Initially set to '0', but one the user makes a first pass
+	                               // through the design process, then the flag will be toggled 
+								   // to '1'. The flag will be reset to '0' upon exit.
+	/*
+	float alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
+	float Fsb;                     // Driver resonance freq mounted in enclosure
+	float Fb;                      // Enclosure resonance requency - not to be confused with Fsb
+	float Fn;                      // Normalized frequency ratio - f(req)/Fsb
+	float Vd;                      // Volume of air displacement
+	float Vb_v;                    // Volume of cabinet - meter^3
+	float Vb_i, Vb_u;              // Internal cabinet volumes - user supplied
+	float Rh;                      // Ripple response (in db)
+	float R;                       // decibel value for a given frequency(f)
+	float Par, Per;                // Displacement limited power ratings
+	float Dv, Lv, L_prime;         // Vent diameter, length in mm
+	float A, B, C, D;              // Intermediate place-holders
+	float a, b, c, d, e, f;        // value holders for frequency response measurement
+	float tmp_1, tmp_2, tmp_3;
+	float D_v{}, L_prm{}, l_v{};   // Values needed for Vent design
+	int i;                         // frequency increment
+	*/
+
+	ptr = drvr;
 	system("clear");
 	cout << "Design a closed box speaker..." << endl;
+
+	while (!flag) {
+		//closed_freq_params(drvr);
+
+		//----------------------------
+		// Compute freq response here
+		//----------------------------
+
+		//closed_freq_response(drvr);
+
+		cout << "Accept results (Y/y)? :" << endl;
+		cin >> l_cmd;
+
+		if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
+			cout << "Speaker Design completed..." << endl;
+			flag = 1;
+			vol_flg = 0;
+		} else {
+			cout << "Specify new Enclosure Internal Volume - " << endl;
+			cout << "Enter value in cu meters: ";
+			cin >> ptr->Vol_vent;
+			cout << "Enter new Vent diameter (mm) > 50(mm) - default is 50 mm: ";
+		}
+
+		sleep(5);
+	}
 }
 /*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr)
@@ -235,7 +302,6 @@ void vented_box_design(Speaker*& drvr)
 	float a, b, c, d, e, f;        // value holders for frequency response measurement
 	float tmp_1, tmp_2, tmp_3;
 	float D_v{}, L_prm{}, l_v{};   // Values needed for Vent design
-	//int f;                         // frequency
 	int i;                         // frequency increment
 
 	ptr = drvr;
@@ -248,19 +314,19 @@ void vented_box_design(Speaker*& drvr)
 	sleep(3);
 	
 	while (!flag) {
-		freq_params(drvr, Vb_v, Fsb, Fb, Fn, Vd, Rh, Par, Per, Dv, Lv, L_prm, l_v, D_v, a, b, c, d, alpha);
+		vented_freq_params(drvr, Vb_v, Fsb, Fb, Fn, Vd, Rh, Par, Per, Dv, Lv, L_prm, l_v, D_v, a, b, c, d, alpha);
 
 		//----------------------------
 		// Compute freq response here
 		//----------------------------
 
-		freq_response(drvr, Fsb, Fb, Fn, alpha);
+		vented_freq_response(drvr, Fsb, Fb, Fn, alpha);
 
 		cout << "Accept results (Y/y)? :" << endl;
 		cin >> l_cmd;
 
 		if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
-			cout << "Vented Design completed..." << endl;
+			cout << "Speaker Design completed..." << endl;
 			flag = 1;
 			vol_flg = 0;
 		} else {
@@ -275,9 +341,9 @@ void vented_box_design(Speaker*& drvr)
 	}
 }
 /*--------------------------------------------------------------------------------------------*/
-void freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha)
+void vented_freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha)
 /*--------------------------------------------------------------------------------------------*/
-/* freq_params() used to compute intermediate Thiel/Small values ised for vented box          */
+/* vented_freq_params() used to compute intermediate Thiel/Small values ised for vented box   */
 /* loudspeaker design. Ideally, the user could pass a single flag that would toggle between   */
 /* vented- and closed-speaker design.                                                         */
 /*--------------------------------------------------------------------------------------------*/
@@ -343,10 +409,10 @@ void freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, f
 	sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/
-void freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha) 
+void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha) 
 /*--------------------------------------------------------------------------------------------*/
-/* freq_response() is used to write the results of the frequency calculation to a CSV format  */
-/* text file. the fill will then be read by the GNUplot graphing utility and displayed.       */
+/* vented_freq_response() is used to write the results of the frequency calculation to a CSV  */
+/* format text file. The file will be read by the GNUplot graphing utility and displayed.     */
 /*--------------------------------------------------------------------------------------------*/
 {
 
@@ -365,7 +431,7 @@ void freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha)
 	cout << "Specify speaker plot file: ";
 	cin >> plot_data;
 
-	plot_data = plot_data + ".gp";
+	plot_data = plot_data + ".dat";
 
 	ofstream outfile(plot_data);
 
