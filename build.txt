@@ -1,0 +1,45 @@
+# cshrc file with aliaes/paths/startup configs
+#
+#
+
+set path = (. .. /usr/bin /bin /usr/src /sbin ~/bin $path)
+set prompt = "joec@`hostname`> "
+set history=500
+set filec
+set ai
+set EDITOR=vi
+
+# aliases
+alias als "alias"
+als src "source"
+als pu "pushd"
+als po "popd"
+als lt "ls -lart"
+als ll "ls -al"
+als hi "history"
+als clr "clear"
+als xg "xterm -sb -fg green -bg black -geom 100x50+0+0 &"
+als xe "xterm -sb -fg grey -bg black -geom 100x50+40+40 &"
+als xo "xterm -sb -fg orange -bg black -geom 100x50+80+80 &"
+als xy "xterm -sb -fg yellow -bg black -geom 100x50+120+120 &"
+als mg "sudo mount gentoo:/stor1 /mnt/stor1"
+als GF1 "cd /mnt/gf1"
+als GF2 "cd /mnt/gf2"
+als GF3 "cd /mnt/gf3"
+als GF4 "cd /mnt/gf4"
+als GF5 "cd /mnt/gf5"
+als GF6 "cd /mnt/gf6"
+als gpp "g++ -std=gnu++17"
+als eskimo "ssh jcipale@debian.eskimo.com"
+als media "pu /media/joec/9016-4EF8/EPSCAN"
+als Dev "cd /mnt/stor1/Develop"
+
+#--------------------------------------------------------------
+# Notes
+#--------------------------------------------------------------
+# Check the version of ones C++ compiler:
+# cout << __cplusplus / 100 % 100 << '\n';
+# Current g++ version - 1/18/2021
+# Linux royal 4.9.0-14-686-pae #1 SMP Debian 4.9.246-2 (2020-12-17) : 14
+#--------------------------------------------------------------
+
