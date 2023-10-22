@@ -16,7 +16,7 @@
 extern struct Speaker
 {
 	char Part_num[40];       // Product part number
-	float Vas;               // Equivalent Volume of cabinet
+	float Vas;               // Equivalent Volume of cabinet dm^3
 	float Cms;               // Compliance
 	float Bl;                // BL Product (aka Force Factor)
 	float Qts;               // Total Q factor
@@ -32,16 +32,22 @@ extern struct Speaker
 	float Xmax;              // Maximum Linear Excursion
 	float Diam;              // Voice Coil Diameter
 	float Nom_Pwr;           // Nominal Power (aka RMS power)
-	float Max_Pwr;           // Maximum Power (aka Long-term max power)`
+	float Max_Pwr;           // Maximum Power (aka Long-term max power)
 	float Freq_Low;          // Low-end of Freq Response
 	float Freq_Hi;           // Upper limit of Frequency Response (F_low -- F_high)
 	float Sensitivity;       // Sensitivity
-	float Vol_seal;          // Sealed Volume (recommended)
-	float Vol_vent;          // Vented Volume (recommended)
-	float f3_sealed;         // 3db down point (rolloff)
+	float Vbs;               // Sealed Volume (user define dm^3)
+	float Vbv;               // Vented Volume (user define dm^3)
+	float f3_seal;           // 3db down point (rolloff)
 	float f3_vent;           // 3db down point (rolloff)
+	float v_diam;            // vent diameter (from data sheet - default)
+	float v_length;          // vent length (from data sheet - default)
 	Speaker *next;
 };
+/*--------------------------------------------------------------------------------------------*/
+/*    Constants                                                                               */
+/*--------------------------------------------------------------------------------------------*/
+const float QTC = 0.707;
 /*--------------------------------------------------------------------------------------------*/
 void build(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
@@ -49,15 +55,19 @@ void parts_list(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_design(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
+void closed_box_param_set(Speaker* drvr, int bdesign, float& Vbs, float& alpha, int gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak);
+//void closed_box_param_set(Speaker* drvr, float gamma, float& alpha, float& L, float& Vab, float& Vb, float& Qa, float& Qtcp, float& Qtc, float& Fc, float& Fsb, float& f3, float& Peak, float& A_1, float& Par, float& Per, float& Vd, int bdesign);
+/*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
-void vented_freq_params(Speaker* drvr, float& Vb_v, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& l_v, float& D_v, float& a, float& b, float& c, float& d, float& alpha);
+void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& lv, float& dv, float& a, float& b, float& c, float& d, float& alpha);
 /*--------------------------------------------------------------------------------------------*/
 void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha);
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_params(Speaker* drvr);
+void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, float& A_1, float& Fsb, float& Fcb, float& Fs, float& f3, float& Fb, float& Fc, float& L, float& Vd, float& Qtc, float& Qtcp, float& Vab, float& Rh, float& R, float& Par, float& Per);
 /*--------------------------------------------------------------------------------------------*/
 void closed_freq_response(Speaker* drvr);
+//void closed_freq_response(Speaker* drvr, float A_1, float f3, float Fsb);
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
