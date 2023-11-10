@@ -21,6 +21,10 @@
 /* Revised data input command. Repalced fgets90 with cin(). Removed 'carriage return' from    */
 /* if-then-else menu construct.                                                               */
 /*--------------------------------------------------------------------------------------------*/
+/* 11/07/2023:                                                                                */
+/* Globally - clean up debug and print statements to track intermediate data values. Need to  */
+/* upload finished closed_box() to github for code checkin.                                   */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
@@ -67,7 +71,6 @@ int main()
 
 		cout << "SpeakEasy: ";
 		
-		//fgets(t_cmd, 8, stdin);
 		cin >> t_cmd;
 
         if ((strcmp(t_cmd, "S") == 0) || (strcmp(t_cmd, "s") == 0) || (strcmp(t_cmd, "1") == 0)) {

@@ -55,8 +55,7 @@ void parts_list(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_design(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_param_set(Speaker* drvr, int bdesign, float& Vbs, float& alpha, int gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak);
-//void closed_box_param_set(Speaker* drvr, float gamma, float& alpha, float& L, float& Vab, float& Vb, float& Qa, float& Qtcp, float& Qtc, float& Fc, float& Fsb, float& f3, float& Peak, float& A_1, float& Par, float& Per, float& Vd, int bdesign);
+void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha, float& gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak, float& Par, float& Per);
 /*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
@@ -64,10 +63,9 @@ void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float&
 /*--------------------------------------------------------------------------------------------*/
 void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha);
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, float& A_1, float& Fsb, float& Fcb, float& Fs, float& f3, float& Fb, float& Fc, float& L, float& Vd, float& Qtc, float& Qtcp, float& Vab, float& Rh, float& R, float& Par, float& Per);
+void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, float& A1, float& Fsb, float& Fcb, float& Fs, float& f3, float& Fb, float& Fc, float& L, float& Vd, float& Qtc, float& Qtcp, float& Vab, float& Rh, float& R, float& Par, float& Per);
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_response(Speaker* drvr);
-//void closed_freq_response(Speaker* drvr, float A_1, float f3, float Fsb);
+void closed_freq_response(Speaker* drvr, float A1, float f3, float fc, float Fsb);
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
