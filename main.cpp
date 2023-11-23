@@ -53,73 +53,122 @@ using namespace std;
 
 /*   Global Variables   */
 char t_cmd[8];
+char x_cmd[8];
 
 /*---------------------------------------------------------*/
 int main()     
 {
     /* The code below avoids the potentially messy "using namespace std" declaration */
 
-	splash_screen();
+    splash_screen();
 
-	sleep(3);
+    sleep(3);
 
-	Speaker *drvr = NULL;
+    Speaker *drvr = NULL;
+	Speaker *Mid = NULL;
+	Speaker *Tweet = NULL;
 
-    while (strcmp(t_cmd, "E\n") != 0) {
+	Cabinet box;
+	Filter crossover;
 
-		menu_screen();
+	//Cabinet *box;
 
-		cout << "SpeakEasy: ";
-		
-		cin >> t_cmd;
+    while (strcmp(t_cmd, "Q\n") != 0) {
+
+        menu_screen();
+
+        cout << "SpeakEasy: ";
+        
+        cin >> t_cmd;
 
         if ((strcmp(t_cmd, "S") == 0) || (strcmp(t_cmd, "s") == 0) || (strcmp(t_cmd, "1") == 0)) {
-			cout << "test menu 1 - Speaker Parameters..." << endl;
-			build(drvr);
-		}
+            cout << "test menu 1 - Speaker Parameters..." << endl;
+            build(drvr);
+        }
 
-		if ((strcmp(t_cmd, "L") == 0) || (strcmp(t_cmd, "l") == 0) || (strcmp(t_cmd, "2") == 0)) {
-			cout << "test menu 2 - Avaialble Parts List..." << endl;
-			parts_list(drvr);
-		}
+        if ((strcmp(t_cmd, "L") == 0) || (strcmp(t_cmd, "l") == 0) || (strcmp(t_cmd, "2") == 0)) {
+            cout << "test menu 2 - Avaialble Parts List..." << endl;
+            parts_list(drvr);
+        }
 
-		if ((strcmp(t_cmd, "C") == 0) || (strcmp(t_cmd, "c") == 0) || (strcmp(t_cmd, "3") == 0)) {
-			cout << "test menu 3 - Closed Box Design..." << endl;
-			closed_box_design(drvr);
-		}
+        if ((strcmp(t_cmd, "C") == 0) || (strcmp(t_cmd, "c") == 0) || (strcmp(t_cmd, "3") == 0)) {
+            cout << "test menu 3 - Closed Box Design..." << endl;
+            closed_box_design(drvr, box);
+        }
 
-		if ((strcmp(t_cmd, "V") == 0) || (strcmp(t_cmd, "v") == 0) || (strcmp(t_cmd, "4") == 0)) {
-			cout << "test menu 4. - Vented Box Design.." << endl;
-			vented_box_design(drvr);
-		}
+        if ((strcmp(t_cmd, "V") == 0) || (strcmp(t_cmd, "v") == 0) || (strcmp(t_cmd, "4") == 0)) {
+            cout << "test menu 4. - Vented Box Design.." << endl;
+            vented_box_design(drvr, box);
+        }
 
-		if ((strcmp(t_cmd, "X") == 0) || (strcmp(t_cmd, "x") == 0) || (strcmp(t_cmd, "5") == 0)) {
-			cout << "test menu 5 - Xover Design..." << endl;
-			crossover_design();
-		}
+        if ((strcmp(t_cmd, "X") == 0) || (strcmp(t_cmd, "x") == 0) || (strcmp(t_cmd, "5") == 0)) {
+            cout << "test menu 5 - Xover Design..." << endl;
+            
+            while (strcmp(x_cmd, "E\n") != 0) {
+                crossover_screen();
 
-		if ((strcmp(t_cmd, "G") == 0) || (strcmp(t_cmd, "g") == 0) || (strcmp(t_cmd, "6") == 0)) {
-			cout << "test menu 6 - Graph Performance.." << endl;
-			graph_performance();
-		}
+			    cin >> x_cmd;
 
-		if ((strcmp(t_cmd, "W") == 0) || (strcmp(t_cmd, "w") == 0) || (strcmp(t_cmd, "7") == 0)) {
-			cout << "test menu 7 - Write Speaker Data..." << endl;
-			save_speaker_data(drvr);
-		}
+                if ((strcmp(x_cmd, "T") == 0) || (strcmp(x_cmd, "t") == 0) || (strcmp(x_cmd, "1") == 0)) {
+                    cout << "xover menu 1 - Two-way Speaker..." << endl;
+                    //build(drvr);
+					sleep(2);
+                }
 
-		if ((strcmp(t_cmd, "R") == 0) || (strcmp(t_cmd, "r") == 0) || (strcmp(t_cmd, "8") == 0)) {
-			cout << "test menu 8 - Read Speaker Data..." << endl;
-			read_speaker_data(drvr);
-		}
+                if ((strcmp(x_cmd, "H") == 0) || (strcmp(x_cmd, "h") == 0) || (strcmp(x_cmd, "2") == 0)) {
+                    cout << "xover menu 2 - Three-way Speaker..." << endl;
+                    //build(drvr);
+					sleep(2);
+                }
 
-		if ((strcmp(t_cmd, "E") == 0) || (strcmp(t_cmd, "e") == 0) || (strcmp(t_cmd, "9") == 0)) {
-			cout << "test menu 9 - Exit program..." << endl;
-			strcpy(t_cmd, "E\n");
-		}
-	}
+                if ((strcmp(x_cmd, "A") == 0) || (strcmp(x_cmd, "a") == 0) || (strcmp(x_cmd, "3") == 0)) {
+                    cout << "xover menu 3 - Active Filter Crossover Design..." << endl;
+                    //build(drvr);
+					sleep(2);
+                }
 
-	exit_screen();
+                if ((strcmp(x_cmd, "P") == 0) || (strcmp(x_cmd, "p") == 0) || (strcmp(x_cmd, "4") == 0)) {
+                    cout << "xover menu 3 - Passive Filter Crossover Design..." << endl;
+                    //build(drvr);
+					sleep(2);
+                }
 
-	return 0;
+                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "5") == 0)) {
+                    cout << "xover menu 3 - Exit sub-menu..." << endl;
+                    //build(drvr);
+					sleep(2);
+                    strcpy(x_cmd, "E\n");
+                }
+            }
+        }
+
+        if ((strcmp(t_cmd, "G") == 0) || (strcmp(t_cmd, "g") == 0) || (strcmp(t_cmd, "6") == 0)) {
+            cout << "test menu 6 - Graph Performance.." << endl;
+            graph_performance();
+        }
+
+        if ((strcmp(t_cmd, "W") == 0) || (strcmp(t_cmd, "w") == 0) || (strcmp(t_cmd, "7") == 0)) {
+            cout << "test menu 7 - Write Speaker Data..." << endl;
+            save_speaker_data(drvr);
+        }
+
+        if ((strcmp(t_cmd, "R") == 0) || (strcmp(t_cmd, "r") == 0) || (strcmp(t_cmd, "8") == 0)) {
+            cout << "test menu 8 - Read Speaker Data..." << endl;
+            read_speaker_data(drvr);
+        }
+
+        if ((strcmp(t_cmd, "D") == 0) || (strcmp(t_cmd, "d") == 0) || (strcmp(t_cmd, "9") == 0)) {
+            cout << "test menu 9 - Save design parameters..." << endl;
+			write_design_data(drvr, box, crossover);
+        }
+
+        if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {
+            cout << "test menu 0 - Quit program..." << endl;
+            strcpy(t_cmd, "Q\n");
+        }
+    }
+
+    exit_screen();
+
+    return 0;
 }
