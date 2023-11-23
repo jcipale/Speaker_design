@@ -14,5 +14,6 @@ minimum/suffested vent diameter/length.
 
 If any of the key small/thiele values are missing (speaker volume, 3db down point or vent length/diameter), the
 tool will be able to determine approximate values based on other values that are contained within the sdb file.
-If the approx values do meet with the needs of the designer, it is suggested that a more accurate data sheet be
-used.
+If the approx values do not meet with the needs of the designer, it is suggested that a more accurate data sheet be
+used. For example: Accuton SS220 data sheets can be found at Accuton.com, Millerspeakers.com and 
+Loudspeakerdatabase.com
