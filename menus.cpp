@@ -9,6 +9,10 @@
 /* 05/30/2023:                                                                                */
 /* Finished implementing/testing/clean-up of menus, splash scren and exit screen.             */
 /*--------------------------------------------------------------------------------------------*/
+/* 12/10/2023:                                                                                */
+/* Completed testing/debugging of driver selection (read) menu.                               */
+/* Completed testing/debugging of Crossover Desgin menu.                                      */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <forward_list>
 #include <iostream>
@@ -36,10 +40,6 @@ void splash_screen()
 {
 
     system("clear");
-
-    // This is used to define the wait time to display the splash screen
-    unsigned int sleep(unsigned int seconds);
-
     cout << "    +-------------------------------------------------------------------------+" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    | SSSSSS                                           EEEEEE                 |" << endl;
@@ -55,34 +55,20 @@ void splash_screen()
     cout << "    |         p                                                               |" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
-    cout << "    SpeakEasy: ";
-}; /* end splash_screen*/
-/*--------------------------------------------------------------------------------------------*/
-void exit_screen()
-{
-    system("clear");
 
     // This is used to define the wait time to display the splash screen
     unsigned int sleep(unsigned int seconds);
-    
-    cout << "    +-------------------------------------------------------------------------+" << endl;
-    cout << "    |                                                                         |" << endl;
-    cout << "    |                                                                         |" << endl;
-    cout << "    |                 Thank you! For using Speak-Easy!                        |" << endl;
-    cout << "    |                                                                         |" << endl;
-    cout << "    |                                                                         |" << endl;
-    cout << "    +-------------------------------------------------------------------------+" << endl;
-}
+
+}; /* end splash_screen*/
 /*--------------------------------------------------------------------------------------------*/
 void menu_screen()
 {
     system("clear");
-
     cout << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |               Program Menu               |" << endl;
     cout << "    +------------------------------------------+" << endl;
-    cout << "    |  1) Speaker Parameters                   |" << endl;
+    cout << "    |  1) Parameters                           |" << endl;
     cout << "    |  2) List Speaker Parts                   |" << endl;
     cout << "    |  3) Closed Box Design                    |" << endl;
     cout << "    |  4) Vented Box Design                    |" << endl;
@@ -93,6 +79,7 @@ void menu_screen()
     cout << "    |  9) Write Design Parameters              |" << endl;
     cout << "    |  0) Quit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
+    cout << "    SpeakEasy: ";
 }
 /*--------------------------------------------------------------------------------------------*/
 void crossover_screen()
@@ -107,4 +94,36 @@ void crossover_screen()
     cout << "    |  4) Passive Filter Design                |" << endl;
     cout << "    |  5) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
+    cout << "    SpeakEasy: ";
 }
+/*--------------------------------------------------------------------------------------------*/
+void driver_selection_screen()
+{
+    system("clear");
+    cout << "    +------------------------------------------+" << endl;
+	cout << "    |          Driver Selection Menu           |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+    cout << "    |  1) Bass Driver                          |" << endl;
+    cout << "    |  2) Mid-range Driver                     |" << endl;
+    cout << "    |  3) Tweeter Driver                       |" << endl;
+    cout << "    |  4) Exit                                 |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+    cout << "    SpeakEasy: ";
+}
+/*--------------------------------------------------------------------------------------------*/
+void exit_screen()
+{
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+    cout << "    |                                                                         |" << endl;
+    cout << "    |                                                                         |" << endl;
+    cout << "    |                 Thank you! For using Speak-Easy!                        |" << endl;
+    cout << "    |                                                                         |" << endl;
+    cout << "    |                                                                         |" << endl;
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+
+    // This is used to define the wait time to display the splash screen
+    unsigned int sleep(unsigned int seconds);
+    
+    system("clear");
+}
+/*--------------------------------------------------------------------------------------------*/

@@ -41,6 +41,13 @@
 /* Implement structures for crossover design.                                                 */
 /* Implement functions to design crossover based on 2,3,4 way speaker                         */
 /*--------------------------------------------------------------------------------------------*/
+/* 12/16/2023:                                                                                */
+/* Completed coding/testing on the following functions:                                       */
+/*    build()                                                                                 */
+/*    save_speaker_data()                                                                     */
+/*    parts_list()                                                                            */
+/*    read_bass_driver()/read_midrange_driver()/read_tweeter_driver()                         */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -79,7 +86,7 @@ string plot_name = "";
 /*--------------------------------------------------------------------------------------------*/
 /*                               Functions and Procedures                                     */
 /*--------------------------------------------------------------------------------------------*/
-void build(Speaker*& drvr)
+void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
 /*--------------------------------------------------------------------------------------------*/
 /* The build() function builds the list of available parts that the user can select from to   */
 /* design/build/simualte a speaker design with. The user is prompted to enter various part    */
@@ -88,14 +95,9 @@ void build(Speaker*& drvr)
 /*                         Adds multiple links if needed by user.                             */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *temp, *ptr;
+    struct Speaker *temp, *bass, *bandp, *high;
 
     temp=(struct Speaker *)malloc(sizeof(struct Speaker));
-
-    if(temp == NULL) {
-        cout << "Out of Memory Space:" << endl;
-        return;
-    }
 
     cout << "+-----------------------------------------------------------+" << endl;
     cout << "| Enter the speaker values as instructed below:             |" << endl;
@@ -158,11 +160,36 @@ void build(Speaker*& drvr)
     cin >> temp->v_length;
     temp->next = NULL;
 
-    drvr = temp;
-    ptr=drvr;
+	sleep(2);
+
+	drvr = temp;
+
+	if (strcmp(temp->Type, "Woof") == 0) {
+		sleep(2);
+        drvr = temp;
+		// check
+		cout << "Part num: " << drvr->Part_num << endl;
+		sleep(3);
+	}
+
+	if (strcmp(temp->Type, "Midr") == 0) {
+		sleep(2);
+        mid = temp;
+		// check
+		cout << "Part num: " << mid->Part_num << endl;
+		sleep(3);
+	}
+
+	if (strcmp(temp->Type, "Twet") == 0) {
+		sleep(2);
+        tweet = temp;
+		// check
+		cout << "Part num: " << tweet->Part_num << endl;
+		sleep(3);
+	}
 }
 /*--------------------------------------------------------------------------------------------*/
-void parts_list(Speaker* drvr)
+void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet)
 /*--------------------------------------------------------------------------------------------*/
 /* The parts_list function simply traverse the current list in a one-way direction. The user  */
 /* has the option of saving changes to the list or closing out the application with no changes*/
@@ -173,12 +200,59 @@ void parts_list(Speaker* drvr)
 /*--------------------------------------------------------------------------------------------*/
 {
     struct Speaker *ptr;
-    struct Speaker *tail;
 
-    cout << "List the available speakers..." << endl;
+	int i;
+
+    cout << "Display current speakers..." << endl;
     cout << "+-----------------------------" << endl;
 
-    sleep(3);
+    sleep(1);
+
+	for (i = 0; i< 3; i++) {
+        if (i == 0 ) {
+		    ptr = drvr;  
+
+            if (ptr == NULL) {
+                cout << "Parts List is empty..." << endl;
+                sleep(2);
+		    } else {
+			    print_part(ptr);
+			    sleep(2);
+		    }
+	    }    
+    
+	    if (i == 1) { 
+		    ptr = mid; 
+    
+            if (ptr == NULL) {
+                cout << "Parts List is empty..." << endl;
+                sleep(2);
+		    } else {
+			    print_part(ptr);
+			    sleep(2);
+		    }
+	    }    
+
+	    if (i == 2) { 
+		    ptr = tweet;
+    
+            if (ptr == NULL) {
+                cout << "Parts List is empty..." << endl;
+                sleep(2);
+		    } else {
+			    print_part(ptr);
+			    sleep(2);
+		    }
+	    }    
+	}
+}
+/*--------------------------------------------------------------------------------------------*/
+void print_part(Speaker* drvr)
+/*--------------------------------------------------------------------------------------------*/
+/* print_part() will display basic characteristics to the user. All values will be shown.     */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
 
     if (drvr == NULL) {
         cout << "Speaker Parts List is empty..." << endl;
@@ -247,7 +321,7 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     int flag;                      // Initial pass of cabinet design flag = 0
     int vol_flg;                   // Initially set to '0', but one the user makes a first pass
                                    // through the design process, then the flag will be toggled 
-                                      // to '1'. The flag will be reset to '0' upon exit.
+                                   // to '1'. The flag will be reset to '0' upon exit.
 
     char fill[4];                  // Box is filled (1) or not (0)
     float alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
@@ -276,7 +350,6 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     int bdesign;                   // Value entered for switch statement choosing deign flow
     int empty_val;                 // value used to checking for missing values.
 
-    ptr = drvr;
     flag = 0;
     
     vol_flg = 0;
@@ -387,7 +460,7 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
             cout << "Speaker Design completed..." << endl;
             flag = 1;
         } else {
-            cout << "compute closed box design..." << endl;
+            c9    m/OUt << "compute closed box design..." << endl;
         }
 
         sleep(5);
@@ -1009,7 +1082,7 @@ void graph_performance() {
     cout << "Display graphical performance..." << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
-void save_speaker_data(Speaker* drvr)
+void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet)
 /*--------------------------------------------------------------------------------------------*/
 /* save_speaker_data is used to write the contents of the speaker list to a file on locally or*/
 /* on the network drive.                                                                      */
@@ -1017,23 +1090,70 @@ void save_speaker_data(Speaker* drvr)
 /*                         Writes the complete list of driver elements.                       */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr;
+    struct Speaker *low;
+    struct Speaker *bpass;
+    struct Speaker *high;
+
+	int i;
+
+    low = drvr;
+	bpass = mid;
+	high = tweet;
 
     system("clear");
 
-    cout << "Specify speaker data file: ";
-    cin >> drvr_dba;
+	/*--------------------------------------------------*/
+	/* Once code is validated, indent to clean up code block */
+	/*--------------------------------------------------*/
+	
+	if (low == NULL) {
+	     cout << "Bass pointer is null..." << endl;
+		 sleep(3);
+    } else {
+	     save_data_ptr(low);
+	}
+	
+	if (bpass == NULL) {
+	     cout << "Midrange pointer is null..." << endl;
+		 sleep(3);
+    } else {
+	     save_data_ptr(bpass);
+	}
+	
+	if (high == NULL) {
+	     cout << "Tweeter pointer is null..." << endl;
+		 sleep(3);
+    } else {
+	     save_data_ptr(high);
+	}
+}
+/*--------------------------------------------------------------------------------------------*/
+void save_data_ptr(Speaker* drvr)
+/*--------------------------------------------------------------------------------------------*/
+/* This function is used to write data to the file system if the pointer in the calling       */
+/* contains data.  
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+    char file_name[40];
+
+    cout << "In save_data_ptr() call..." << endl;
+	cout << drvr->Part_num << endl;
+	cout << drvr->Type << endl;
+	sleep(4);
+
+	drvr_dba = drvr->Part_num;
 
     drvr_dba = drvr_dba + ".sdb";
 
     ofstream outfile(drvr_dba);
 
-    if (ptr == NULL) {
+    if (drvr == NULL) {
         cout << "Speaker Parts List is empty..." << endl;
         return;
     }
     else {
-        ptr = drvr;  //Set the temporary pointer to the head of the list
+	    ptr = drvr;  //Set the temporary pointer to the head of the list
 
         while (ptr != NULL) {
             outfile << ptr->Part_num << ";";
@@ -1064,14 +1184,14 @@ void save_speaker_data(Speaker* drvr)
             outfile << ptr->f3_vent << ";";
             outfile << ptr->v_diam << ";";
             outfile << ptr->v_length << ";";
-            ptr = ptr->next;
+            ptr = drvr->next;
             
             sleep(3);
         }
     }
 }
 /*--------------------------------------------------------------------------------------------*/
-void read_speaker_data(Speaker*& drvr)
+void read_bass_driver(Speaker*& drvr)
 /*--------------------------------------------------------------------------------------------*/
 /* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
 /* on the network drive.                                                                      */
@@ -1079,113 +1199,355 @@ void read_speaker_data(Speaker*& drvr)
 /*                         reads the complete list of driver elements.                        */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *temp, *ptr;
+    struct Speaker *ptr, *temp;
 
     char line[64];
     char *token;
     
+    int i, j, k;
+
+    float num;
+
+    string cmd_str;
+	string filesdb = "";
+
     ifstream infile;
     ifstream input;
 
-    int i, j, k;
+	drvr = NULL;
+	drvr_dba = "";
 
-    string cmd_str;
+	system("clear");
 
-    float num;
-    
-    drvr = NULL;;
-    system("clear");
-    cout << "List the available speakers..." << endl;
+	cout << "-------------------------------" << endl;
+	sleep(5);
+    cmd_str = "./driver.csh Woof";
+
+    cout << "Select a speaker from the list below..." << endl;
     cout << "+-----------------------------" << endl;
-
-    // This is a linux/unix derived command used for all *nix based systems
-    system("ls | grep sdb");
-
-    sleep(4);
-
-    cout << "select a file from the list above..." << endl;
-    cin >> drvr_dba;
-    
-    cmd_str = "cat " + drvr_dba + "| wc -l > drvr_lgth.txt";
 
     system(cmd_str.c_str());
 
-    infile.open("drvr_lgth.txt", ios::in);
+    sleep(4);
 
-    input.open(drvr_dba, ios::in);
+	cout << endl;
+	cout << "Speaker File : ";
+    cin >> drvr_dba;
 
-    temp=(struct Speaker *)malloc(sizeof(struct Speaker));
+	drvr_dba = drvr_dba + ".sdb";
+	
+	sleep(3);
+	
+	input.open(drvr_dba, ios::in);
 
-    if (temp == NULL) {
-        cout << "Out of Memory Space:" << endl;
-        return;
-    }
+    //system("cat drvr_dba");
+	temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
-    while (input >> line) {
-        cout << "Data: " << line << endl;
-        token = strtok(line, ";");
-        strcpy(temp->Part_num, token);
-        token = strtok(NULL, ";");
-        strcpy(temp->Type, token);
-        token = strtok(NULL, ";");
-        temp->Vas = atof(token);
-        token = strtok(NULL, ";");
-        temp->Cms = atof(token);
-        token = strtok(NULL, ";");
-        temp->Bl = atof(token);
-        token = strtok(NULL, ";");
-        temp->Qts = atof(token);
-        token = strtok(NULL, ";");
-        temp->Qes = atof(token);
-        token = strtok(NULL, ";");
-        temp->Qms = atof(token);
-        token = strtok(NULL, ";");
-        temp->Fs = atof(token);
-        token = strtok(NULL, ";");
-        temp->Re = atof(token);
-        token = strtok(NULL, ";");
-        temp->Rms = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_nom = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_min = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_max = atof(token);
-        token = strtok(NULL, ";");
-        temp->Le = atof(token);
-        token = strtok(NULL, ";");
-        temp->Xmax = atof(token);
-        token = strtok(NULL, ";");
-        temp->Diam = atof(token);
-        token = strtok(NULL, ";");
-        temp->Nom_Pwr = atof(token);
-        token = strtok(NULL, ";");
-        temp->Max_Pwr = atof(token);
-        token = strtok(NULL, ";");
-        temp->Freq_Low = atof(token);
-        token = strtok(NULL, ";");
-        temp->Freq_Hi = atof(token);
-        token = strtok(NULL, ";");
-        temp->Sensitivity = atof(token);
-        token = strtok(NULL, ";");
-        temp->Vbs = atof(token);
-        token = strtok(NULL, ";");
-        temp->Vbv = atof(token);
-        token = strtok(NULL, ";");
-        temp->f3_seal = atof(token);
-        token = strtok(NULL, ";");
-        temp->f3_vent = atof(token);
-        token = strtok(NULL, ";");
-        temp->v_diam = atof(token);
-        token = strtok(NULL, ";");
-        temp->v_length = atof(token);
-        temp->next = NULL;
-        
+	while (input >> line) {
+	    //cout << "Data: " << line << endl;
+	    token = strtok(line, ";");
+	    strcpy(temp->Part_num, token);
+	    token = strtok(NULL, ";");
+	    strcpy(temp->Type, token);
+	    token = strtok(NULL, ";");
+	    temp->Vas = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Cms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Bl = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qts = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qes = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Fs = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Re = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Rms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_nom = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_min = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_max = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Le = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Xmax = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Diam = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Nom_Pwr = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Max_Pwr = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Freq_Low = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Freq_Hi = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Sensitivity = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Vbs = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Vbv = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->f3_seal = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->f3_vent = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->v_diam = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->v_length = atof(token);
+	    temp->next = NULL;
+	
         sleep(2);
-
         drvr = temp;
-        ptr=drvr;
+        ptr = drvr;
     }
+
+	sleep(5);
+}
+/*--------------------------------------------------------------------------------------------*/
+void read_midrange_driver(Speaker*& midr)
+/*--------------------------------------------------------------------------------------------*/
+/* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
+/* on the network drive.                                                                      */
+/* Input: Struct Speaker - passed by reference                                                */
+/*                         reads the complete list of driver elements.                        */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr, *temp;
+
+    char line[64];
+    char *token;
+    
+    int i, j, k;
+
+    float num;
+
+    string cmd_str;
+	string filesdb = "";
+
+    ifstream infile;
+    ifstream input;
+
+	midr = NULL;
+	system("clear");
+	drvr_dba = "";
+
+	cout << "-------------------------------" << endl;
+	sleep(5);
+    cmd_str = "./driver.csh Midr";
+
+    cout << "Select a speaker from the list below..." << endl;
+    cout << "+-----------------------------" << endl;
+
+    system(cmd_str.c_str());
+
+    sleep(4);
+
+	cout << endl;
+	cout << "Speaker File : ";
+    cin >> drvr_dba;
+
+	drvr_dba = drvr_dba + ".sdb";
+	
+	sleep(3);
+	
+	input.open(drvr_dba, ios::in);
+
+    //system("cat drvr_dba");
+	temp = (struct Speaker *)malloc(sizeof(struct Speaker));
+
+	while (input >> line) {
+	    //cout << "Data: " << line << endl;
+	    token = strtok(line, ";");
+	    strcpy(temp->Part_num, token);
+	    token = strtok(NULL, ";");
+	    strcpy(temp->Type, token);
+	    token = strtok(NULL, ";");
+	    temp->Vas = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Cms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Bl = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qts = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qes = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Fs = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Re = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Rms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_nom = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_min = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_max = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Le = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Xmax = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Diam = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Nom_Pwr = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Max_Pwr = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Freq_Low = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Freq_Hi = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Sensitivity = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Vbs = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Vbv = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->f3_seal = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->f3_vent = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->v_diam = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->v_length = atof(token);
+	    temp->next = NULL;
+	
+        sleep(2);
+        midr = temp;
+        ptr = midr;
+    }
+
+	sleep(5);
+}
+/*--------------------------------------------------------------------------------------------*/
+void read_tweet_driver(Speaker*& tweet)
+/*--------------------------------------------------------------------------------------------*/
+/* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
+/* on the network drive.                                                                      */
+/* Input: Struct Speaker - passed by reference                                                */
+/*                         reads the complete list of driver elements.                        */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr, *temp;
+
+    char line[64];
+    char *token;
+    
+    int i, j, k;
+
+    float num;
+
+    string cmd_str;
+	string filesdb = "";
+
+    ifstream infile;
+    ifstream input;
+
+	tweet = NULL;
+	drvr_dba = "";
+
+	system("clear");
+
+	cout << "-------------------------------" << endl;
+	sleep(5);
+    cmd_str = "./driver.csh Twet";
+
+    cout << "Select a speaker from the list below..." << endl;
+    cout << "+-----------------------------" << endl;
+
+    system(cmd_str.c_str());
+
+    sleep(4);
+
+	cout << endl;
+	cout << "Speaker File : ";
+    cin >> drvr_dba;
+
+	drvr_dba = drvr_dba + ".sdb";
+	
+	sleep(3);
+	
+	input.open(drvr_dba, ios::in);
+
+    //system("cat drvr_dba");
+	temp = (struct Speaker *)malloc(sizeof(struct Speaker));
+
+	while (input >> line) {
+	    //cout << "Data: " << line << endl;
+	    token = strtok(line, ";");
+	    strcpy(temp->Part_num, token);
+	    token = strtok(NULL, ";");
+	    strcpy(temp->Type, token);
+	    token = strtok(NULL, ";");
+	    temp->Vas = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Cms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Bl = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qts = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qes = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Qms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Fs = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Re = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Rms = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_nom = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_min = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Z_max = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Le = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Xmax = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Diam = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Nom_Pwr = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Max_Pwr = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Freq_Low = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Freq_Hi = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Sensitivity = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Vbs = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->Vbv = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->f3_seal = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->f3_vent = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->v_diam = atof(token);
+	    token = strtok(NULL, ";");
+	    temp->v_length = atof(token);
+	    temp->next = NULL;
+	
+        sleep(2);
+        tweet = temp;
+        ptr = tweet;
+    }
+
+	sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/
 void write_design_data(Speaker* drvr, Cabinet box, Filter crossover)

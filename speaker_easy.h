@@ -14,6 +14,13 @@
 /* Implement structures for crossover design.                                                 */   
 /* Implement functions to design crossover based on 2,3,4 way speaker                         */   
 /*--------------------------------------------------------------------------------------------*/
+/* 12/16/2023:                                                                                */
+/* Added, revised and tested the following functions:                                         */
+/*    build()                                                                                 */
+/*    save_speaker_data()                                                                     */
+/*    parts_list()                                                                            */
+/*    read_bass_driver()/read_midrange_driver()/read_tweeter_driver()                         */
+/*--------------------------------------------------------------------------------------------*/
 /*                           Classes, Objects and Methods                                     */
 /*--------------------------------------------------------------------------------------------*/
 /* struct Speaker is the pointer for the Speaker Driver list.                                 */
@@ -87,9 +94,15 @@ extern typedef struct Filter
 /*--------------------------------------------------------------------------------------------*/
 const float QTC = 0.707;
 /*--------------------------------------------------------------------------------------------*/
-void build(Speaker*& drvr);
+void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
-void parts_list(Speaker* drvr);
+void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet);
+/*--------------------------------------------------------------------------------------------*/
+void save_data_ptr(Speaker* drvr);
+/*--------------------------------------------------------------------------------------------*/
+void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet);
+/*--------------------------------------------------------------------------------------------*/
+void print_part(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_design(Speaker*& drvr, Cabinet& box);
 /*--------------------------------------------------------------------------------------------*/
@@ -109,9 +122,11 @@ void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
 void graph_performance();
 /*--------------------------------------------------------------------------------------------*/
-void save_speaker_data(Speaker* drvr);
+void read_bass_driver(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
-void read_speaker_data(Speaker*& drvr);
+void read_midrange_driver(Speaker*& mid);
+/*--------------------------------------------------------------------------------------------*/
+void read_tweet_driver(Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
 void write_design_data(Speaker* drvr, Cabinet box, Filter crossover);
 /*--------------------------------------------------------------------------------------------*/
