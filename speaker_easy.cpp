@@ -53,6 +53,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include <string.h>
 #include <string>
 #include <cmath>
@@ -67,7 +68,9 @@
 
 #define extern
 #include "speaker_easy.h"
+#include "compute.h"
 #undef extern
+
 
 using namespace std;
 using std::cin;
@@ -82,6 +85,7 @@ string dsgn_data = "";
 string drvr_lgth = "";
 string plot_data = "";
 string plot_name = "";
+string pad_string = "";
 
 /*--------------------------------------------------------------------------------------------*/
 /*                               Functions and Procedures                                     */
@@ -460,7 +464,7 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
             cout << "Speaker Design completed..." << endl;
             flag = 1;
         } else {
-            c9    m/OUt << "compute closed box design..." << endl;
+            cout << "compute closed box design..." << endl;
         }
 
         sleep(5);
@@ -1231,7 +1235,7 @@ void read_bass_driver(Speaker*& drvr)
     sleep(4);
 
 	cout << endl;
-	cout << "Speaker File : ";
+	cout << "Bass Speaker... : ";
     cin >> drvr_dba;
 
 	drvr_dba = drvr_dba + ".sdb";
@@ -1350,7 +1354,7 @@ void read_midrange_driver(Speaker*& midr)
     sleep(4);
 
 	cout << endl;
-	cout << "Speaker File : ";
+	cout << "Mid-range Speaker... : ";
     cin >> drvr_dba;
 
 	drvr_dba = drvr_dba + ".sdb";
@@ -1470,7 +1474,7 @@ void read_tweet_driver(Speaker*& tweet)
     sleep(4);
 
 	cout << endl;
-	cout << "Speaker File : ";
+	cout << "Tweeter Speaker... : ";
     cin >> drvr_dba;
 
 	drvr_dba = drvr_dba + ".sdb";
@@ -1590,4 +1594,51 @@ void write_design_data(Speaker* drvr, Cabinet box, Filter crossover)
 
 }
 /*--------------------------------------------------------------------------------------------*/
+void passive_two_way(Speaker* drvr, Speaker* tweet)
+/*--------------------------------------------------------------------------------------------*/
+/* This function prompts the user for a fixed value (resistance) and the desired crossover    */
+/* point for the speaker. The function will then compute the values of a 1st order crossover. */
+/* (future feature) - a 2nd order filter design is a forth coming feature.                    */
+/*--------------------------------------------------------------------------------------------*/
+{
+	string pad_string = "";
+	string field_three = "";
 
+    cout << "This is a 1st order crossover for 2 driver speaker. " << endl;
+
+	// the values below are constants and are used to set the display table to compare freq ranges
+	cout << HDR << endl;
+	cout << TOWAY << endl;
+	cout << HDR << endl;
+	data_field(drvr);
+	//cout << HDR << endl;
+	data_field(tweet);
+	cout << HDR << endl;
+
+	sleep(2);
+}
+/*--------------------------------------------------------------------------------------------*/
+void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet)
+/*--------------------------------------------------------------------------------------------*/
+/* This function prompts the user for a fixed value (resistance) and the desired crossover    */
+/* points for the speaker. The function will then compute the values of a 1st order crossover.*/
+/* (future feature) - a 2nd order filter design is a forth coming feature.                    */
+/*--------------------------------------------------------------------------------------------*/
+{
+	string pad_string = "";
+	string field_three = "";
+	string field_four = "";
+
+    cout << "This is a 1st order crossover for 3 driver speaker. " << endl;
+
+	// the values below are constants and are used to set the display table to compare freq ranges
+	cout << THDR << endl;
+	cout << TOWAY << endl;
+	cout << THDR << endl;
+	data_field(drvr);
+	data_field(mid);
+	data_field(tweet);
+	cout << THDR << endl;
+
+	sleep(2);
+}

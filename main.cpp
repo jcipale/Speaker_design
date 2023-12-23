@@ -58,6 +58,7 @@
      
 #define extern
 #include "speaker_easy.h"
+//#include "compute.h"
 #undef extern
 
 #include "menus.h"
@@ -134,11 +135,13 @@ int main()
 
                 if ((strcmp(x_cmd, "T") == 0) || (strcmp(x_cmd, "t") == 0) || (strcmp(x_cmd, "1") == 0)) {
                     cout << "xover menu - Two-way Speaker..." << endl;
+					passive_two_way(drvr, tweet);
 					sleep(2);
                 }
 
                 if ((strcmp(x_cmd, "H") == 0) || (strcmp(x_cmd, "h") == 0) || (strcmp(x_cmd, "2") == 0)) {
                     cout << "xover menu - Three-way Speaker..." << endl;
+					passive_three_way(drvr, mid, tweet);
 					sleep(2);
                 }
 
