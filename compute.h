@@ -8,5 +8,5 @@
 /* Began code development of classes, methods and objects                                     */
 /* Begin development of field_pad() functions.                                                */
 /*--------------------------------------------------------------------------------------------*/
-void data_field(Speaker* drvr);
+void data_field(Speaker* drvr, std::string& data_display);
 /*--------------------------------------------------------------------------------------------*/

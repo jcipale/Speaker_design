@@ -58,7 +58,7 @@ extern struct Speaker
     Speaker *next;
 };
 /*--------------------------------------------------------------------------------------------*/
-extern typedef struct Cabinet
+extern struct Cabinet
 /*--------------------------------------------------------------------------------------------*/
 /* struct Cabinet is used to store and display the final cabinet values for the speaker design*/
 /*--------------------------------------------------------------------------------------------*/
@@ -78,17 +78,21 @@ extern typedef struct Cabinet
     float crossover_hi;
 	float PAR;
 	float PER;
-} box;
+};
 /*--------------------------------------------------------------------------------------------*/
-extern typedef struct Filter
+extern struct Filter
 /*--------------------------------------------------------------------------------------------*/
 /* struct crossover is used to store and display the components needes for crossover design.  */
 /*--------------------------------------------------------------------------------------------*/
 {
+	float stages;
+	float gain;
+	float xover1, xover2;
     float R1, R2, R3;
     float L1, L2, L3;
     float C1, C2, C3;
-} crossover;
+	float f3db1, f3db2;
+};
 /*--------------------------------------------------------------------------------------------*/
 /*    Constants                                                                               */
 /*--------------------------------------------------------------------------------------------*/
@@ -133,11 +137,11 @@ void read_midrange_driver(Speaker*& mid);
 /*--------------------------------------------------------------------------------------------*/
 void read_tweet_driver(Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
-void write_design_data(Speaker* drvr, Cabinet box, Filter crossover);
+void write_design_data(Speaker* drvr, Cabinet box, Filter lowpass, Filter bandpass, Filter highpass);
 /*--------------------------------------------------------------------------------------------*/
-void passive_two_way(Speaker* drvr, Speaker* tweet);
+void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
-void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet);
+void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
 /*                                 end of speaker_easy.h                                      */
 /*--------------------------------------------------------------------------------------------*/

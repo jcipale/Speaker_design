@@ -95,6 +95,9 @@ int main()
 
 	Cabinet box;
 	Filter crossover;
+	Filter lowpass;
+	Filter bandpass;
+	Filter highpass;
 
 	//Cabinet *box;
 
@@ -135,13 +138,13 @@ int main()
 
                 if ((strcmp(x_cmd, "T") == 0) || (strcmp(x_cmd, "t") == 0) || (strcmp(x_cmd, "1") == 0)) {
                     cout << "xover menu - Two-way Speaker..." << endl;
-					passive_two_way(drvr, tweet);
+					passive_two_way(drvr, tweet, lowpass, highpass);
 					sleep(2);
                 }
 
                 if ((strcmp(x_cmd, "H") == 0) || (strcmp(x_cmd, "h") == 0) || (strcmp(x_cmd, "2") == 0)) {
                     cout << "xover menu - Three-way Speaker..." << endl;
-					passive_three_way(drvr, mid, tweet);
+					passive_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
 					sleep(2);
                 }
 
@@ -210,11 +213,10 @@ int main()
                 }
             }
         }
-            //read_speaker_data(drvr, mid, tweet);
 
         if ((strcmp(t_cmd, "D") == 0) || (strcmp(t_cmd, "d") == 0) || (strcmp(t_cmd, "9") == 0)) {
             cout << "test menu 9 - Save design parameters..." << endl;
-			write_design_data(drvr, box, crossover);
+			write_design_data(drvr, box, lowpass, bandpass, highpass);
         }
 
         if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {

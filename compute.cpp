@@ -36,14 +36,14 @@ using std::cout;
 using std::endl;
 
 /*--------------------------------------------------------------------------------------------*/
-void data_field(Speaker* drvr)
+void data_field(Speaker* drvr, std::string& data_display)
 /*--------------------------------------------------------------------------------------------*/
 /* This function will manipulate the data_field string and pad it to fit the desired format   */
 /* to display the Part_num and frequency range of the selected speaker in order to determine  */
 /* the crossover point for the speaker being designed.                                        */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr_1;   
+    //struct Speaker *ptr_1;   
 	string fld = "";
 
 	int i;
@@ -52,6 +52,8 @@ void data_field(Speaker* drvr)
 
 	fld = fld + "| ";
 	ttl_cnt = fld.length();
+
+	sleep(2);
 
 	// the associated field below is a char array, so the operation is differnt.
 	cnt = strlen(drvr->Part_num);
@@ -98,5 +100,7 @@ void data_field(Speaker* drvr)
 	}
 	fld = fld + "|";
 	
+	data_display = fld;
 	cout << fld << endl;
 }
+/*--------------------------------------------------------------------------------------------*/
