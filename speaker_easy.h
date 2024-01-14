@@ -82,21 +82,27 @@ extern struct Cabinet
 /*--------------------------------------------------------------------------------------------*/
 extern struct Filter
 /*--------------------------------------------------------------------------------------------*/
-/* struct crossover is used to store and display the components needes for crossover design.  */
+/* struct crossover is used to store and display the components needs for crossover design.   */
 /*--------------------------------------------------------------------------------------------*/
 {
+	std::string xover_type;     /* sets the type of crossover network: active or passive for the final design */
 	float stages;
-	float gain;
+	float gain;                 /* gain is computed by Vg = 1 + R2/R1 where R1 is significantly larger than R2 */
 	float xover1, xover2;
-    float R1, R2, R3;
-    float L1, L2, L3;
-    float C1, C2, C3;
+	float FB_R1, FB_R2;         /* Feedback values used in active filter design Vg = 1 + R2/R1 where R1 -> infinity */
+    float R1, R2, R3, R4;
+    //float L1, L2, L3, L4;     /* Inductors are NOT in use, but are kept in place for future use. */
+    float C1, C2, C3, C4;
+	float Fres;                 /* resonant frequency - used for bandpass filters only */
 	float f3db1, f3db2;
 };
 /*--------------------------------------------------------------------------------------------*/
 /*    Constants                                                                               */
 /*--------------------------------------------------------------------------------------------*/
 const float QTC = 0.707;
+
+const float feedback_1 = 1000000.00;
+const float feedback_2 = 100.00;
 
 const std::string HDR = "+------------------------------------------+-----------------+-------------------+";
 const std::string TOWAY = "|              Driver Name                 |    Low freq     |      High freq    |";
@@ -142,6 +148,10 @@ void write_design_data(Speaker* drvr, Cabinet box, Filter lowpass, Filter bandpa
 void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
 void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
+/*--------------------------------------------------------------------------------------------*/
+void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
+/*--------------------------------------------------------------------------------------------*/
+void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
 /*                                 end of speaker_easy.h                                      */
 /*--------------------------------------------------------------------------------------------*/

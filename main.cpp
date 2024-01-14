@@ -136,25 +136,27 @@ int main()
 
 			    cin >> x_cmd;
 
-                if ((strcmp(x_cmd, "T") == 0) || (strcmp(x_cmd, "t") == 0) || (strcmp(x_cmd, "1") == 0)) {
-                    cout << "xover menu - Two-way Speaker..." << endl;
+                if (strcmp(x_cmd, "1") == 0) {
+                    cout << "Passive xover design - Two-way Speaker..." << endl;
 					passive_two_way(drvr, tweet, lowpass, highpass);
 					sleep(2);
                 }
 
-                if ((strcmp(x_cmd, "H") == 0) || (strcmp(x_cmd, "h") == 0) || (strcmp(x_cmd, "2") == 0)) {
-                    cout << "xover menu - Three-way Speaker..." << endl;
+                if (strcmp(x_cmd, "2") == 0) {
+                    cout << "Active xover design - Two-way Speaker..." << endl;
+					active_two_way(drvr, tweet, lowpass, highpass);
+					sleep(2);
+                }
+
+                if (strcmp(x_cmd, "3") == 0) {
+                    cout << "Passive xover design - Three-way Speaker..." << endl;
 					passive_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
 					sleep(2);
                 }
 
-                if ((strcmp(x_cmd, "A") == 0) || (strcmp(x_cmd, "a") == 0) || (strcmp(x_cmd, "3") == 0)) {
-                    cout << "xover menu - Active Filter Crossover Design..." << endl;
-					sleep(2);
-                }
-
-                if ((strcmp(x_cmd, "P") == 0) || (strcmp(x_cmd, "p") == 0) || (strcmp(x_cmd, "4") == 0)) {
-                    cout << "xover menu - Passive Filter Crossover Design..." << endl;
+                if (strcmp(x_cmd, "4") == 0) {
+                    cout << "Active xover design - Three-way Speaker..." << endl;
+					active_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
 					sleep(2);
                 }
 

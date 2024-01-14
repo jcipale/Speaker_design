@@ -87,11 +87,12 @@ void crossover_screen()
     system("clear");
     cout << "    +------------------------------------------+" << endl;
 	cout << "    |          Crossover Design Menu           |" << endl;
+	cout << "    |      (Use numerical selection only)      |" << endl;
     cout << "    +------------------------------------------+" << endl;
-    cout << "    |  1) Two-way speaker                      |" << endl;
-    cout << "    |  2) tHree-way speaker                    |" << endl;
-    cout << "    |  3) Active Filter Design                 |" << endl;
-    cout << "    |  4) Passive Filter Design                |" << endl;
+    cout << "    |  1) 2-way - passive speaker              |" << endl;
+    cout << "    |  2) 2-way - active speaker               |" << endl;
+    cout << "    |  3) 3-way - passive speaker              |" << endl;
+    cout << "    |  4) 3-way - active speaker               |" << endl;
     cout << "    |  5) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
