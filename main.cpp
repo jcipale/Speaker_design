@@ -42,6 +42,10 @@
 /* Added in new structure to store crossover part values per frequency response of seelcted   */
 /* drivers.                                                                                   */
 /*--------------------------------------------------------------------------------------------*/
+/* 01/21/2024:                                                                                */
+/* Final code cleanup. Reduce/remove extraneous sleep times. Commit code to github under      */
+/* Ver_1.0                                                                                    */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
