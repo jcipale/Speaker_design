@@ -325,13 +325,13 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     char d_cmd[8];
 
     char fill[4];                  // Box is filled (1) or not (0)
-	char units[8];                 // used to display centimeters or inches
+    char units[8];                 // used to display centimeters or inches
 
 
     float Qa;                      // These two *values* are used to determine the 'filling'
     float gamma;                   // constants for a closed-box design. Qa = 10/5 - lambda = 1/1.2
 
-	int uom;                       // Unit of measure - metric (0) or imperial (1)
+    int uom;                       // Unit of measure - metric (0) or imperial (1)
     int flag;                      // Initial pass of cabinet design flag = 0
     int vol_flg;                   // Initially set to '0', but one the user makes a first pass
                                    // through the design process, then the flag will be toggled 
@@ -359,6 +359,7 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     float R;                       // decibel value for a given frequency(f)
     float A, B;                    // Intermediate place-holder for frequency response
     float a, b, c, d;
+    float DrvDiam;                 // Speaker Diameter from data sheet
 
     int i;                         // frequency increment
     int bdesign;                   // Value entered for switch statement choosing deign flow
@@ -505,12 +506,31 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
 		 cout << "DBG - Vbs : " << Vbs << endl;
      }
 
+     cout << "Volume in " << units << ": " << Vbs << endl;
+
+     cout << "Enter enclosure depth in " << units << ": ";
+     cin >> box.D;
+
+     cout << "Enter driver diameter in " << units << " from driver data sheet : ";
+     cin  >> DrvDiam;
+
+     box.W = DrvDiam + DrvDiam/2;
+
+     box.H = Vbs/(box.W * box.D);
+
+     cout << "Interior Box dimensions in " << units << ":";
+     cout << "Height: " << box.H << endl;
+     cout << "Width: " << box.W << endl;
+     cout << "Depth: " << box.D << endl;
+
      // Compute box dimensions
+     /*
      cout << "Determine interior box volume..." << endl;
      cout << "-----------------------------------" << endl;
      cout << endl;
      cout << "Enter box depth (D) in " << units << " : ";
      cin >> box.D;
+     */
 
 }
 /*--------------------------------------------------------------------------------------------*/
