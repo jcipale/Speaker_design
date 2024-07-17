@@ -63,7 +63,7 @@ extern struct Cabinet
 /* struct Cabinet is used to store and display the final cabinet values for the speaker design*/
 /*--------------------------------------------------------------------------------------------*/
 {
-	char Part_num[40];
+    char Part_num[40];
     float vent_diam;
     float vent_length;
     float cab_volume;
@@ -76,8 +76,9 @@ extern struct Cabinet
     float rolloff;
     float crossover_lo;
     float crossover_hi;
-	float PAR;
-	float PER;
+    float PAR;
+    float PER;
+    float H, W, D;
 };
 /*--------------------------------------------------------------------------------------------*/
 extern struct Filter
@@ -85,21 +86,24 @@ extern struct Filter
 /* struct crossover is used to store and display the components needs for crossover design.   */
 /*--------------------------------------------------------------------------------------------*/
 {
-	std::string xover_type;     /* sets the type of crossover network: active or passive for the final design */
-	float stages;
-	float gain;                 /* gain is computed by Vg = 1 + R2/R1 where R1 is significantly larger than R2 */
-	float xover1, xover2;
-	float FB_R1, FB_R2;         /* Feedback values used in active filter design Vg = 1 + R2/R1 where R1 -> infinity */
+    std::string xover_type;     /* sets the type of crossover network: active or passive for the final design */
+    float stages;
+    float gain;                 /* gain is computed by Vg = 1 + R2/R1 where R1 is significantly larger than R2 */
+    float xover1, xover2;
+    float FB_R1, FB_R2;         /* Feedback values used in active filter design Vg = 1 + R2/R1 where R1 -> infinity */
     float R1, R2, R3, R4;
     //float L1, L2, L3, L4;     /* Inductors are NOT in use, but are kept in place for future use. */
     float C1, C2, C3, C4;
-	float Fres;                 /* resonant frequency - used for bandpass filters only */
-	float f3db1, f3db2;
+    float Fres;                 /* resonant frequency - used for bandpass filters only */
+    float f3db1, f3db2;
 };
 /*--------------------------------------------------------------------------------------------*/
 /*    Constants                                                                               */
 /*--------------------------------------------------------------------------------------------*/
 const float QTC = 0.707;
+const float liter_to_cubicInch = 61023.7;
+const float met_to_decmet = 1000.0;
+const float liter_to_cubic_cm = 1000.0;
 
 const float feedback_1 = 1000000.00;
 const float feedback_2 = 100.00;

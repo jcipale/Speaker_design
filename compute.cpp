@@ -8,7 +8,7 @@
 /* Began code development of classes, methods and objects                                     */
 /* Begin development of field_pad() functions.                                                */
 /*--------------------------------------------------------------------------------------------*/
-#include <algorithm>
+//#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>

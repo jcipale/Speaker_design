@@ -164,7 +164,13 @@ int main()
 					sleep(2);
                 }
 
-                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "5") == 0)) {
+                if (strcmp(x_cmd, "5") == 0) {
+                    cout << "Compute Speaker Volume..." << endl;
+					cout << "Dummy routine - compute volume basedon cubic inches because the developer cant use the metric system" << endl;
+					sleep(2);
+                }
+
+                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "6") == 0)) {
                     cout << "xover menu - Exit sub-menu..." << endl;
 					sleep(2);
                     strcpy(x_cmd, "E\n");
