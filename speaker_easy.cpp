@@ -110,62 +110,62 @@ void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
     cout << "+-----------------------------------------------------------+" << endl;
     cout << "| Enter the speaker values as instructed below:             |" << endl;
     cout << "+-----------------------------------------------------------+" << endl;
-    cout << "    Part Number            : ";
+    cout << "    Part Number               : ";
     cin >> temp->Part_num;
-    cout << "    Type (Woof/Twet/Midr)  : ";
+    cout << "    Type (Woof/Twet/Midr)     : ";
     cin >> temp->Type;
-    cout << "    Vas (dm^3) (aka liters): ";
+    cout << "    Vas (dm^3) (aka liters)   : ";
     cin >> temp->Vas;
-    cout << "    Compliance             : ";
+    cout << "    Compliance                : ";
     cin >> temp->Cms;
-    cout << "    BL (Force Factor)      : ";
+    cout << "    BL (Force Factor)         : ";
     cin >> temp->Bl;
-    cout << "    Qts (Total Q factor)   : ";
+    cout << "    Qts (Total Q factor)      : ";
     cin >> temp->Qts;
-    cout << "    Qes (Electric Q factor): ";
+    cout << "    Qes (Electric Q factor)   : ";
     cin >> temp->Qes;
-    cout << "    Qms (Mech Q factor)    : ";
+    cout << "    Qms (Mech Q factor)       : ";
     cin >> temp->Qms;
-    cout << "    Fs                     : ";
+    cout << "    Fs                        : ";
     cin >> temp->Fs;
-    cout << "    Re (ohms)              : ";
+    cout << "    Re (ohms)                 : ";
     cin >> temp->Re;
-    cout << "    RMS (kg*s)             : ";
+    cout << "    RMS (kg*s)                : ";
     cin >> temp->Rms;
-    cout << "    Z_nom (Nom Impedance)  : ";
+    cout << "    Z_nom (Nom Impedance)     : ";
     cin >> temp->Z_nom;
-    cout << "    Z_min (Min Impedance)  : ";
-    cin >> temp->Z_min;
-    cout << "    Z_max (Max Impedance)  : ";
-    cin >> temp->Z_max;
-    cout << "    Le (mH)                : ";
+    cout << "    Le (mH)                   : ";
     cin >> temp->Le;
-    cout << "    Xmax (mm)              : ";
+    cout << "    Xmax (mm)                 : ";
     cin >> temp->Xmax;
-    cout << "    Diam (mm)              : ";
+    cout << "    Diam (mm)                 : ";
     cin >> temp->Diam;
-    cout << "    Nom_Pwr (W)            : ";
+    cout << "    Nom_Pwr (W)               : ";
     cin >> temp->Nom_Pwr;
-    cout << "    Max_Pwr (W)            : ";
+    cout << "    Max_Pwr (W)               : ";
     cin >> temp->Max_Pwr;
-    cout << "    Freq_Low (Hz)          : ";
+    cout << "    Freq_Low (Hz)             : ";
     cin >> temp->Freq_Low;
-    cout << "    Freq_Hi (Hz)           : ";
+    cout << "    Freq_Hi (Hz)              : ";
     cin >> temp->Freq_Hi;
-    cout << "    Sensitivity (db 1w/1m) : ";
+    cout << "    Sensitivity (db 1w/1m)    : ";
     cin >> temp->Sensitivity;
-    cout << "    Box volume - sealed (m^3)         : ";
+    cout << "    Box volume - sealed (m^3) : ";
     cin >> temp->Vbs;
-    cout << "    Box volume - vented (m^3)       : ";
+    cout << "    Box volume - vented (m^3) : ";
     cin >> temp->Vbv;
-    cout << "    f3_seal (3db rolloff): ";
+    cout << "    f3_seal (3db rolloff)     : ";
     cin >> temp->f3_seal;
-    cout << "    f3_vent (3db rolloff)  : ";
+    cout << "    f3_vent (3db rolloff)     : ";
     cin >> temp->f3_vent;
-    cout << "    v_diam (vent diameter) : ";
+    cout << "    v_diam (vent diameter)    : ";
     cin >> temp->v_diam;
-    cout << "    v_length (vent length) : ";
+    cout << "    v_length (vent length)    : ";
     cin >> temp->v_length;
+    cout << "    b_diam (speaker diameter) : ";
+    cin >> temp->b_diam;
+    cout << "    depth (speaker depth)     : ";
+    cin >> temp->depth;
     temp->next = NULL;
 
     sleep(10);
@@ -284,8 +284,6 @@ void print_part(Speaker* drvr)
             cout << "Re (Ohms)              : " << ptr->Re << endl;
             cout << "Rms                    : " << ptr->Rms << endl;
             cout << "Z_nom (Ohms)           : " << ptr->Z_nom << endl;
-            cout << "Z_min (Ohms)           : " << ptr->Z_min << endl;
-            cout << "Z_max (Ohms)           : " << ptr->Z_max << endl;
             cout << "Le (mH)                : " << ptr->Le << endl;
             cout << "Xmax (mm)              : " << ptr->Xmax << endl;
             cout << "Diam (mm)              : " << ptr->Diam << endl;
@@ -293,14 +291,16 @@ void print_part(Speaker* drvr)
             cout << "Max_Pwr (W)            : " << ptr->Max_Pwr << endl;
             cout << "Freq_Low (Hz)          : " << ptr->Freq_Low << endl;
             cout << "Freq_Hi (Hz)           : " << ptr->Freq_Hi << endl;
-            cout << "Sensitivity            :  " << ptr->Sensitivity << endl;
+            cout << "Sensitivity            : " << ptr->Sensitivity << endl;
             cout << "- - - - Default Data Sheet Values - - - -" << endl;
             cout << "Vol Sealed (L || dm^3) : " << ptr->Vbs << endl;
             cout << "Vol Vented (L || dm^3) : " << ptr->Vbv << endl;
             cout << "f3_seal (Hz)           : " << ptr->f3_seal << endl;
             cout << "f3_vent (Hz)           : " << ptr->f3_vent << endl;
             cout << "vent diam  (mm)        : " << ptr->v_diam << endl;
-            cout << "vent length(mm)        : " << ptr->v_length << endl;
+            cout << "vent length (mm)       : " << ptr->v_length << endl;
+            cout << "speaker diam (mm)      : " << ptr->b_diam << endl;
+            cout << "speaker depth (mm)     : " << ptr->depth << endl;
             ptr = ptr->next;
             cout << "+-----------------------------" << endl;
             
@@ -495,7 +495,6 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
 		 uom = 0;
 
 		 strcpy(units, "cms");
-		 cout << "DBG - Vbs : " << Vbs << endl;
      } else {
          // work in imperial units
          Vbs = liter_to_cubicInch * Vbs;
@@ -503,7 +502,6 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
 		 uom = 1;
 
 		 strcpy(units, "inches");
-		 cout << "DBG - Vbs : " << Vbs << endl;
      }
 
      cout << "Volume in " << units << ": " << Vbs << endl;
@@ -1238,8 +1236,6 @@ void save_data_ptr(Speaker* drvr)
             outfile << ptr->Re << ";";
             outfile << ptr->Rms << ";";
             outfile << ptr->Z_nom << ";"; 
-            outfile << ptr->Z_min << ";"; 
-            outfile << ptr->Z_max << ";"; 
             outfile << ptr->Le << ";"; 
             outfile << ptr->Xmax << ";";
             outfile << ptr->Diam << ";";
@@ -1254,6 +1250,8 @@ void save_data_ptr(Speaker* drvr)
             outfile << ptr->f3_vent << ";";
             outfile << ptr->v_diam << ";";
             outfile << ptr->v_length << ";";
+            outfile << ptr->b_diam << ";";
+            outfile << ptr->depth << ";";
             ptr = drvr->next;
             
             sleep(3);
@@ -1310,11 +1308,11 @@ void read_bass_driver(Speaker*& drvr)
     
     input.open(drvr_dba, ios::in);
 
-    //system("cat drvr_dba");
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        //cout << "Data: " << line << endl;
+        cout << "Data: " << line << endl;
+	    sleep(2);
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
@@ -1339,10 +1337,6 @@ void read_bass_driver(Speaker*& drvr)
         temp->Rms = atof(token);
         token = strtok(NULL, ";");
         temp->Z_nom = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_min = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_max = atof(token);
         token = strtok(NULL, ";");
         temp->Le = atof(token);
         token = strtok(NULL, ";");
@@ -1371,6 +1365,10 @@ void read_bass_driver(Speaker*& drvr)
         temp->v_diam = atof(token);
         token = strtok(NULL, ";");
         temp->v_length = atof(token);
+        token = strtok(NULL, ";");
+        temp->b_diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->depth = atof(token);
         temp->next = NULL;
     
         sleep(2);
@@ -1433,7 +1431,7 @@ void read_midrange_driver(Speaker*& midr)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        //cout << "Data: " << line << endl;
+        cout << "Data: " << line << endl;
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
@@ -1458,10 +1456,6 @@ void read_midrange_driver(Speaker*& midr)
         temp->Rms = atof(token);
         token = strtok(NULL, ";");
         temp->Z_nom = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_min = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_max = atof(token);
         token = strtok(NULL, ";");
         temp->Le = atof(token);
         token = strtok(NULL, ";");
@@ -1490,6 +1484,12 @@ void read_midrange_driver(Speaker*& midr)
         temp->v_diam = atof(token);
         token = strtok(NULL, ";");
         temp->v_length = atof(token);
+//-----
+        token = strtok(NULL, ";");
+        temp->b_diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->depth = atof(token);
+//----
         temp->next = NULL;
     
         sleep(2);
@@ -1553,7 +1553,7 @@ void read_tweet_driver(Speaker*& tweet)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        //cout << "Data: " << line << endl;
+        cout << "Data: " << line << endl;
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
@@ -1578,10 +1578,6 @@ void read_tweet_driver(Speaker*& tweet)
         temp->Rms = atof(token);
         token = strtok(NULL, ";");
         temp->Z_nom = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_min = atof(token);
-        token = strtok(NULL, ";");
-        temp->Z_max = atof(token);
         token = strtok(NULL, ";");
         temp->Le = atof(token);
         token = strtok(NULL, ";");
@@ -1610,6 +1606,12 @@ void read_tweet_driver(Speaker*& tweet)
         temp->v_diam = atof(token);
         token = strtok(NULL, ";");
         temp->v_length = atof(token);
+//-----
+        token = strtok(NULL, ";");
+        temp->b_diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->depth = atof(token);
+//----
         temp->next = NULL;
     
         sleep(2);

@@ -27,8 +27,8 @@
 /*--------------------------------------------------------------------------------------------*/
 extern struct Speaker
 {
-    char Part_num[40];       // Product part number
-    char Type[8];            // Speaker type. One of Woof, Twet or Midr
+    char Part_num[64];       // Product part number
+    char Type[16];           // Speaker type. One of Woof, Twet or Midr
     float Vas;               // Equivalent Volume of cabinet dm^3
     float Cms;               // Compliance
     float Bl;                // BL Product (aka Force Factor)
@@ -39,8 +39,6 @@ extern struct Speaker
     float Re;                // DC Resistance
     float Rms;               // Mechanical resistance
     float Z_nom;             // Nominal impedance (aka Impedance)
-    float Z_min;             // Minimum Impedance
-    float Z_max;             // Maximum Impedance 
     float Le;                // Voice Coil inductance (aka Lbm)
     float Xmax;              // Maximum Linear Excursion
     float Diam;              // Voice Coil Diameter
@@ -55,6 +53,8 @@ extern struct Speaker
     float f3_vent;           // 3db down point (rolloff)
     float v_diam;            // vent diameter (from data sheet - default)
     float v_length;          // vent length (from data sheet - default)
+    float b_diam;            // Overall basket diameter - used for designing physical cabinet
+    float depth;             // Overall driver depth - used for designing physical cabinet
     Speaker *next;
 };
 /*--------------------------------------------------------------------------------------------*/
@@ -66,6 +66,8 @@ extern struct Cabinet
     char Part_num[40];
     float vent_diam;
     float vent_length;
+    float diam;              // Overall basket diameter - used for designing physical cabinet
+    float depth;             // Overall driver depth - used for designing physical cabinet
     float cab_volume;
     float freq_lo;
     float freq_hi;

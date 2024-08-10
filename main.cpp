@@ -93,17 +93,17 @@ int main()
     sleep(3);
 
     Speaker *drvr = NULL;
-	Speaker *mid = NULL;
-	Speaker *tweet = NULL;
+    Speaker *mid = NULL;
+    Speaker *tweet = NULL;
     
+    
+    Cabinet box;
+    Filter crossover;
+    Filter lowpass;
+    Filter bandpass;
+    Filter highpass;
 
-	Cabinet box;
-	Filter crossover;
-	Filter lowpass;
-	Filter bandpass;
-	Filter highpass;
-
-	//Cabinet *box;
+    //Cabinet *box;
 
     while (strcmp(t_cmd, "Q\n") != 0) {
 
@@ -111,7 +111,7 @@ int main()
 
         cin >> t_cmd;
 
-        if ((strcmp(t_cmd, "P") == 0) || (strcmp(t_cmd, "p") == 0) || (strcmp(t_cmd, "1") == 0)) {
+        if ((strcmp(t_cmd, "B") == 0) || (strcmp(t_cmd, "b") == 0) || (strcmp(t_cmd, "1") == 0)) {
             cout << "test menu 1 - Parameters..." << endl;
             build(drvr, mid, tweet);
         }
@@ -134,45 +134,45 @@ int main()
         if ((strcmp(t_cmd, "X") == 0) || (strcmp(t_cmd, "x") == 0) || (strcmp(t_cmd, "5") == 0)) {
             cout << "test menu 5 - Xover Design..." << endl;
             
-			strcpy(x_cmd, "");
+            strcpy(x_cmd, "");
             while (strcmp(x_cmd, "E\n") != 0) {
                 crossover_screen();
 
-			    cin >> x_cmd;
+		cin >> x_cmd;
 
                 if (strcmp(x_cmd, "1") == 0) {
                     cout << "Passive xover design - Two-way Speaker..." << endl;
-					passive_two_way(drvr, tweet, lowpass, highpass);
-					sleep(2);
+		    passive_two_way(drvr, tweet, lowpass, highpass);
+		    sleep(2);
                 }
 
                 if (strcmp(x_cmd, "2") == 0) {
                     cout << "Active xover design - Two-way Speaker..." << endl;
-					active_two_way(drvr, tweet, lowpass, highpass);
-					sleep(2);
+		    active_two_way(drvr, tweet, lowpass, highpass);
+		    sleep(2);
                 }
 
                 if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive xover design - Three-way Speaker..." << endl;
-					passive_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
-					sleep(2);
+		    passive_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
+		    sleep(2);
                 }
 
                 if (strcmp(x_cmd, "4") == 0) {
                     cout << "Active xover design - Three-way Speaker..." << endl;
-					active_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
-					sleep(2);
+		    active_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
+		    sleep(2);
                 }
 
                 if (strcmp(x_cmd, "5") == 0) {
                     cout << "Compute Speaker Volume..." << endl;
-					cout << "Dummy routine - compute volume basedon cubic inches because the developer cant use the metric system" << endl;
-					sleep(2);
+		    cout << "Dummy routine - compute volume basedon cubic inches because the developer cant use the metric system" << endl;
+		    sleep(2);
                 }
 
                 if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "6") == 0)) {
                     cout << "xover menu - Exit sub-menu..." << endl;
-					sleep(2);
+		    sleep(2);
                     strcpy(x_cmd, "E\n");
                 }
             }
@@ -183,7 +183,7 @@ int main()
             graph_performance();
         }
 
-        if ((strcmp(t_cmd, "W") == 0) || (strcmp(t_cmd, "w") == 0) || (strcmp(t_cmd, "7") == 0)) {
+        if ((strcmp(t_cmd, "S") == 0) || (strcmp(t_cmd, "s") == 0) || (strcmp(t_cmd, "7") == 0)) {
             cout << "test menu 7 - Write Speaker Data..." << endl;
             save_speaker_data(drvr, mid, tweet);
         }
@@ -191,36 +191,36 @@ int main()
         if ((strcmp(t_cmd, "R") == 0) || (strcmp(t_cmd, "r") == 0) || (strcmp(t_cmd, "8") == 0)) {
             cout << "test menu 8 - Read Speaker Data..." << endl;
             
-			strcpy(s_cmd, "");
-            while (strcmp(s_cmd, "E\n") != 0) {
-                driver_selection_screen();
+	    strcpy(s_cmd, "");
+                while (strcmp(s_cmd, "E\n") != 0) {
+                    driver_selection_screen();
 
-			    cin >> s_cmd;
+		    cin >> s_cmd;
 
-                if ((strcmp(s_cmd, "B") == 0) || (strcmp(s_cmd, "b") == 0) || (strcmp(s_cmd, "1") == 0)) {
-                    cout << "Bass selection menu 1..." << endl;
-			        sptype = 1;
-					read_bass_driver(drvr);
-					sleep(2);
-                }
+                    if ((strcmp(s_cmd, "B") == 0) || (strcmp(s_cmd, "b") == 0) || (strcmp(s_cmd, "1") == 0)) {
+                        cout << "Bass selection menu 1..." << endl;
+		        sptype = 1;
+		        read_bass_driver(drvr);
+		        sleep(2);
+                    }
 
-                if ((strcmp(s_cmd, "M") == 0) || (strcmp(s_cmd, "m") == 0) || (strcmp(s_cmd, "2") == 0)) {
-                    cout << "Midrange selection menu 2..." << endl;
-			        sptype = 2;
-					read_midrange_driver(mid);
-					sleep(2);
-                }
+                    if ((strcmp(s_cmd, "M") == 0) || (strcmp(s_cmd, "m") == 0) || (strcmp(s_cmd, "2") == 0)) {
+                        cout << "Midrange selection menu 2..." << endl;
+		        sptype = 2;
+		        read_midrange_driver(mid);
+		        sleep(2);
+                    }
 
-                if ((strcmp(s_cmd, "T") == 0) || (strcmp(s_cmd, "t") == 0) || (strcmp(s_cmd, "3") == 0)) {
-                    cout << "Tweeter selection menu 3..." << endl;
-			        sptype = 3;
-					read_tweet_driver(tweet);
-					sleep(2);
+                    if ((strcmp(s_cmd, "T") == 0) || (strcmp(s_cmd, "t") == 0) || (strcmp(s_cmd, "3") == 0)) {
+                        cout << "Tweeter selection menu 3..." << endl;
+			sptype = 3;
+			read_tweet_driver(tweet);
+			sleep(2);
                 }
 
                 if ((strcmp(s_cmd, "E") == 0) || (strcmp(s_cmd, "e") == 0) || (strcmp(s_cmd, "4") == 0)) {
                     cout << "Parts menu - Exit sub-menu..." << endl;
-					sleep(2);
+		    sleep(2);
                     strcpy(s_cmd, "E\n");
                 }
             }
@@ -228,7 +228,7 @@ int main()
 
         if ((strcmp(t_cmd, "D") == 0) || (strcmp(t_cmd, "d") == 0) || (strcmp(t_cmd, "9") == 0)) {
             cout << "test menu 9 - Save design parameters..." << endl;
-			write_design_data(drvr, box, lowpass, bandpass, highpass);
+	    write_design_data(drvr, box, lowpass, bandpass, highpass);
         }
 
         if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {

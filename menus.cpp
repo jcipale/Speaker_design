@@ -68,16 +68,16 @@ void menu_screen()
     cout << "    +------------------------------------------+" << endl;
     cout << "    |               Program Menu               |" << endl;
     cout << "    +------------------------------------------+" << endl;
-    cout << "    |  1) Parameters                           |" << endl;
-    cout << "    |  2) List Speaker Parts                   |" << endl;
-    cout << "    |  3) Closed Box Design                    |" << endl;
-    cout << "    |  4) Vented Box Design                    |" << endl;
-    cout << "    |  5) Xover Design                         |" << endl;
-    cout << "    |  6) Graph Performance                    |" << endl;
-    cout << "    |  7) Write Speaker Data                   |" << endl;
-    cout << "    |  8) Read Speaker Data                    |" << endl;
-    cout << "    |  9) Write Design Parameters              |" << endl;
-    cout << "    |  0) Quit                                 |" << endl;
+    cout << "    |  1) (B)uild Parameters                   |" << endl;
+    cout << "    |  2) (L)ist Speaker Parts                 |" << endl;
+    cout << "    |  3) (C)losed Box Design                  |" << endl;
+    cout << "    |  4) (V)ented Box Design                  |" << endl;
+    cout << "    |  5) (X)over Design                       |" << endl;
+    cout << "    |  6) (G)raph Performance                  |" << endl;
+    cout << "    |  7) (S)ave Speaker Data                  |" << endl;
+    cout << "    |  8) (R)ead Speaker Data                  |" << endl;
+    cout << "    |  9) (W)rite Design Parameters            |" << endl;
+    cout << "    |  0) (Q)uit                               |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }
@@ -86,8 +86,8 @@ void crossover_screen()
 {
     system("clear");
     cout << "    +------------------------------------------+" << endl;
-	cout << "    |          Crossover Design Menu           |" << endl;
-	cout << "    |      (Use numerical selection only)      |" << endl;
+    cout << "    |          Crossover Design Menu           |" << endl;
+    cout << "    |      (Use numerical selection only)      |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) 2-way - passive speaker              |" << endl;
     cout << "    |  2) 2-way - active speaker               |" << endl;
@@ -102,11 +102,11 @@ void driver_selection_screen()
 {
     system("clear");
     cout << "    +------------------------------------------+" << endl;
-	cout << "    |          Driver Selection Menu           |" << endl;
+    cout << "    |          Driver Selection Menu           |" << endl;
     cout << "    +------------------------------------------+" << endl;
-    cout << "    |  1) Bass Driver                          |" << endl;
-    cout << "    |  2) Mid-range Driver                     |" << endl;
-    cout << "    |  3) Tweeter Driver                       |" << endl;
+    cout << "    |  1) (B)ass Driver                        |" << endl;
+    cout << "    |  2) (M)id-range Driver                   |" << endl;
+    cout << "    |  3) (T)weeter Driver                     |" << endl;
     cout << "    |  4) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
