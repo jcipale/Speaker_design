@@ -110,61 +110,63 @@ void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
     cout << "+-----------------------------------------------------------+" << endl;
     cout << "| Enter the speaker values as instructed below:             |" << endl;
     cout << "+-----------------------------------------------------------+" << endl;
-    cout << "    Part Number               : ";
+    cout << "    Part Number                 : ";
     cin >> temp->Part_num;
-    cout << "    Type (Woof/Twet/Midr)     : ";
+    cout << "    Type (Woof/Twet/Midr)       : ";
     cin >> temp->Type;
-    cout << "    Vas (dm^3) (aka liters)   : ";
+    cout << "    Vas (dm^3) (aka liters)     : ";
     cin >> temp->Vas;
-    cout << "    Compliance                : ";
+    cout << "    Compliance                  : ";
     cin >> temp->Cms;
-    cout << "    BL (Force Factor)         : ";
+    cout << "    BL (Force Factor)           : ";
     cin >> temp->Bl;
-    cout << "    Qts (Total Q factor)      : ";
+    cout << "    Qts (Total Q factor)        : ";
     cin >> temp->Qts;
-    cout << "    Qes (Electric Q factor)   : ";
+    cout << "    Qes (Electric Q factor)     : ";
     cin >> temp->Qes;
-    cout << "    Qms (Mech Q factor)       : ";
+    cout << "    Qms (Mech Q factor)         : ";
     cin >> temp->Qms;
-    cout << "    Fs                        : ";
+    cout << "    Fs                          : ";
     cin >> temp->Fs;
-    cout << "    Re (ohms)                 : ";
+    cout << "    Re (ohms)                   : ";
     cin >> temp->Re;
-    cout << "    RMS (kg*s)                : ";
+    cout << "    RMS (kg*s)                  : ";
     cin >> temp->Rms;
-    cout << "    Z_nom (Nom Impedance)     : ";
+    cout << "    Z_nom (Nom Impedance)       : ";
     cin >> temp->Z_nom;
-    cout << "    Le (mH)                   : ";
+    cout << "    Le (mH)                     : ";
     cin >> temp->Le;
-    cout << "    Xmax (mm)                 : ";
+    cout << "    Xmax (mm)                   : ";
     cin >> temp->Xmax;
-    cout << "    Diam (mm)                 : ";
+    cout << "    Diam (mm)                   : ";
     cin >> temp->Diam;
-    cout << "    Nom_Pwr (W)               : ";
+    cout << "    Nom_Pwr (W)                 : ";
     cin >> temp->Nom_Pwr;
-    cout << "    Max_Pwr (W)               : ";
+    cout << "    Max_Pwr (W)                 : ";
     cin >> temp->Max_Pwr;
-    cout << "    Freq_Low (Hz)             : ";
+    cout << "    Freq_Low (Hz)               : ";
     cin >> temp->Freq_Low;
-    cout << "    Freq_Hi (Hz)              : ";
+    cout << "    Freq_Hi (Hz)                : ";
     cin >> temp->Freq_Hi;
-    cout << "    Sensitivity (db 1w/1m)    : ";
+    cout << "    Sensitivity (db 1w/1m)      : ";
     cin >> temp->Sensitivity;
-    cout << "    Box volume - sealed (m^3) : ";
+    cout << "    Box volume - sealed (m^3)   : ";
     cin >> temp->Vbs;
-    cout << "    Box volume - vented (m^3) : ";
+    cout << "    Box volume - vented (m^3)   : ";
     cin >> temp->Vbv;
-    cout << "    f3_seal (3db rolloff)     : ";
+    cout << "    f3_seal (3db rolloff)       : ";
     cin >> temp->f3_seal;
-    cout << "    f3_vent (3db rolloff)     : ";
+    cout << "    f3_vent (3db rolloff)       : ";
     cin >> temp->f3_vent;
-    cout << "    v_diam (vent diameter)    : ";
+    cout << "    v_diam (vent diameter)      : ";
     cin >> temp->v_diam;
-    cout << "    v_length (vent length)    : ";
+    cout << "    v_length (vent length)      : ";
     cin >> temp->v_length;
-    cout << "    b_diam (speaker diameter) : ";
+    cout << "    b_diam (speaker diameter)   : ";
     cin >> temp->b_diam;
-    cout << "    depth (speaker depth)     : ";
+    cout << "    b_height (speaker diameter) : ";
+    cin >> temp->b_height;
+    cout << "    depth (speaker depth)       : ";
     cin >> temp->depth;
     temp->next = NULL;
 
@@ -300,6 +302,7 @@ void print_part(Speaker* drvr)
             cout << "vent diam  (mm)        : " << ptr->v_diam << endl;
             cout << "vent length (mm)       : " << ptr->v_length << endl;
             cout << "speaker diam (mm)      : " << ptr->b_diam << endl;
+            cout << "speaker height (mm)    : " << ptr->b_height << endl;
             cout << "speaker depth (mm)     : " << ptr->depth << endl;
             ptr = ptr->next;
             cout << "+-----------------------------" << endl;
@@ -309,7 +312,7 @@ void print_part(Speaker* drvr)
     }
 }
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_design(Speaker*& drvr, Cabinet& box)
+void closed_box_design(Speaker*& drvr, Cabinet*& box)
 /*--------------------------------------------------------------------------------------------*/
 /* closed_box_design will take the stored Small/Thiele parameters, compute the necessary data */
 /* points then plot the resulting frequency plot. This function calls the functions:          */
@@ -320,7 +323,10 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     struct Speaker *ptr;
     ptr = drvr;
 
-    struct Cabinet enclosure;
+    struct Cabinet *temp, *cptr;
+
+    temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
+
     char l_cmd[8];
     char d_cmd[8];
 
@@ -364,6 +370,8 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     int i;                         // frequency increment
     int bdesign;                   // Value entered for switch statement choosing deign flow
     int empty_val;                 // value used to checking for missing values.
+	
+    std::string cab_type;
 
     flag = 0;
     
@@ -371,8 +379,26 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     empty_val = 0;
 
     system("clear");
+	/*
     cout << "Design a closed box speaker..." << endl;
 
+    if (ptr->Vbs <= 0) {
+        empty_val = 2;
+    }
+	*/
+
+    if ((ptr->f3_seal <= 0) || (ptr->Vbs <= 0)) {
+        empty_val = 2;
+    }
+
+	/*
+    if (empty_val = 0) {
+        cin >> bdesign;
+    } else {
+        bdesign = empty_val;
+    }
+	*/
+        
     while (!flag) {
         cout << "Use acoustic filling - Y/N? :";
         cin >> fill;
@@ -384,32 +410,16 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
             Qa = 5.0;
         }
 
-        if (ptr->Vbs <= 0) {
-            sleep(2);
-
-            empty_val = 2;
-        }
-
-        if (ptr->f3_seal <= 0) {
-            sleep(2);
-
-            empty_val = 2;
-        }
-
-        sleep(2);
 
         cout << "Choose design based on:" << endl;
         cout << "    1) default speaker values" << endl;
         cout << "    2) box volume" << endl;
         cout << "    3) Enter Q(tc)" << endl;
         cout << "    4) Use default value of Q(tc) = 1" << endl;
+		cout << "-------------------------------------" << endl;
 
-        if (empty_val = 0) {
-            cin >> bdesign;
-        } else {
-            bdesign = empty_val;
-        }
-        
+		cin >> bdesign;
+
         switch (bdesign) {
             case 1:
                 cout << "Choose design based on default values : " << endl;
@@ -430,40 +440,45 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
 
         }
 
-        cout << "+------------------------------------------+" << endl;
-        cout << "| Inermediate values for sealed box design |" << endl;
-        cout << "+------------------------------------------+" << endl;
-        cout << " Acoustic Filling (Y/N)   : " << fill << endl;
-        cout << " Driver compliance (Vas)  : " << ptr->Vas << endl;
-        cout << " Box Volume (dm^3)        : " << Vbs << endl;
-        cout << " Volume compliance (Vab)  : " << Vab << endl;
-        cout << " Volume ratio (alpha)     : " << alpha << endl;
-        cout << " Filling value (gamma)    : " << gamma << endl;
-        cout << " Filling value (Qa)       : " << Qa << endl;
-        cout << " Driver Q (Qtc)           : " << Qtc << endl;
-        cout << " Derived Driver Q (Qtcp)  : " << Qtcp << endl;
-        cout << " Resonance Frequncy Fc    : " << Fsb << endl;
-        cout << " Driver resonance Fs      : " << ptr->Fs << endl;
-        cout << " Driver resonance Fsb     : " << Fsb << endl;
-        cout << " Q driver ratio L         : " << L << endl;
-        cout << " 3db down response f3 (Hz): " << f3 << endl;
-        cout << " Peak db                  : " << peak << endl;
-        cout << " Acoustic Power Par       : " << Par << endl;
-        cout << " Electrical Power Per     : " << Per << endl;
+        cout << "+-------------------------------------------+" << endl;
+        cout << "| Intermediate values for sealed box design |" << endl;
+        cout << "+-------------------------------------------+" << endl;
+        cout << " Aco-ustic Filling (Y/N)        : " << fill << endl;
+        cout << " Driver compliance (Vas)       : " << ptr->Vas << endl;
+        cout << " Box Volume (dm^3)             : " << Vbs << endl;
+        cout << " Cabinet Volume derived (Vab)  : " << Vab << endl;
+        cout << " Volume ratio (alpha)          : " << alpha << endl;
+        cout << " Filling value (gamma)         : " << gamma << endl;
+        cout << " Filling value (Qa)            : " << Qa << endl;
+        cout << " Driver Q (Qtc)                : " << Qtc << endl;
+        cout << " Derived Driver Q (Qtcp)       : " << Qtcp << endl;
+        cout << " Resonance Frequncy Fc         : " << Fsb << endl;
+        cout << " Driver resonance Fs           : " << ptr->Fs << endl;
+        cout << " Driver resonance Fsb          : " << Fsb << endl;
+        cout << " Q driver ratio L              : " << L << endl;
+        cout << " 3db down response f3 (Hz)     : " << f3 << endl;
+        cout << " Peak db                       : " << peak << endl;
+        cout << " Acoustic Power Par            : " << Par << endl;
+        cout << " Electrical Power Per          : " << Per << endl;
         cout << "--------------------------------------------" << endl;
 
-        strcpy(box.Part_num, ptr->Part_num);
-        box.cab_volume = Vbs;
-        box.freq_lo = ptr->Freq_Low;
-        box.freq_hi = ptr->Freq_Hi;
-        box.Sensitivity = ptr->Sensitivity;
-        box.res_freq = Fsb;
-        box.rolloff = f3;
-        box.imp_Nom = ptr->Z_nom;;
-        box.vent_diam = 0;
-        box.vent_length = 0;
-        box.PAR = Par;
-        box.PER = Per;
+        strcpy(temp->Part_num, ptr->Part_num);
+        temp->cab_volume = Vbs;
+        temp->freq_lo = ptr->Freq_Low;
+        temp->freq_hi = ptr->Freq_Hi;
+        temp->Sensitivity = ptr->Sensitivity;
+        temp->res_freq = Fsb;
+        temp->rolloff = f3;
+        temp->imp_Nom = ptr->Z_nom;
+        temp->diam = drvr->b_diam;
+        temp->height = drvr->b_height;
+        temp->depth = drvr->depth;
+        temp->vent_diam = 0;
+        temp->vent_length = 0;
+        temp->PAR = Par;
+        temp->PER = Per;
+
+        box = temp;
 
         sleep(5);
         // Power displacement ratings 
@@ -484,52 +499,13 @@ void closed_box_design(Speaker*& drvr, Cabinet& box)
     // reuse the flag value and reset to 0
     flag = 0;
 
-    cout << "Units are based on metric measurements. Continue with metric (cubic decimeters) or use imperial (cubic inches) (Y/N) ?" << endl;
-     cout << "--------------------------------------------------------------------------------------------------------------" << endl;
-     cin >> l_cmd;
-
-     if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
-         // Remain in metric units
-         Vbs = liter_to_cubicInch * Vbs;
-
-		 uom = 0;
-
-		 strcpy(units, "cms");
-     } else {
-         // work in imperial units
-         Vbs = liter_to_cubicInch * Vbs;
-
-		 uom = 1;
-
-		 strcpy(units, "inches");
-     }
-
-     cout << "Volume in " << units << ": " << Vbs << endl;
-
-     cout << "Enter enclosure depth in " << units << ": ";
-     cin >> box.D;
-
-     cout << "Enter driver diameter in " << units << " from driver data sheet : ";
-     cin  >> DrvDiam;
-
-     box.W = DrvDiam + DrvDiam/2;
-
-     box.H = Vbs/(box.W * box.D);
-
-     cout << "Interior Box dimensions in " << units << ":";
-     cout << "Height: " << box.H << endl;
-     cout << "Width: " << box.W << endl;
-     cout << "Depth: " << box.D << endl;
-
-     // Compute box dimensions
-     /*
-     cout << "Determine interior box volume..." << endl;
-     cout << "-----------------------------------" << endl;
-     cout << endl;
-     cout << "Enter box depth (D) in " << units << " : ";
-     cin >> box.D;
-     */
-
+    while (!flag) {
+        cout << "define cabinet dimensions..." << endl;
+        cab_type = "closed";
+        cabinet_design(drvr, box, "sealed", drvr->Type);
+        // make sure to set flag to true
+		flag = 1;
+    }
 }
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha, float& gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak, float& Par, float& Per)
@@ -541,7 +517,7 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
 {
     struct Speaker *ptr;
     ptr = drvr;
-
+	
     char flag;                 // trigger to ignore switch stmt and fall into case statement
 
     float a, b, c, d;          // Intermediate placeholders to ease complex math evaluations
@@ -580,7 +556,7 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
 
         case 2:
             cout << "Enter speaker box volume in decimeters^3: ";
-            cout << "Current speaker volume: " << ptr->Vbs << endl;
+            cout << "Sspeaker volume = " << ptr->Vbs << " )" << endl;
             cout << "Enter: ";
             cin >> Vbs;
 
@@ -609,7 +585,7 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
 
         case 3:
             cout << "Choose design based on user specified value of Q(tc) :";
-            cout << "Current value of Qtc: " << Qtc << endl;
+            cout << "(Qtc = " << Qtc << " )" << endl;
             cout << "Enter: ";
             cin >> Qtc;
 
@@ -782,7 +758,7 @@ void closed_freq_response(Speaker* drvr, float A1, float f3, float fc, float Fsb
     gplot.close();
 }
 /*--------------------------------------------------------------------------------------------*/
-void vented_box_design(Speaker*& drvr, Cabinet& box)
+void vented_box_design(Speaker*& drvr, Cabinet*& box)
 /*--------------------------------------------------------------------------------------------*/
 /* vented_box_design will take the stored Small/Thiele parameters, compute the necessary data */
 /* points then plot the resulting frequency plot. This function calls the functions:          */
@@ -793,6 +769,10 @@ void vented_box_design(Speaker*& drvr, Cabinet& box)
     struct Speaker *ptr;
     ptr = drvr;
 
+    struct Cabinet *temp, *cptr;
+
+    temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
+
     char l_cmd[8];
     char d_cmd[8];
 
@@ -801,6 +781,7 @@ void vented_box_design(Speaker*& drvr, Cabinet& box)
                                    // through the design process, then the flag will be toggled 
                                    // to '1'. The flag will be reset to '0' upon exit.
     float alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
+    float f3;                      // frequency rolloff
     float Fsb;                     // Driver resonance freq mounted in enclosure
     float Fb;                      // Enclosure resonance requency - not to be confused with Fsb
     float Fn;                      // Normalized frequency ratio - f(req)/Fsb
@@ -818,6 +799,8 @@ void vented_box_design(Speaker*& drvr, Cabinet& box)
     float a, b, c, d, e, f;        // value holders for frequency response measurement
     float tmp_1, tmp_2, tmp_3;
     int i;                        // frequency increment
+
+    std::string cab_type;
 
     flag  = 0;
     vol_flg = 0;
@@ -871,19 +854,51 @@ void vented_box_design(Speaker*& drvr, Cabinet& box)
         sleep(5);
     }
 
-    strcpy(box.Part_num, ptr->Part_num);
-    box.cab_volume = Vbv;
-    box.freq_lo = ptr->Freq_Low;
-    box.freq_hi = ptr->Freq_Hi;
-    box.Sensitivity = ptr->Sensitivity;
-    box.res_freq = Fsb;
-    box.rolloff = ptr->f3_vent;
-    box.imp_Nom = ptr->Z_nom;;
-    box.vent_diam = ptr->v_diam;
-    box.vent_length = ptr->v_length;
-    box.PAR = Par;
-    box.PER = Per;
+    cout << "+-------------------------------------------+" << endl;
+    cout << "| Intermediate values for vented box design |" << endl;
+    cout << "+-------------------------------------------+" << endl;
+    cout << " Driver compliance (Vas)  : " << ptr->Vas << endl;
+    cout << " Box Volume (dm^3)        : " << ptr->Vbv << endl;
+    //cout << " Volume compliance (Vb)   : " << ptr->Vb << endl;
+    cout << " Volume compliance (Vb)   : " << ptr->Cms << endl;
+    cout << " Volume ratio (alpha)     : " << alpha << endl;
+    cout << " Filling value (gamma)    : " << gamma << endl;
+    cout << " Resonance Frequncy Fc    : " << Fsb << endl;
+    cout << " Driver resonance Fs      : " << ptr->Fs << endl;
+    cout << " Driver resonance Fsb     : " << Fsb << endl;
+    cout << " 3db down response f3 (Hz): " << ptr->f3_vent << endl;
+    cout << " Acoustic Power Par       : " << Par << endl;
+    cout << " Electrical Power Per     : " << Per << endl;
+    cout << "--------------------------------------------" << endl;
 
+    strcpy(temp->Part_num, ptr->Part_num);
+    strcpy(temp->Part_num, ptr->Part_num);
+    temp->cab_volume = ptr->Vbv;
+    temp->freq_lo = ptr->Freq_Low;
+    temp->freq_hi = ptr->Freq_Hi;
+    temp->Sensitivity = ptr->Sensitivity;
+    temp->res_freq = Fsb;
+    //temp->rolloff = f3;
+    temp->rolloff = ptr->f3_vent;
+    temp->imp_Nom = ptr->Z_nom;;
+    temp->vent_diam = ptr->v_diam;
+    temp->vent_length = ptr->v_length;
+    temp->PAR = Par;
+    temp->PER = Per;
+	
+	box = temp;
+
+	sleep(5);
+    // reuse the flag value and reset to 0
+    flag = 0;
+
+    while (!flag) {
+        cout << "define cabinet dimensions..." << endl;
+        cab_type = "vented";
+        cabinet_design(drvr, box, "vented", drvr->Type);
+
+		flag = 1;
+    }
 }
 /*--------------------------------------------------------------------------------------------*/
 void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, float& A1, float& Fsb, float& Fcb, float& Fs, float& f3, float& Fb, float& Fc, float& L, float& Vd, float& Qtc, float& Qtcp, float& Vab, float& Rh, float& R, float& Par, float& Per) 
@@ -1251,6 +1266,7 @@ void save_data_ptr(Speaker* drvr)
             outfile << ptr->v_diam << ";";
             outfile << ptr->v_length << ";";
             outfile << ptr->b_diam << ";";
+            outfile << ptr->b_height << ";";
             outfile << ptr->depth << ";";
             ptr = drvr->next;
             
@@ -1311,7 +1327,7 @@ void read_bass_driver(Speaker*& drvr)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        cout << "Data: " << line << endl;
+        //cout << "Data: " << line << endl;
 	    sleep(2);
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
@@ -1367,6 +1383,8 @@ void read_bass_driver(Speaker*& drvr)
         temp->v_length = atof(token);
         token = strtok(NULL, ";");
         temp->b_diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->b_height = atof(token);
         token = strtok(NULL, ";");
         temp->depth = atof(token);
         temp->next = NULL;
@@ -1431,7 +1449,7 @@ void read_midrange_driver(Speaker*& midr)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        cout << "Data: " << line << endl;
+        //cout << "Data: " << line << endl;
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
@@ -1484,12 +1502,12 @@ void read_midrange_driver(Speaker*& midr)
         temp->v_diam = atof(token);
         token = strtok(NULL, ";");
         temp->v_length = atof(token);
-//-----
         token = strtok(NULL, ";");
         temp->b_diam = atof(token);
         token = strtok(NULL, ";");
+        temp->b_height = atof(token);
+        token = strtok(NULL, ";");
         temp->depth = atof(token);
-//----
         temp->next = NULL;
     
         sleep(2);
@@ -1530,7 +1548,7 @@ void read_tweet_driver(Speaker*& tweet)
 
     cout << "-------------------------------" << endl;
     sleep(2);
-    cmd_str = "./driver.csh Twet";
+	cmd_str = "cat *.sdb | grep Twet";
 
     cout << "Select a speaker from the list below..." << endl;
     cout << "+-----------------------------" << endl;
@@ -1553,7 +1571,7 @@ void read_tweet_driver(Speaker*& tweet)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        cout << "Data: " << line << endl;
+        //cout << "Data: " << line << endl;
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
@@ -1606,12 +1624,12 @@ void read_tweet_driver(Speaker*& tweet)
         temp->v_diam = atof(token);
         token = strtok(NULL, ";");
         temp->v_length = atof(token);
-//-----
         token = strtok(NULL, ";");
         temp->b_diam = atof(token);
         token = strtok(NULL, ";");
+        temp->b_height = atof(token);
+        token = strtok(NULL, ";");
         temp->depth = atof(token);
-//----
         temp->next = NULL;
     
         sleep(2);
@@ -1622,7 +1640,7 @@ void read_tweet_driver(Speaker*& tweet)
     //sleep(3);
 }
 /*--------------------------------------------------------------------------------------------*/
-void write_design_data(Speaker* drvr, Cabinet box, Filter lowpass, Filter bandpass, Filter highpass)
+void write_design_data(Speaker* drvr, Cabinet* box, Filter lowpass, Filter bandpass, Filter highpass)
 /*--------------------------------------------------------------------------------------------*/
 /* This function will print the resulting speaker parameters and crossover information to a   */
 /* simple text file that the user can then print out.                                         */
@@ -1642,18 +1660,18 @@ void write_design_data(Speaker* drvr, Cabinet box, Filter lowpass, Filter bandpa
     outfile << "+--------------------------------------------+" << endl;
     outfile << " Cabinet Design Values" << endl;
     outfile << "+--------------------------------------------+" << endl;
-    outfile << " Part Number              : " << box.Part_num << endl;
-    outfile << " Cabinet Volume(dm^3)     : " << box.cab_volume << endl;
-    outfile << " Vent Diameter (mm)       : " << box.vent_diam << endl;
-    outfile << " Vent Length (mm)         : " << box.vent_length << endl;
-    outfile << " Low Frequency (Hz)       : " << box.freq_lo << endl;
-    outfile << " High Frequency (Hz)      : " << box.freq_hi << endl;
-    outfile << " Nominal Impedance (ohms) : " << box.imp_Nom << endl;
-    outfile << " Resonant Frequency (Hz)  : " << box.res_freq << endl;
-    outfile << " Frequency Rolloff (Hz)   : " << box.rolloff << endl;
-    outfile << " Sensitivity (SPL)        : " << box.Sensitivity << endl;
-    outfile << " Acoustic Power (W)       : " << box.PAR << endl;
-    outfile << " Electrical Power (W)     : " << box.PER << endl;
+    outfile << " Part Number              : " << box->Part_num << endl;
+    outfile << " Cabinet Volume(dm^3)     : " << box->cab_volume << endl;
+    outfile << " Vent Diameter (mm)       : " << box->vent_diam << endl;
+    outfile << " Vent Length (mm)         : " << box->vent_length << endl;
+    outfile << " Low Frequency (Hz)       : " << box->freq_lo << endl;
+    outfile << " High Frequency (Hz)      : " << box->freq_hi << endl;
+    outfile << " Nominal Impedance (ohms) : " << box->imp_Nom << endl;
+    outfile << " Resonant Frequency (Hz)  : " << box->res_freq << endl;
+    outfile << " Frequency Rolloff (Hz)   : " << box->rolloff << endl;
+    outfile << " Sensitivity (SPL)        : " << box->Sensitivity << endl;
+    outfile << " Acoustic Power (W)       : " << box->PAR << endl;
+    outfile << " Electrical Power (W)     : " << box->PER << endl;
     outfile << "+--------------------------------------------+" << endl;
     outfile << endl;
     outfile << "+--------------------------------------------+" << endl;

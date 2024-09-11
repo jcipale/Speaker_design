@@ -27,7 +27,7 @@
 /*--------------------------------------------------------------------------------------------*/
 extern struct Speaker
 {
-    char Part_num[64];       // Product part number
+    char Part_num[128];      // Product part number
     char Type[16];           // Speaker type. One of Woof, Twet or Midr
     float Vas;               // Equivalent Volume of cabinet dm^3
     float Cms;               // Compliance
@@ -53,7 +53,8 @@ extern struct Speaker
     float f3_vent;           // 3db down point (rolloff)
     float v_diam;            // vent diameter (from data sheet - default)
     float v_length;          // vent length (from data sheet - default)
-    float b_diam;            // Overall basket diameter - used for designing physical cabinet
+    float b_diam;            // Overall basket diameter or diaphragm width if ribbon - used for designing physical cabinet
+    float b_height;           // driver width. Used primarily for ribbon tweeters. defaults to b_diam for mid/bass/cone tweeters
     float depth;             // Overall driver depth - used for designing physical cabinet
     Speaker *next;
 };
@@ -63,11 +64,12 @@ extern struct Cabinet
 /* struct Cabinet is used to store and display the final cabinet values for the speaker design*/
 /*--------------------------------------------------------------------------------------------*/
 {
-    char Part_num[40];
+    char Part_num[128];
     float vent_diam;
     float vent_length;
     float diam;              // Overall basket diameter - used for designing physical cabinet
     float depth;             // Overall driver depth - used for designing physical cabinet
+	float height;            // overall driver height - used for designing physical cabinet
     float cab_volume;
     float freq_lo;
     float freq_hi;
@@ -81,6 +83,7 @@ extern struct Cabinet
     float PAR;
     float PER;
     float H, W, D;
+    Cabinet *next;
 };
 /*--------------------------------------------------------------------------------------------*/
 extern struct Filter
@@ -103,9 +106,10 @@ extern struct Filter
 /*    Constants                                                                               */
 /*--------------------------------------------------------------------------------------------*/
 const float QTC = 0.707;
-const float liter_to_cubicInch = 61023.7;
+const float liter_to_cubicInch = 61.0237;
 const float met_to_decmet = 1000.0;
 const float liter_to_cubic_cm = 1000.0;
+const float mm_to_inch = 0.0393701;
 
 const float feedback_1 = 1000000.00;
 const float feedback_2 = 100.00;
@@ -113,6 +117,12 @@ const float feedback_2 = 100.00;
 const std::string HDR = "+------------------------------------------+-----------------+-------------------+";
 const std::string TOWAY = "|              Driver Name                 |    Low freq     |      High freq    |";
 const std::string THDR = "+------------------------------------------+------------+------------+-----------+";
+
+const std::string HDR2 = "    +------------------------------------------+";
+
+const std::string SUB = "    |          Sub-woofer Design Menu          |";
+const std::string DUAL = "    |            Two-way Design Menu           |";
+const std::string THREE =  "    |           Three-way Design Menu          |";
 
 /*--------------------------------------------------------------------------------------------*/
 void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet);
@@ -125,11 +135,11 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet);
 /*--------------------------------------------------------------------------------------------*/
 void print_part(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_design(Speaker*& drvr, Cabinet& box);
+void closed_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha, float& gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak, float& Par, float& Per);
 /*--------------------------------------------------------------------------------------------*/
-void vented_box_design(Speaker*& drvr, Cabinet& box);
+void vented_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
 void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& lv, float& dv, float& a, float& b, float& c, float& d, float& alpha);
 /*--------------------------------------------------------------------------------------------*/
@@ -149,7 +159,7 @@ void read_midrange_driver(Speaker*& mid);
 /*--------------------------------------------------------------------------------------------*/
 void read_tweet_driver(Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
-void write_design_data(Speaker* drvr, Cabinet box, Filter lowpass, Filter bandpass, Filter highpass);
+void write_design_data(Speaker* drvr, Cabinet* box, Filter lowpass, Filter bandpass, Filter highpass);
 /*--------------------------------------------------------------------------------------------*/
 void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/

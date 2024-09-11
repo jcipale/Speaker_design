@@ -104,3 +104,133 @@ void data_field(Speaker* drvr, std::string& data_display)
 	cout << fld << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
+void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::string speaker_type)
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+    struct Cabinet *cptr;
+
+    ptr = drvr;
+    cptr = box;
+   
+    char flag[4];
+    char type[4];
+    char unit[4];
+	
+    float vol;
+    float spkr_diam;
+    float spkr_depth;
+    float spkr_height;
+    float vent_length;
+    float vent_diam;
+    float Depth;
+    float Front;
+    float Height;
+
+    int done;
+
+
+    cout << "Test function..." << endl;
+
+    /* The 3rd argument determines what speaker type is being built (sealed vs vented) */
+    //if (strcmp(cab_type, "sealed") == 0) {
+    if (cab_type == "sealed") {
+        vol = ptr->Vbs;
+    } else {
+        vol = ptr->Vbv;
+    }
+
+    cout << "Use Metric (M) or Imperial (I) units of measure? ( Metric is default)";
+    cin >> unit;
+	
+    if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0)) {
+        vol = vol * liter_to_cubicInch;
+	    spkr_diam = ptr->b_diam * mm_to_inch;
+	    spkr_depth = ptr->depth * mm_to_inch;
+	    spkr_height = ptr->b_height * mm_to_inch;
+	    vent_diam = ptr->v_diam * mm_to_inch;
+	    vent_length = ptr->v_length * mm_to_inch;
+    } else {
+        vol = vol;
+	    spkr_diam = ptr->b_diam;
+	    spkr_depth = ptr->depth;
+	    spkr_height = ptr->b_height;
+	    vent_diam = ptr->v_diam;
+	    vent_length = ptr->v_length;
+    }
+
+	done = 0;
+
+    while (!done) {
+        // Loop to determine box dimensions
+        cout << "Driver dimensions: " << endl;
+        cout <<" Part Number: " << cptr->Part_num << endl;
+        cout <<" Nominal impedance: " << cptr->imp_Nom << endl;
+        cout <<" Frequency - low: " << cptr->freq_lo << endl;
+        cout <<" Frequency - high: " << cptr->freq_hi << endl;
+        cout <<" Frequency rolloff: " << cptr->rolloff << endl;
+        cout <<" Resonant frequncy: " << cptr->res_freq << endl;
+		if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0 )) {
+            if (cab_type == "sealed") {
+                cout <<" Cabinet volume: " << vol << " in^3" << endl;
+            } else {
+                cout <<" Cabinet volume: " << vol << " in^3" << endl;
+                cout <<" Vent diameter: " << vent_diam << " inches " << endl;
+                cout <<" Vent length: " << vent_length << " inches " << endl;
+            }
+            cout << " Speaker diameter: " << spkr_diam << " inches " << endl;
+            cout << " Speaker depth: " << spkr_depth << " inches " << endl;
+            cout << " Speaker height: " << spkr_height << " inches " << endl;
+
+		} else {
+            if (cab_type == "sealed") {
+                cout <<" Cabinet volume: " << vol << " liters" << endl;
+            } else {
+                cout <<" Cabinet volume: " << vol << " liters" << endl;
+                cout <<" Vent diameter: " << vent_diam << " mm " << endl;
+                cout <<" Vent length: " << vent_length << " mm " << endl;
+            }
+            cout << " Speaker diameter: " << spkr_diam << " mm " << endl;
+            cout << " Speaker depth: " << spkr_depth << " mm " << endl;
+            cout << " Speaker height: " << spkr_height << " mm " << endl;
+
+		}
+        // Compute baffle width
+        Front = 1.5 * spkr_diam;
+
+        // Compute cabinet depth
+        Depth = 2.0 * spkr_depth;
+ 
+        // Compute Height ht = Vas/(w * d)
+        Height = vol/(Front * Depth);
+
+        // Check with user id for correct dimensions
+
+        cout << "Accept dimensions? (Y/N): " << endl;
+        cin >> flag;
+
+        if ((strcmp(flag, "Y") == 0) || (strcmp(flag, "y") == 0)) {
+            cout << "Speaker Design completed..." << endl;
+            done = 1;
+        } else {
+            cout << "compute closed box design..." << endl;
+        }
+
+        cptr->D = Depth;
+        cptr->W = Front;
+        cptr->H = Height;
+
+        cout << "--------------------------------------------" << endl;
+        cout << "            Speaker Dimensions              " << endl;
+        cout << "--------------------------------------------" << endl;
+        cout << "  Width:  " << cptr->W << endl;
+        cout << "  Depth:  " << cptr->D << endl;
+        cout << "  Height: " << cptr->H << endl;
+        cout << "--------------------------------------------" << endl;
+
+        sleep(5);
+    }
+
+    sleep(2);
+}
+/*--------------------------------------------------------------------------------------------*/

@@ -70,14 +70,13 @@ void menu_screen()
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) (B)uild Parameters                   |" << endl;
     cout << "    |  2) (L)ist Speaker Parts                 |" << endl;
-    cout << "    |  3) (C)losed Box Design                  |" << endl;
-    cout << "    |  4) (V)ented Box Design                  |" << endl;
-    cout << "    |  5) (X)over Design                       |" << endl;
-    cout << "    |  6) (G)raph Performance                  |" << endl;
-    cout << "    |  7) (S)ave Speaker Data                  |" << endl;
-    cout << "    |  8) (R)ead Speaker Data                  |" << endl;
-    cout << "    |  9) (W)rite Design Parameters            |" << endl;
-    cout << "    |  0) (Q)uit                               |" << endl;
+    cout << "    |  3) (C)abinet Design                     |" << endl;
+    cout << "    |  4) (X)over Design                       |" << endl;
+    cout << "    |  5) (G)raph Performance                  |" << endl;
+    cout << "    |  6) (S)ave Speaker Data                  |" << endl;
+    cout << "    |  7) (R)ead Speaker Data                  |" << endl;
+    cout << "    |  8) (W)rite Design Parameters            |" << endl;
+    cout << "    |  9) (Q)uit                               |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }
@@ -85,6 +84,7 @@ void menu_screen()
 void crossover_screen()
 {
     system("clear");
+	cout << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |          Crossover Design Menu           |" << endl;
     cout << "    |      (Use numerical selection only)      |" << endl;
@@ -101,6 +101,7 @@ void crossover_screen()
 void driver_selection_screen()
 {
     system("clear");
+	cout << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |          Driver Selection Menu           |" << endl;
     cout << "    +------------------------------------------+" << endl;
@@ -112,8 +113,35 @@ void driver_selection_screen()
     cout << "    SpeakEasy: ";
 }
 /*--------------------------------------------------------------------------------------------*/
+void cabinet_screen()
+{
+    system("clear");
+	cout << endl;
+    cout << "    +------------------------------------------+" << endl;
+    cout << "    |           Cabinet Design Menu            |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+	cout << "    |  1) (S)ub-woofer Design                  |" << endl;
+	cout << "    |  2) (2)-way Speaker Design               |" << endl;
+	cout << "    |  3) (3)-way Speaker Design               |" << endl;
+    cout << "    |  4) Exit                                 |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+    cout << "    SpeakEasy: ";
+
+}
+/*--------------------------------------------------------------------------------------------*/
+void cabinet_design_screen()
+{
+    cout << "    +------------------------------------------+" << endl;
+    cout << "    |  1) (S)ealed Cabinet                     |" << endl;
+    cout << "    |  2) (V)ented Cabinet                     |" << endl;
+    cout << "    |  3) Exit                                 |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+    cout << "    SpeakEasy: ";
+}
+/*--------------------------------------------------------------------------------------------*/
 void exit_screen()
 {
+	cout << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    |                                                                         |" << endl;
