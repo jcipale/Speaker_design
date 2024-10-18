@@ -104,6 +104,20 @@ void data_field(Speaker* drvr, std::string& data_display)
 	cout << fld << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
+double compute_efficiency(Speaker* drvr)
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+    
+	ptr = drvr;
+
+	double efficency;
+
+	efficency = (pow((2 * M_PI)*(ptr->Fs),3)) * ((ptr->Vas)/1000)/(pow(C,3) * ptr->Qes);
+
+	return(efficency);
+}
+/*--------------------------------------------------------------------------------------------*/
 void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::string speaker_type)
 /*--------------------------------------------------------------------------------------------*/
 {
@@ -117,15 +131,15 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
     char type[4];
     char unit[4];
 	
-    float vol;
-    float spkr_diam;
-    float spkr_depth;
-    float spkr_height;
-    float vent_length;
-    float vent_diam;
-    float Depth;
-    float Front;
-    float Height;
+    double vol;
+    double spkr_diam;
+    double spkr_depth;
+    double spkr_height;
+    double vent_length;
+    double vent_diam;
+    double Depth;
+    double Front;
+    double Height;
 
     int done;
 
@@ -140,7 +154,7 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
         vol = ptr->Vbv;
     }
 
-    cout << "Use Metric (M) or Imperial (I) units of measure? ( Metric is default)";
+    cout << "Use Metric (M) or Imperial (I) units of measure? (Metric is default): ";
     cin >> unit;
 	
     if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0)) {

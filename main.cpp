@@ -85,6 +85,7 @@ char th_cmd[8];
 int sptype;                   // This int is used to determine what type of 
                               // speaker is being read from the file system
 
+double Vd;                     // driver displacement volume. Added to overall cabinet volume;
 string speaker = "";
 
 /*---------------------------------------------------------*/
@@ -99,17 +100,18 @@ int main()
     Speaker *drvr = NULL;
     Speaker *mid = NULL;
     Speaker *tweet = NULL;
+    Speaker *pasv = NULL;
     
     
     Cabinet *bass = NULL;
     Cabinet *midr = NULL;
     Cabinet *treb = NULL;
+	Cabinet *pass = NULL;
+
     Filter crossover;
     Filter lowpass;
     Filter bandpass;
     Filter highpass;
-
-    //Cabinet *box;
 
     while (strcmp(t_cmd, "Q\n") != 0) {
 
@@ -119,11 +121,11 @@ int main()
         cin >> t_cmd;
 
         if ((strcmp(t_cmd, "B") == 0) || (strcmp(t_cmd, "b") == 0) || (strcmp(t_cmd, "1") == 0)) {
-            build(drvr, mid, tweet);
+            build(drvr, mid, tweet, pasv);
         }
 
         if ((strcmp(t_cmd, "L") == 0) || (strcmp(t_cmd, "l") == 0) || (strcmp(t_cmd, "2") == 0)) {
-            parts_list(drvr, mid, tweet);
+            parts_list(drvr, mid, tweet, pasv);
         }
 
         if ((strcmp(t_cmd, "C") == 0) || (strcmp(t_cmd, "c") == 0) || (strcmp(t_cmd, "3") == 0)) {
@@ -146,7 +148,6 @@ int main()
 					    cin >> w_cmd;
 
                         if ((strcmp(w_cmd, "S") == 0) || (strcmp(w_cmd, "s") == 0) || (strcmp(w_cmd, "1") == 0)) {
-					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr, bass);
 						    sleep(2);
 					    }
@@ -154,10 +155,21 @@ int main()
                         if ((strcmp(w_cmd, "V") == 0) || (strcmp(w_cmd, "v") == 0) || (strcmp(w_cmd, "2") == 0)) {
 					        cout << "In vented design space..." << endl;
 							vented_box_design(drvr, bass);
+							cout << "leaving vented case" << endl;
 						    sleep(2);
 					    }
 
-                        if ((strcmp(w_cmd, "E") == 0) || (strcmp(w_cmd, "e") == 0) || (strcmp(w_cmd, "3") == 0)) {
+                        if ((strcmp(w_cmd, "P") == 0) || (strcmp(w_cmd, "p") == 0) || (strcmp(w_cmd, "3") == 0)) {
+					        cout << "In passive design space..." << endl;
+							cout << "This feature is not implemented at this time" << endl;
+							/*
+							closed_box_design(drvr, bass);
+							passive_box_design(pasv, bass, pass);
+							*/
+						    sleep(2);
+					    }
+
+                        if ((strcmp(w_cmd, "E") == 0) || (strcmp(w_cmd, "e") == 0) || (strcmp(w_cmd, "4") == 0)) {
 					        cout << "Exit subwoofer design..." << endl;
 						    sleep(2);
                             strcpy(w_cmd, "E\n");
@@ -177,18 +189,29 @@ int main()
                         if ((strcmp(tw_cmd, "S") == 0) || (strcmp(tw_cmd, "s") == 0) || (strcmp(tw_cmd, "1") == 0)) {
 					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr, bass);
-							vented_box_design(drvr, treb);
+							closed_box_design(tweet, treb);
 						    sleep(2);
 					    }
 
                         if ((strcmp(tw_cmd, "V") == 0) || (strcmp(tw_cmd, "v") == 0) || (strcmp(tw_cmd, "2") == 0)) {
 					        cout << "In vented design space..." << endl;
 							closed_box_design(drvr, bass);
-							vented_box_design(drvr, treb);
+							vented_box_design(tweet, treb);
 						    sleep(2);
 					    }
 
-                        if ((strcmp(tw_cmd, "E") == 0) || (strcmp(tw_cmd, "e") == 0) || (strcmp(tw_cmd, "3") == 0)) {
+                        if ((strcmp(w_cmd, "P") == 0) || (strcmp(w_cmd, "p") == 0) || (strcmp(w_cmd, "3") == 0)) {
+					        cout << "In passive design space..." << endl;
+							cout << "This feature is not implemented at this time" << endl;
+							/*
+							closed_box_design(drvr, bass);
+							passive_box_design(pasv, bass, pass);
+							vented_box_design(tweet, treb);
+							*/
+						    sleep(2);
+					    }
+
+                        if ((strcmp(tw_cmd, "E") == 0) || (strcmp(tw_cmd, "e") == 0) || (strcmp(tw_cmd, "4") == 0)) {
 					        cout << "Exit two-way speaker design..." << endl;
 						    sleep(2);
                             strcpy(tw_cmd, "E\n");
@@ -208,20 +231,32 @@ int main()
                         if ((strcmp(th_cmd, "S") == 0) || (strcmp(th_cmd, "s") == 0) || (strcmp(th_cmd, "1") == 0)) {
 					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr, bass);
-							closed_box_design(drvr, midr);
-							closed_box_design(drvr, treb);
+							closed_box_design(mid, midr);
+							closed_box_design(tweet, treb);
 						    sleep(2);
 					    }
 
                         if ((strcmp(th_cmd, "V") == 0) || (strcmp(th_cmd, "v") == 0) || (strcmp(th_cmd, "2") == 0)) {
 					        cout << "In vented design space..." << endl;
 							vented_box_design(drvr, bass);
-							closed_box_design(drvr, midr);
-							closed_box_design(drvr, treb);
+							closed_box_design(mid, midr);
+							closed_box_design(tweet, treb);
 						    sleep(2);
 					    }
 
-                        if ((strcmp(th_cmd, "E") == 0) || (strcmp(th_cmd, "e") == 0) || (strcmp(th_cmd, "3") == 0)) {
+                        if ((strcmp(w_cmd, "P") == 0) || (strcmp(w_cmd, "p") == 0) || (strcmp(w_cmd, "3") == 0)) {
+					        cout << "In passive design space..." << endl;
+							cout << "This feature is not implemented at this time" << endl;
+							/*
+							closed_box_design(drvr, bass);
+							passive_box_design(pasv, bass, pass);
+							closed_box_design(mid, midr);
+							vented_box_design(tweet, treb);
+							*/
+						    sleep(2);
+					    }
+
+                        if ((strcmp(th_cmd, "E") == 1) || (strcmp(th_cmd, "e") == 0) || (strcmp(th_cmd, "4") == 0)) {
 					        cout << "Exit three-way speaker design..." << endl;
 						    sleep(2);
                             strcpy(th_cmd, "E\n");
@@ -281,7 +316,7 @@ int main()
         }
 
         if ((strcmp(t_cmd, "S") == 0) || (strcmp(t_cmd, "s") == 0) || (strcmp(t_cmd, "6") == 0)) {
-            save_speaker_data(drvr, mid, tweet);
+            save_speaker_data(drvr, mid, tweet, pasv);
         }
 
         if ((strcmp(t_cmd, "R") == 0) || (strcmp(t_cmd, "r") == 0) || (strcmp(t_cmd, "7") == 0)) {
@@ -295,7 +330,11 @@ int main()
                 if ((strcmp(s_cmd, "B") == 0) || (strcmp(s_cmd, "b") == 0) || (strcmp(s_cmd, "1") == 0)) {
                     cout << "Bass selection menu 1..." << endl;
 		            sptype = 1;
+					speaker = "Woof";
+					//strcpy(speaker, "Woof");
+		            //read_bass_driver(drvr, speaker);
 		            read_bass_driver(drvr);
+
 		            sleep(2);
                 }
 
@@ -303,6 +342,7 @@ int main()
                     cout << "Midrange selection menu 2..." << endl;
 		            sptype = 2;
 		            read_midrange_driver(mid);
+
 		            sleep(2);
                 }
 
@@ -310,6 +350,19 @@ int main()
                     cout << "Tweeter selection menu 3..." << endl;
 			        sptype = 3;
 			        read_tweet_driver(tweet);
+
+			        sleep(2);
+                }
+
+                if ((strcmp(s_cmd, "P") == 0) || (strcmp(s_cmd, "p") == 0) || (strcmp(s_cmd, "4") == 0)) {
+                    cout << "Passive Radiator selection menu 4..." << endl;
+					cout << "This feature is not implemented at this time" << endl;
+					/*
+			        sptype = 4;
+					speaker = "Pass";
+			        read_passive_driver(pasv);
+					*/
+
 			        sleep(2);
                 }
 
@@ -322,13 +375,17 @@ int main()
         }
 
         if ((strcmp(t_cmd, "D") == 0) || (strcmp(t_cmd, "d") == 0) || (strcmp(t_cmd, "8") == 0)) {
-            cout << "test menu 9 - Save design parameters..." << endl;
+            cout << "Save design data..." << endl;
 			/* this function needs to be revised to add in other driver data as well */
 	        write_design_data(drvr, bass, lowpass, bandpass, highpass);
         }
 
-        if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "9") == 0)) {
-            cout << "test menu 0 - Quit program..." << endl;
+        if ((strcmp(t_cmd, "P") == 0) || (strcmp(t_cmd, "p") == 0) || (strcmp(t_cmd, "9") == 0)) {
+            cout << "Purge driver data and erad new drivers in.." << endl;
+        }
+
+        if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {
+            cout << "Terinatating program..." << endl;
             strcpy(t_cmd, "Q\n");
         }
     }

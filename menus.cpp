@@ -55,6 +55,8 @@ void splash_screen()
     cout << "    |         p                                                               |" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
+	cout << "    |                             Version 1.0.001                             |" << endl;
+    cout << "    +-------------------------------------------------------------------------+" << endl;
 
     // This is used to define the wait time to display the splash screen
     unsigned int sleep(unsigned int seconds);
@@ -76,7 +78,8 @@ void menu_screen()
     cout << "    |  6) (S)ave Speaker Data                  |" << endl;
     cout << "    |  7) (R)ead Speaker Data                  |" << endl;
     cout << "    |  8) (W)rite Design Parameters            |" << endl;
-    cout << "    |  9) (Q)uit                               |" << endl;
+    cout << "    |  9) (P)urge                              |" << endl;
+    cout << "    |  0) (Q)uit                               |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }
@@ -108,7 +111,8 @@ void driver_selection_screen()
     cout << "    |  1) (B)ass Driver                        |" << endl;
     cout << "    |  2) (M)id-range Driver                   |" << endl;
     cout << "    |  3) (T)weeter Driver                     |" << endl;
-    cout << "    |  4) Exit                                 |" << endl;
+    cout << "    |  4) (P)assive Driver                     |" << endl;
+    cout << "    |  5) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }
@@ -134,7 +138,8 @@ void cabinet_design_screen()
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) (S)ealed Cabinet                     |" << endl;
     cout << "    |  2) (V)ented Cabinet                     |" << endl;
-    cout << "    |  3) Exit                                 |" << endl;
+    cout << "    |  3) (P)assive Radiator                   |" << endl;
+    cout << "    |  4) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }

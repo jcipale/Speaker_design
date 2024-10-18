@@ -27,35 +27,38 @@
 /*--------------------------------------------------------------------------------------------*/
 extern struct Speaker
 {
-    char Part_num[128];      // Product part number
-    char Type[16];           // Speaker type. One of Woof, Twet or Midr
-    float Vas;               // Equivalent Volume of cabinet dm^3
-    float Cms;               // Compliance
-    float Bl;                // BL Product (aka Force Factor)
-    float Qts;               // Total Q factor
-    float Qes;               // Electrical Q factor
-    float Qms;               // Mechanical Q factor
-    float Fs;                // Resonant Frequency
-    float Re;                // DC Resistance
-    float Rms;               // Mechanical resistance
-    float Z_nom;             // Nominal impedance (aka Impedance)
-    float Le;                // Voice Coil inductance (aka Lbm)
-    float Xmax;              // Maximum Linear Excursion
-    float Diam;              // Voice Coil Diameter
-    float Nom_Pwr;           // Nominal Power (aka RMS power)
-    float Max_Pwr;           // Maximum Power (aka Long-term max power)
-    float Freq_Low;          // Low-end of Freq Response
-    float Freq_Hi;           // Upper limit of Frequency Response (F_low -- F_high)
-    float Sensitivity;       // Sensitivity
-    float Vbs;               // Sealed Volume (user define dm^3)
-    float Vbv;               // Vented Volume (user define dm^3)
-    float f3_seal;           // 3db down point (rolloff)
-    float f3_vent;           // 3db down point (rolloff)
-    float v_diam;            // vent diameter (from data sheet - default)
-    float v_length;          // vent length (from data sheet - default)
-    float b_diam;            // Overall basket diameter or diaphragm width if ribbon - used for designing physical cabinet
-    float b_height;           // driver width. Used primarily for ribbon tweeters. defaults to b_diam for mid/bass/cone tweeters
-    float depth;             // Overall driver depth - used for designing physical cabinet
+    char Part_num[128];       // Product part number
+    char Type[16];            // Speaker type. One of Woof, Pass, Twet or Midr
+	char Build[16];           // Construction type: cone or ribbon/electrostatic
+    double Vas;               // Equivalent Volume of cabinet dm^3
+    double Cms;               // Compliance
+    double Bl;                // BL Product (aka Force Factor)
+    double Qts;               // Total Q factor
+    double Qes;               // Electrical Q factor
+    double Qms;               // Mechanical Q factor
+    double Fs;                // Resonant Frequency
+    double Re;                // DC Resistance
+    double Rms;               // Mechanical resistance
+    double Z_nom;             // Nominal impedance (aka Impedance)
+    double Le;                // Voice Coil inductance (aka Lbm)
+    double Xmax;              // Maximum Linear Excursion
+    double Diam;              // Voice Coil Diameter
+    double Nom_Pwr;           // Nominal Power (aka RMS power)
+    double Max_Pwr;           // Maximum Power (aka Long-term max power)
+    double Freq_Low;          // Low-end of Freq Response
+    double Freq_Hi;           // Upper limit of Frequency Response (F_low -- F_high)
+    double Sensitivity;       // Sensitivity
+    double Vbs;               // Sealed Volume (user define dm^3)
+    double Vbv;               // Vented Volume (user define dm^3)
+    double f3_seal;           // 3db down point (rolloff)
+    double f3_vent;           // 3db down point (rolloff)
+    double v_diam;            // vent diameter (from data sheet - default)
+    double v_length;          // vent length (from data sheet - default)
+    double b_diam;            // Overall basket diameter or diaphragm width if 
+	                          // ribbon - used for designing physical cabinet
+    double b_height;          // driver height. Used primarily for ribbon tweeters. 
+	                          // defaults to b_diam for mid/bass/cone tweeters
+    double depth;             // Overall driver depth - used for designing physical cabinet
     Speaker *next;
 };
 /*--------------------------------------------------------------------------------------------*/
@@ -64,25 +67,27 @@ extern struct Cabinet
 /* struct Cabinet is used to store and display the final cabinet values for the speaker design*/
 /*--------------------------------------------------------------------------------------------*/
 {
-    char Part_num[128];
-    float vent_diam;
-    float vent_length;
-    float diam;              // Overall basket diameter - used for designing physical cabinet
-    float depth;             // Overall driver depth - used for designing physical cabinet
-	float height;            // overall driver height - used for designing physical cabinet
-    float cab_volume;
-    float freq_lo;
-    float freq_hi;
-    float imp_Nom;
-    float res_freq;
-    float DC_resist;
-    float Sensitivity;
-    float rolloff;
-    float crossover_lo;
-    float crossover_hi;
-    float PAR;
-    float PER;
-    float H, W, D;
+    char Part_num[128]; //*
+	char Build[16]; //*           // Construction type: cone or ribbon/electrostatic 
+    double vent_diam;
+    double vent_length;
+    double diam; //*              // Overall basket diameter - used for designing physical cabinet
+    double depth; //*             // Overall driver depth - used for designing physical cabinet
+	double height; //*            // overall driver height - used for designing physical cabinet
+    double cab_volume; //*
+    double freq_lo;
+    double freq_hi;
+    double imp_Nom;
+    double res_freq;
+    double DC_resist;
+    double Sensitivity;
+    double rolloff;
+    double crossover_lo;
+    double crossover_hi;
+	double PAR;                   // Acostic power
+	double PER;                   // Electirical efficiency
+	double Rh;                    // 3db ripple
+    double H, W, D;
     Cabinet *next;
 };
 /*--------------------------------------------------------------------------------------------*/
@@ -91,28 +96,34 @@ extern struct Filter
 /* struct crossover is used to store and display the components needs for crossover design.   */
 /*--------------------------------------------------------------------------------------------*/
 {
-    std::string xover_type;     /* sets the type of crossover network: active or passive for the final design */
-    float stages;
-    float gain;                 /* gain is computed by Vg = 1 + R2/R1 where R1 is significantly larger than R2 */
-    float xover1, xover2;
-    float FB_R1, FB_R2;         /* Feedback values used in active filter design Vg = 1 + R2/R1 where R1 -> infinity */
-    float R1, R2, R3, R4;
-    //float L1, L2, L3, L4;     /* Inductors are NOT in use, but are kept in place for future use. */
-    float C1, C2, C3, C4;
-    float Fres;                 /* resonant frequency - used for bandpass filters only */
-    float f3db1, f3db2;
+    std::string xover_type;     // sets the type of crossover network: active or passive for 
+	                            // the final design
+    double stages;
+    double gain;                // gain is computed by Vg = 1 + R2/R1 where R1 is significantly 
+	                            // larger than R2 
+    double xover1, xover2;
+    double FB_R1, FB_R2;        // Feedback values used in active filter design Vg = 1 + R2/R1 
+	                            // where R1 -> infinity 
+    double R1, R2, R3, R4;
+    //double L1, L2, L3, L4;    // Inductors are NOT in use, but are kept in place for future use. 
+    double C1, C2, C3, C4;
+    double Fres;                // resonant frequency - used for bandpass filters only
+    double f3db1, f3db2;
 };
 /*--------------------------------------------------------------------------------------------*/
 /*    Constants                                                                               */
 /*--------------------------------------------------------------------------------------------*/
-const float QTC = 0.707;
-const float liter_to_cubicInch = 61.0237;
-const float met_to_decmet = 1000.0;
-const float liter_to_cubic_cm = 1000.0;
-const float mm_to_inch = 0.0393701;
+const double C = 343.0;         // Speed of sound in m/s
+const double QTC = 0.707;
+const double liter_to_cubicInch = 61.0237;
+const double met_to_decmet = 1000.0;
+const double liter_to_cubic_cm = 1000.0;
+const double mm_to_inch = 0.0393701;
 
-const float feedback_1 = 1000000.00;
-const float feedback_2 = 100.00;
+const double feedback_1 = 1000000.00;
+const double feedback_2 = 100.00;
+
+const double BUFFER = 2.54;     // Default units are in metric units (this is centimeter)
 
 const std::string HDR = "+------------------------------------------+-----------------+-------------------+";
 const std::string TOWAY = "|              Driver Name                 |    Low freq     |      High freq    |";
@@ -125,39 +136,44 @@ const std::string DUAL = "    |            Two-way Design Menu           |";
 const std::string THREE =  "    |           Three-way Design Menu          |";
 
 /*--------------------------------------------------------------------------------------------*/
-void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet);
+void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet, Speaker*& pass);
 /*--------------------------------------------------------------------------------------------*/
-void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet);
+void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass);
 /*--------------------------------------------------------------------------------------------*/
 void save_data_ptr(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
-void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet);
+void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass);
 /*--------------------------------------------------------------------------------------------*/
 void print_part(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha, float& gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak, float& Par, float& Per);
+void passive_box_design(Speaker*& drvr, Cabinet*& box, Cabinet*& pass);
+/*--------------------------------------------------------------------------------------------*/
+void closed_box_param_set(Speaker* drvr, int& bdesign, double& Vbs, double& alpha, double& gamma, double Qa, double& Fsb, double& Vab, double& L, double& Qtc, double& Qtcp, double& fc, double& A1, double& f3, double& peak, double& Par, double& Per, double& Rh, double& Vd);
 /*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
-void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& lv, float& dv, float& a, float& b, float& c, float& d, float& alpha);
+void vented_freq_params(Speaker* drvr, double& Vbv, double& Fsb, double& Fb, double& Fn, double& Vd, double& Rh, double& Par, double& Per, double& L_prm, double& a, double& b, double& c, double& d, double& alpha);
 /*--------------------------------------------------------------------------------------------*/
-void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha);
+void vented_freq_response(Speaker* drvr, double Fsb, double Fb, double Fn, double alpha);
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, float& A1, float& Fsb, float& Fcb, float& Fs, float& f3, float& Fb, float& Fc, float& L, float& Vd, float& Qtc, float& Qtcp, float& Vab, float& Rh, float& R, float& Par, float& Per);
+void closed_freq_params(Speaker* drvr, double& Qa, double& gamma, double& alpha, double& A1, double& Fsb, double& Fcb, double& Fs, double& f3, double& Fb, double& Fc, double& L, double& Vd, double& Qtc, double& Qtcp, double& Vab, double& Rh, double& R, double& Par, double& Per);
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_response(Speaker* drvr, float A1, float f3, float fc, float Fsb);
+void closed_freq_response(Speaker* drvr, double A1, double f3, double fc, double Fsb);
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
 void graph_performance();
 /*--------------------------------------------------------------------------------------------*/
+//void read_bass_driver(Speaker*& drvr,  std::string& speaker);
 void read_bass_driver(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
 void read_midrange_driver(Speaker*& mid);
 /*--------------------------------------------------------------------------------------------*/
 void read_tweet_driver(Speaker*& tweet);
+/*--------------------------------------------------------------------------------------------*/
+void read_passive_driver(Speaker*& passive);
 /*--------------------------------------------------------------------------------------------*/
 void write_design_data(Speaker* drvr, Cabinet* box, Filter lowpass, Filter bandpass, Filter highpass);
 /*--------------------------------------------------------------------------------------------*/
@@ -168,6 +184,12 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowp
 void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
 void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
+/*--------------------------------------------------------------------------------------------*/
+void design_low_sealed(Speaker*& drvr, Cabinet*& box, double& Vd);
+/*--------------------------------------------------------------------------------------------*/
+void design_low_vented(Speaker*& drvr, Cabinet*& box, double& Vd);
+/*--------------------------------------------------------------------------------------------*/
+void design_tweeter_sealed(Speaker*& drvr, Cabinet*& box, double& Vd);
 /*--------------------------------------------------------------------------------------------*/
 /*                                 end of speaker_easy.h                                      */
 /*--------------------------------------------------------------------------------------------*/

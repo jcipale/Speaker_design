@@ -52,6 +52,14 @@
 /* Begin work on revising closed_box_design() function to  derive box internal measurements   */
 /* for cabinet construction.                                                                  */
 /*--------------------------------------------------------------------------------------------*/
+/* 09/27/2024:                                                                                */
+/*    Revised loudspeaker design procedures for closed/vented box designs.                    */
+/*    Fixed segmaentaion fault by increasing size of string buffer on reading in line from    */
+/*    *.sdb file.                                                                             */
+/*    Incorporated passive radiator spkr struct and cabinet design.                           */
+/*    Created extra field to distinguish between ribbon and cone for tweeter cabinet design.  */
+/*    Refactored closed/vented box designs to make better use of tweeter design requirements. */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -94,7 +102,7 @@ string pad_string = "";
 /*--------------------------------------------------------------------------------------------*/
 /*                               Functions and Procedures                                     */
 /*--------------------------------------------------------------------------------------------*/
-void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
+void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet, Speaker*& pass)
 /*--------------------------------------------------------------------------------------------*/
 /* The build() function builds the list of available parts that the user can select from to   */
 /* design/build/simualte a speaker design with. The user is prompted to enter various part    */
@@ -103,70 +111,72 @@ void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
 /*                         Adds multiple links if needed by user.                             */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *temp, *bass, *bandp, *high;
+    struct Speaker *temp, *bass, *bandp, *high, *passive;
 
     temp=(struct Speaker *)malloc(sizeof(struct Speaker));
 
     cout << "+-----------------------------------------------------------+" << endl;
     cout << "| Enter the speaker values as instructed below:             |" << endl;
     cout << "+-----------------------------------------------------------+" << endl;
-    cout << "    Part Number                 : ";
+    cout << "    Part Number                      : ";
     cin >> temp->Part_num;
-    cout << "    Type (Woof/Twet/Midr)       : ";
+    cout << "    Type (Woof/Tweet/Midr/Pass)      : ";
     cin >> temp->Type;
-    cout << "    Vas (dm^3) (aka liters)     : ";
+    cout << "    Build (cone/ribbon/electrostatic): ";
+    cin >> temp->Build;
+    cout << "    Vas (dm^3) (aka liters)          : ";
     cin >> temp->Vas;
-    cout << "    Compliance                  : ";
+    cout << "    Compliance                       : ";
     cin >> temp->Cms;
-    cout << "    BL (Force Factor)           : ";
+    cout << "    BL (Force Factor)                : ";
     cin >> temp->Bl;
-    cout << "    Qts (Total Q factor)        : ";
+    cout << "    Qts (Total Q factor)             : ";
     cin >> temp->Qts;
-    cout << "    Qes (Electric Q factor)     : ";
+    cout << "    Qes (Electric Q factor)          : ";
     cin >> temp->Qes;
-    cout << "    Qms (Mech Q factor)         : ";
+    cout << "    Qms (Mech Q factor)              : ";
     cin >> temp->Qms;
-    cout << "    Fs                          : ";
+    cout << "    Fs                               : ";
     cin >> temp->Fs;
-    cout << "    Re (ohms)                   : ";
+    cout << "    Re (ohms)                        : ";
     cin >> temp->Re;
-    cout << "    RMS (kg*s)                  : ";
+    cout << "    RMS (kg*s)                       : ";
     cin >> temp->Rms;
-    cout << "    Z_nom (Nom Impedance)       : ";
+    cout << "    Z_nom (Nom Impedance)            : ";
     cin >> temp->Z_nom;
-    cout << "    Le (mH)                     : ";
+    cout << "    Le (mH)                          : ";
     cin >> temp->Le;
-    cout << "    Xmax (mm)                   : ";
+    cout << "    Xmax (mm)                        : ";
     cin >> temp->Xmax;
-    cout << "    Diam (mm)                   : ";
+    cout << "    Diam (mm)                        : ";
     cin >> temp->Diam;
-    cout << "    Nom_Pwr (W)                 : ";
+    cout << "    Nom_Pwr (W)                      : ";
     cin >> temp->Nom_Pwr;
-    cout << "    Max_Pwr (W)                 : ";
+    cout << "    Max_Pwr (W)                      : ";
     cin >> temp->Max_Pwr;
-    cout << "    Freq_Low (Hz)               : ";
+    cout << "    Freq_Low (Hz)                    : ";
     cin >> temp->Freq_Low;
-    cout << "    Freq_Hi (Hz)                : ";
+    cout << "    Freq_Hi (Hz)                     : ";
     cin >> temp->Freq_Hi;
-    cout << "    Sensitivity (db 1w/1m)      : ";
+    cout << "    Sensitivity (db 1w/1m)           : ";
     cin >> temp->Sensitivity;
-    cout << "    Box volume - sealed (m^3)   : ";
+    cout << "    Box volume - sealed (liters)     : ";
     cin >> temp->Vbs;
-    cout << "    Box volume - vented (m^3)   : ";
+    cout << "    Box volume - vented (liters)     : ";
     cin >> temp->Vbv;
-    cout << "    f3_seal (3db rolloff)       : ";
+    cout << "    f3_seal (3db rolloff)            : ";
     cin >> temp->f3_seal;
-    cout << "    f3_vent (3db rolloff)       : ";
+    cout << "    f3_vent (3db rolloff)            : ";
     cin >> temp->f3_vent;
-    cout << "    v_diam (vent diameter)      : ";
+    cout << "    v_diam (vent diameter)           : ";
     cin >> temp->v_diam;
-    cout << "    v_length (vent length)      : ";
+    cout << "    v_length (vent length)           : ";
     cin >> temp->v_length;
-    cout << "    b_diam (speaker diameter)   : ";
+    cout << "    b_diam (speaker diameter)        : ";
     cin >> temp->b_diam;
-    cout << "    b_height (speaker diameter) : ";
-    cin >> temp->b_height;
-    cout << "    depth (speaker depth)       : ";
+    cout << "    b_height (speaker height)        : ";
+    cin >> temp->b_diam;
+    cout << "    depth (speaker depth)            : ";
     cin >> temp->depth;
     temp->next = NULL;
 
@@ -177,8 +187,7 @@ void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
     if (strcmp(temp->Type, "Woof") == 0) {
         sleep(1);
         drvr = temp;
-        // check
-        cout << "Part num: " << drvr->Part_num << endl;
+        //cout << "Part num: " << drvr->Part_num << endl;
         sleep(1);
     }
 
@@ -186,20 +195,29 @@ void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet)
         sleep(1);
         mid = temp;
         // check
-        cout << "Part num: " << mid->Part_num << endl;
+        //cout << "Part num: " << mid->Part_num << endl;
         sleep(1);
     }
 
-    if (strcmp(temp->Type, "Twet") == 0) {
+    if (strcmp(temp->Type, "Tweet") == 0) {
         sleep(1);
         tweet = temp;
         // check
-        cout << "Part num: " << tweet->Part_num << endl;
+        //cout << "Part num: " << tweet->Part_num << endl;
         sleep(1);
     }
+
+    if (strcmp(temp->Type, "Pass") == 0) {
+        sleep(1);
+        pass = temp;
+        // check
+        //cout << "Part num: " << pass->Part_num << endl;
+        sleep(1);
+    }
+
 }
 /*--------------------------------------------------------------------------------------------*/
-void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet)
+void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass)
 /*--------------------------------------------------------------------------------------------*/
 /* The parts_list function simply traverse the current list in a one-way direction. The user  */
 /* has the option of saving changes to the list or closing out the application with no changes*/
@@ -218,12 +236,12 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet)
 
     sleep(5);
 
-    for (i = 0; i< 3; i++) {
+    for (i = 0; i< 4; i++) {
         if (i == 0 ) {
             ptr = drvr;  
 
             if (ptr == NULL) {
-                cout << "Parts List is empty..." << endl;
+                //cout << "Parts List is empty..." << endl;
                 sleep(1);
             } else {
                 print_part(ptr);
@@ -235,7 +253,7 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet)
             ptr = mid; 
     
             if (ptr == NULL) {
-                cout << "Parts List is empty..." << endl;
+                //cout << "Parts List is empty..." << endl;
                 sleep(1);
             } else {
                 print_part(ptr);
@@ -247,7 +265,19 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet)
             ptr = tweet;
     
             if (ptr == NULL) {
-                cout << "Parts List is empty..." << endl;
+                //cout << "Parts List is empty..." << endl;
+                sleep(1);
+            } else {
+                print_part(ptr);
+                sleep(1);
+            }
+        }    
+
+        if (i == 3) { 
+            ptr = pass;
+    
+            if (ptr == NULL) {
+                //cout << "Parts List is empty..." << endl;
                 sleep(1);
             } else {
                 print_part(ptr);
@@ -265,7 +295,7 @@ void print_part(Speaker* drvr)
     struct Speaker *ptr;
 
     if (drvr == NULL) {
-        cout << "Speaker Parts List is empty..." << endl;
+        //cout << "Speaker Parts List is empty..." << endl;
         
         sleep(1);
         return;
@@ -276,6 +306,7 @@ void print_part(Speaker* drvr)
         while (ptr != NULL) {
             cout << "Part Number            : " << ptr->Part_num << endl;
             cout << "Type                   : " << ptr->Type << endl;
+            cout << "Build                  : " << ptr->Build << endl;
             cout << "Vas (L || dm^3)        : " << ptr->Vas << endl;
             cout << "Cms                    : " << ptr->Cms << endl;
             cout << "Bl                     : " << ptr->Bl  << endl;
@@ -302,7 +333,7 @@ void print_part(Speaker* drvr)
             cout << "vent diam  (mm)        : " << ptr->v_diam << endl;
             cout << "vent length (mm)       : " << ptr->v_length << endl;
             cout << "speaker diam (mm)      : " << ptr->b_diam << endl;
-            cout << "speaker height (mm)    : " << ptr->b_height << endl;
+            cout << "speaker ht/length (mm) : " << ptr->b_height << endl;
             cout << "speaker depth (mm)     : " << ptr->depth << endl;
             ptr = ptr->next;
             cout << "+-----------------------------" << endl;
@@ -323,192 +354,40 @@ void closed_box_design(Speaker*& drvr, Cabinet*& box)
     struct Speaker *ptr;
     ptr = drvr;
 
-    struct Cabinet *temp, *cptr;
+    struct Cabinet *temp, *cptr, *bass, *midr, *treb;
 
-    temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
+    //temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
 
-    char l_cmd[8];
-    char d_cmd[8];
+    std::string cab_type;           // Type of cabinet being built - vented or sealed.
+	                                // Passive radiator defaults to sealed.
 
-    char fill[4];                  // Box is filled (1) or not (0)
-    char units[8];                 // used to display centimeters or inches
+    double Vd;                      // Speaker displacement volume - part of overall cabinet volume
 
-
-    float Qa;                      // These two *values* are used to determine the 'filling'
-    float gamma;                   // constants for a closed-box design. Qa = 10/5 - lambda = 1/1.2
-
-    int uom;                       // Unit of measure - metric (0) or imperial (1)
-    int flag;                      // Initial pass of cabinet design flag = 0
-    int vol_flg;                   // Initially set to '0', but one the user makes a first pass
-                                   // through the design process, then the flag will be toggled 
-                                   // to '1'. The flag will be reset to '0' upon exit.
-
-    float alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
-    float A1;
-    float f3;
-    float Fcb;
-    float Fsb;                     // Driver resonance freq mounted in enclosure
-    float Fb;                      // Resonance frequency of a closed box system
-    float fc;                      // Resonance frequency of a closed box system
-    float Fs;
-    float Fn;                      // Normal frequency value
-    float L;
-    float Vd;
-    float Qtc, Qtcp;               // Q factor values used for closed-box measurements
-    float Vab;                     // box volume derived from compliance (Vas) and alpha/gamma
-    float Vbs;                     // Temporary value of box volume derived from Vol_seal
-    float vol_temp;                // Hold value of converte volume
-
-    float Par, Per;                // Displacement limited power ratings
-    float peak;
-    float Rh;                      // Ripple response (in db)
-    float R;                       // decibel value for a given frequency(f)
-    float A, B;                    // Intermediate place-holder for frequency response
-    float a, b, c, d;
-    float DrvDiam;                 // Speaker Diameter from data sheet
-
-    int i;                         // frequency increment
-    int bdesign;                   // Value entered for switch statement choosing deign flow
-    int empty_val;                 // value used to checking for missing values.
-	
-    std::string cab_type;
-
-    flag = 0;
-    
-    vol_flg = 0;
-    empty_val = 0;
+	char fill[4];                   // Box is filled (1) or not (0)
+	char units[8];                  // used to display centimeters or inches
 
     system("clear");
-	/*
-    cout << "Design a closed box speaker..." << endl;
 
-    if (ptr->Vbs <= 0) {
-        empty_val = 2;
-    }
-	*/
+	/* REDESIGN/REFACTOR THIS BLACK OF CODE */
 
-    if ((ptr->f3_seal <= 0) || (ptr->Vbs <= 0)) {
-        empty_val = 2;
-    }
-
-	/*
-    if (empty_val = 0) {
-        cin >> bdesign;
+	// Determine speaker displacement
+    if (strcmp(ptr->Type, "Tweet") == 0) {
+	    Vd = 0;
+		design_tweeter_sealed(drvr, temp, Vd);
+		treb = temp;
+    } else if (strcmp(ptr->Type, "Woof") == 0) {
+        Vd = (M_PI * pow((drvr->Diam/2), 2) * drvr->Xmax);
+        design_low_sealed(drvr, temp, Vd);
+        midr = temp;
     } else {
-        bdesign = empty_val;
-    }
-	*/
-        
-    while (!flag) {
-        cout << "Use acoustic filling - Y/N? :";
-        cin >> fill;
-        if ((strcmp(fill, "Y") == 0) || (strcmp(fill, "y") == 0)) {
-            gamma = 1.0;
-            Qa = 10.0;
-        } else {
-            gamma = 1.2;
-            Qa = 5.0;
-        }
+        Vd = (M_PI * pow((drvr->Diam/2), 2) * drvr->Xmax);
+        design_low_sealed(drvr, temp, Vd);
+        bass = temp;
+	}
 
-
-        cout << "Choose design based on:" << endl;
-        cout << "    1) default speaker values" << endl;
-        cout << "    2) box volume" << endl;
-        cout << "    3) Enter Q(tc)" << endl;
-        cout << "    4) Use default value of Q(tc) = 1" << endl;
-		cout << "-------------------------------------" << endl;
-
-		cin >> bdesign;
-
-        switch (bdesign) {
-            case 1:
-                cout << "Choose design based on default values : " << endl;
-                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per);
-                break;
-            case 2:
-                cout << "Choose design based on box volume : " << endl;
-                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per);
-                break;
-            case 3:
-                cout << "Choose design based on user specified value of Q(tc) : " << endl;
-                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per);
-                break;
-            default:
-                cout << "Choose design based on default value of Q(tc) to 1" << endl;
-                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per);
-                break;
-
-        }
-
-        cout << "+-------------------------------------------+" << endl;
-        cout << "| Intermediate values for sealed box design |" << endl;
-        cout << "+-------------------------------------------+" << endl;
-        cout << " Aco-ustic Filling (Y/N)        : " << fill << endl;
-        cout << " Driver compliance (Vas)       : " << ptr->Vas << endl;
-        cout << " Box Volume (dm^3)             : " << Vbs << endl;
-        cout << " Cabinet Volume derived (Vab)  : " << Vab << endl;
-        cout << " Volume ratio (alpha)          : " << alpha << endl;
-        cout << " Filling value (gamma)         : " << gamma << endl;
-        cout << " Filling value (Qa)            : " << Qa << endl;
-        cout << " Driver Q (Qtc)                : " << Qtc << endl;
-        cout << " Derived Driver Q (Qtcp)       : " << Qtcp << endl;
-        cout << " Resonance Frequncy Fc         : " << Fsb << endl;
-        cout << " Driver resonance Fs           : " << ptr->Fs << endl;
-        cout << " Driver resonance Fsb          : " << Fsb << endl;
-        cout << " Q driver ratio L              : " << L << endl;
-        cout << " 3db down response f3 (Hz)     : " << f3 << endl;
-        cout << " Peak db                       : " << peak << endl;
-        cout << " Acoustic Power Par            : " << Par << endl;
-        cout << " Electrical Power Per          : " << Per << endl;
-        cout << "--------------------------------------------" << endl;
-
-        strcpy(temp->Part_num, ptr->Part_num);
-        temp->cab_volume = Vbs;
-        temp->freq_lo = ptr->Freq_Low;
-        temp->freq_hi = ptr->Freq_Hi;
-        temp->Sensitivity = ptr->Sensitivity;
-        temp->res_freq = Fsb;
-        temp->rolloff = f3;
-        temp->imp_Nom = ptr->Z_nom;
-        temp->diam = drvr->b_diam;
-        temp->height = drvr->b_height;
-        temp->depth = drvr->depth;
-        temp->vent_diam = 0;
-        temp->vent_length = 0;
-        temp->PAR = Par;
-        temp->PER = Per;
-
-        box = temp;
-
-        sleep(5);
-        // Power displacement ratings 
-
-        cout << "Accept results (Y/y)? :" << endl;
-        cin >> l_cmd;
-
-        if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
-            cout << "Speaker Design completed..." << endl;
-            flag = 1;
-        } else {
-            cout << "compute closed box design..." << endl;
-        }
-
-        sleep(5);
-    }
-
-    // reuse the flag value and reset to 0
-    flag = 0;
-
-    while (!flag) {
-        cout << "define cabinet dimensions..." << endl;
-        cab_type = "closed";
-        cabinet_design(drvr, box, "sealed", drvr->Type);
-        // make sure to set flag to true
-		flag = 1;
-    }
 }
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha, float& gamma, float Qa, float& Fsb, float& Vab, float& L, float& Qtc, float& Qtcp, float& fc, float& A1, float& f3, float& peak, float& Par, float& Per)
+void closed_box_param_set(Speaker* drvr, int& bdesign, double& Vbs, double& alpha, double& gamma, double Qa, double& Fsb, double& Vab, double& L, double& Qtc, double& Qtcp, double& fc, double& A1, double& f3, double& peak, double& Par, double& Per, double& Rh, double& Vd)
 /*--------------------------------------------------------------------------------------------*/
 /* closed_box_param_set() will take the settingd used to define the closed_box parameters     */
 /* derived from gamma and Qa based on the choice to use fill material or no. The user defines */
@@ -520,12 +399,11 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
 	
     char flag;                 // trigger to ignore switch stmt and fall into case statement
 
-    float a, b, c, d;          // Intermediate placeholders to ease complex math evaluations
-    float Vd;                  // Volume of air displacement;
-    float alpha_p;
-    float Fsb_p;
-    //float Fsb;
-    float Qt;                  // Total Q factor - computed
+    double a, b, c, d;          // Intermediate placeholders to ease complex math evaluations
+    double alpha_p;
+    double Fsb_p;
+    double Qt;                  // Total Q factor - computed
+	double power;
 
     int choice;
 
@@ -577,15 +455,10 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
                 ptr->f3_seal = f3;
             }
             
-            if (ptr->Vbs <= 0) {
-                ptr->Vbs = Vbs;
-            }
-
             break;
 
         case 3:
-            cout << "Choose design based on user specified value of Q(tc) :";
-            cout << "(Qtc = " << Qtc << " )" << endl;
+            cout << "Choose design based on user specified value of Q(tc) (.5 <= Qtc <= 0.9) :";
             cout << "Enter: ";
             cin >> Qtc;
 
@@ -606,7 +479,7 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
             break;
 
         default:
-            cout << "Choose design based on default value of Q(tc) to 1" << endl;
+            cout << "Choose design based on default value of Q(tc) to 0.707" << endl;
             Qtc = 1;
 
             Qtcp = 1/((1/Qtc) - (1/Qa));
@@ -628,9 +501,6 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
     }
     ptr->Vbs = Vbs;
 
-    // Speaker displacement - cu meter
-    Vd = (M_PI * pow((ptr->Diam/2), 2) * ptr->Xmax/1000.00);
-
     if (A1 >= 0) {
         peak = 0;
     } else {
@@ -641,6 +511,7 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
     cout << " Debug - intermediate data           " << endl;
     cout << "-------------------------------------" << endl;
     cout << " Sealed box volume (Vbs) : " << ptr->Vbs << endl;
+    cout << " Sealed box volume (Vbs) : " << Vbs << endl;
     cout << " Vas                     : " << ptr->Vas << endl;
     cout << " ratio of Vas/Vbs (alpha): " << alpha << endl;
     cout << "-------------------------------------" << endl;
@@ -664,16 +535,30 @@ void closed_box_param_set(Speaker* drvr, int& bdesign, float& Vbs, float& alpha,
 
     sleep(5);
 
-    //Par = (pow(ptr->f3_seal, 4) * pow(Vd, 2))/(1.2e9);
-    //Per = (pow(ptr->f3_seal, 4) * pow(Vd, 2) * ptr->Qts)/(pow(ptr->Fs, 3) * ptr->Vas * 1e3);
-    Par = (pow(f3, 4) * pow(Vd, 2))/(1.2e9);
-    Per = (pow(f3, 4) * pow(Vd, 2) * ptr->Qts)/(pow(ptr->Fs, 3) * ptr->Vas * 1e3);
+	// Electrical/Acoustigal measurements
+	Per = compute_efficiency(drvr) * 100.0;
+	Par = 1/(compute_efficiency(drvr));
 
+    // 3db Ripple 
+	Rh = ptr->Fs * sqrt(((ptr->Vas)/(ptr->Vbs)) + 1.0);
     closed_freq_response(drvr, A1, f3, fc, Fsb);
-
 }
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_response(Speaker* drvr, float A1, float f3, float fc, float Fsb)
+void passive_box_design(Speaker*& drvr, Cabinet*& box, Cabinet*& pass)
+/*--------------------------------------------------------------------------------------------*/
+/* closed_box_design will take the stored Small/Thiele parameters, compute the necessary data */
+/* points then plot the resulting frequency plot. This function calls the functions:          */
+/*     closed_box_param_set()                                                                 */
+/*     freq_response()                                                                        */
+/*--------------------------------------------------------------------------------------------*/
+{
+	struct Speaker *ptr;
+    ptr = drvr;
+
+    cout << "TEST PROCEDURE" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void closed_freq_response(Speaker* drvr, double A1, double f3, double fc, double Fsb)
 /*--------------------------------------------------------------------------------------------*/
 /* closed_freq_response() plots the frequency rsponse of a sealed box speaker for the chosen  */
 /* driver.                                                                                    */
@@ -682,11 +567,11 @@ void closed_freq_response(Speaker* drvr, float A1, float f3, float fc, float Fsb
     struct Speaker *ptr;
     ptr = drvr;
     
-    float a, b, c, d;                     // Intermediate variables used to keep track
+    double a, b, c, d;                     // Intermediate variables used to keep track
                                           // of computations and ease readability
-    float i;
-    float Fn;
-    float R, Rp;
+    double i;
+    double Fn;
+    double R, Rp;
 
     system("clear");
 
@@ -769,139 +654,41 @@ void vented_box_design(Speaker*& drvr, Cabinet*& box)
     struct Speaker *ptr;
     ptr = drvr;
 
-    struct Cabinet *temp, *cptr;
+    struct Cabinet *temp, *bass, *midr, *treb, *vptr;
 
     temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
 
-    char l_cmd[8];
-    char d_cmd[8];
-
-    int flag;                      // Initial pass of cabinet design flag = 0
-    int vol_flg;                   // Initially set to '0', but one the user makes a first pass
-                                   // through the design process, then the flag will be toggled 
-                                   // to '1'. The flag will be reset to '0' upon exit.
-    float alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
-    float f3;                      // frequency rolloff
-    float Fsb;                     // Driver resonance freq mounted in enclosure
-    float Fb;                      // Enclosure resonance requency - not to be confused with Fsb
-    float Fn;                      // Normalized frequency ratio - f(req)/Fsb
-    float Vd;                      // Volume of air displacement
-    float Vb;                      // Volume of cabinet - liters || dm^3
-    float Vbv;                     // Computed volume of cabinet - liters || dm^3 
-    float Vb_i, Vb_u;              // Internal cabinet volumes - user supplied
-    float Rh;                      // Ripple response (in db)
-    float R;                       // decibel value for a given frequency(f)
-    float Par, Per;                // Displacement limited power ratings
-    float Dv, Lv, L_prm;           // Vent diameter, length in mm
-    float lv;
-    float dv;
-    float A, B, C, D;              // Intermediate place-holders
-    float a, b, c, d, e, f;        // value holders for frequency response measurement
-    float tmp_1, tmp_2, tmp_3;
-    int i;                        // frequency increment
+	char fill[4];
+	
+	double a;
+	double Dv;                   // Default vent diameter
+	double Lv;                   // Default port length 
+	double Vd;                   // Diameter of speaker cone
 
     std::string cab_type;
-
-    flag  = 0;
-    vol_flg = 0;
 
     /* Default flat values */
     Dv = 50.0; // Set Vent diameter to 50mm by default;
     Lv = 50.0;
 
-    if (ptr->Vbv <= 0) {
-        a = pow(ptr->Qts, 3.3);
-
-        ptr->Vbv = pow(ptr->Qts, 3.3) * (ptr->Vas) * 20.0;
+	// Determine speaker displacement
+    if (strcmp(ptr->Type, "Tweet") == 0) {
+        Vd = 0;
+		treb = temp;
+        design_tweeter_sealed(drvr, treb, Vd);
+    } else if (strcmp(ptr->Type, "Woof") == 0) {
+        Vd = (M_PI * pow((drvr->Diam/2), 2) * drvr->Xmax);
+        design_low_vented(drvr, bass, Vd);
+        midr = temp;
+    } else {
+        Vd = (M_PI * pow((drvr->Diam/2), 2) * drvr->Xmax);
+        design_low_vented(drvr, midr, Vd);
+        bass = temp;
     }
 
-    alpha = ptr->Vas/ptr->Vbv;
-    Fsb = (ptr->f3_vent)/pow(alpha, 0.44);
-    Fb = (ptr->f3_vent)/pow(alpha, 0.13);
-
-    system("clear");
-    cout << "Design a vented box speaker..." << endl;
-    sleep(5);
-    
-    while (!flag) {
-        vented_freq_params(drvr, Vbv, Fsb, Fb, Fn, Vd, Rh, Par, Per, Dv, Lv, L_prm, lv, dv, a, b, c, d, alpha);
-
-        sleep(5);
-        //----------------------------
-        // Compute freq response here
-        //----------------------------
-
-        vented_freq_response(drvr, Fsb, Fb, Fn, alpha);
-
-        cout << "Accept results (Y/y)? :" << endl;
-        cin >> l_cmd;
-        system("clear");
-
-        if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
-            cout << "Speaker Design completed..." << endl;
-            flag = 1;
-            vol_flg = 0;
-        } else {
-            cout << "Specify new Enclosure Internal Volume - " << endl;
-            cout << "Enter value in dm^3 (aka liters): ";
-            cin >> ptr->Vbv;
-            cout << "Enter new Vent diameter (mm) > 50(mm) - default is " << ptr->v_diam << "mm: ";
-            cin >> ptr->v_diam;
-            cout << "Enter new Vent length (mm) > 50(mm) - default is " << ptr->v_length << "mm: ";
-            cin >> ptr->v_length;
-        }
-
-        sleep(5);
-    }
-
-    cout << "+-------------------------------------------+" << endl;
-    cout << "| Intermediate values for vented box design |" << endl;
-    cout << "+-------------------------------------------+" << endl;
-    cout << " Driver compliance (Vas)  : " << ptr->Vas << endl;
-    cout << " Box Volume (dm^3)        : " << ptr->Vbv << endl;
-    //cout << " Volume compliance (Vb)   : " << ptr->Vb << endl;
-    cout << " Volume compliance (Vb)   : " << ptr->Cms << endl;
-    cout << " Volume ratio (alpha)     : " << alpha << endl;
-    cout << " Filling value (gamma)    : " << gamma << endl;
-    cout << " Resonance Frequncy Fc    : " << Fsb << endl;
-    cout << " Driver resonance Fs      : " << ptr->Fs << endl;
-    cout << " Driver resonance Fsb     : " << Fsb << endl;
-    cout << " 3db down response f3 (Hz): " << ptr->f3_vent << endl;
-    cout << " Acoustic Power Par       : " << Par << endl;
-    cout << " Electrical Power Per     : " << Per << endl;
-    cout << "--------------------------------------------" << endl;
-
-    strcpy(temp->Part_num, ptr->Part_num);
-    strcpy(temp->Part_num, ptr->Part_num);
-    temp->cab_volume = ptr->Vbv;
-    temp->freq_lo = ptr->Freq_Low;
-    temp->freq_hi = ptr->Freq_Hi;
-    temp->Sensitivity = ptr->Sensitivity;
-    temp->res_freq = Fsb;
-    //temp->rolloff = f3;
-    temp->rolloff = ptr->f3_vent;
-    temp->imp_Nom = ptr->Z_nom;;
-    temp->vent_diam = ptr->v_diam;
-    temp->vent_length = ptr->v_length;
-    temp->PAR = Par;
-    temp->PER = Per;
-	
-	box = temp;
-
-	sleep(5);
-    // reuse the flag value and reset to 0
-    flag = 0;
-
-    while (!flag) {
-        cout << "define cabinet dimensions..." << endl;
-        cab_type = "vented";
-        cabinet_design(drvr, box, "vented", drvr->Type);
-
-		flag = 1;
-    }
 }
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, float& A1, float& Fsb, float& Fcb, float& Fs, float& f3, float& Fb, float& Fc, float& L, float& Vd, float& Qtc, float& Qtcp, float& Vab, float& Rh, float& R, float& Par, float& Per) 
+void closed_freq_params(Speaker* drvr, double& Qa, double& gamma, double& alpha, double& A1, double& Fsb, double& Fcb, double& Fs, double& f3, double& Fb, double& Fc, double& L, double& Vd, double& Qtc, double& Qtcp, double& Vab, double& Rh, double& R, double& Par, double& Per) 
 /*--------------------------------------------------------------------------------------------*/
 /* closed_freq_params - evaluates the Small/Thiele parameters for a closed box systeem in     */
 /* preparation for evaluating the peak power and frequency response.                          */
@@ -912,7 +699,7 @@ void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, fl
     ptr = drvr;
 
     char fill[4];                  // Box is filled (1) or not (0)
-    float a, b, c, d;              // intermediate compute buckets
+    double a, b, c, d;              // intermediate compute buckets
         
     // Box volume based on fill factor
     Vab = gamma * ptr->Vbs;
@@ -944,9 +731,6 @@ void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, fl
     f3 = Fc * c;
     ptr->f3_seal = f3;
 
-    // Speaker displacement - cu meter
-    Vd = (M_PI * pow((ptr->Diam/2), 2) * ptr->Xmax/1000.00);
-
     if (A1 < 0) {
         Rh = 10 * log (4 /(4 - pow(A1, 2)));
     } else {
@@ -954,10 +738,10 @@ void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, fl
     }
         
     // Displaement limited power ratings
-    Par = (pow(ptr->f3_seal, 4) * pow(Vd, 2))/1.2e9;
-        
-    Per = (pow(ptr->f3_seal, 4) * pow(Vd, 2) * ptr->Qts)/(pow(ptr->Fs, 3) * ptr->Vas * 1e3);
+	Per = compute_efficiency(drvr) * 100.0;
+	Par = 1/(compute_efficiency(drvr));
 
+    cout << "-----------------------------------------------------------" << endl;
     cout << "Closed Box design values - flat alignment" << endl;
     cout << "-----------------------------------------------------------" << endl;
     cout << " Driver name               :    " << ptr->Part_num << endl;
@@ -981,15 +765,15 @@ void closed_freq_params(Speaker* drvr, float& Qa, float& gamma, float& alpha, fl
     cout << "-----------------------------------------------------------" << endl;
     cout << "              Displacement Power Ratings                   " << endl;
     cout << "-----------------------------------------------------------" << endl;
-    cout << " Limited Acoustic Power    :    " << Par << endl;
-    cout << " Limited Electrical Power  :    " << Per << endl;
+    cout << " Electrical Efficiency     :    " << Per << " % " << endl;
+    cout << " Accoustical Power         :    " << Par << " W " << endl;
     cout << "-----------------------------------------------------------" << endl;
 
     sleep(5);
 
 }
 /*--------------------------------------------------------------------------------------------*/
-void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float& Fn, float& Vd, float& Rh, float& Par, float& Per, float& Dv, float& Lv, float& L_prm, float& lv, float& dv, float& a, float& b, float& c, float& d, float& alpha)
+void vented_freq_params(Speaker* drvr, double& Vbv, double& Fsb, double& Fb, double& Fn, double& Vd, double& Rh, double& Par, double& Per, double& L_prm, double& a, double& b, double& c, double& d, double& alpha)
 /*--------------------------------------------------------------------------------------------*/
 /* vented_freq_params() used to compute intermediate Thiel/Small values ised for vented box   */
 /* loudspeaker design. Ideally, the user could pass a single flag that would toggle between   */
@@ -999,8 +783,8 @@ void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float&
     struct Speaker *ptr;
     ptr = drvr;
 
-    float A, B, C, D;
-    float Vb;
+    double A, B, C, D;
+    double Vb;
 
     /* If f3 down parameters are missing, compute here */
     if (ptr->f3_vent <= 0) {
@@ -1011,10 +795,6 @@ void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float&
 
     // Driver resonance frequency - mounted
     Fsb = ptr->f3_vent/(0.28 * pow(ptr->Qts, -1.4));
-
-    // Speaker displacement - decimeter^3
-    A = M_PI * pow(ptr->Diam/2, 2);
-    Vd = (A * ptr->Xmax)/1000.00;
 
     /* Vent design                                                   */
     /* If vent parameters are missing or null, define minimal values */
@@ -1039,12 +819,12 @@ void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float&
     alpha = ptr->Vas/ptr->Vbv;
 
     // Displacement limited power ratings
-    Par = (pow(ptr->f3_vent, 4) * pow(Vd, 2))/3e8;
-    Per = (1.2e6 * Par * ptr->Qts)/(pow(ptr->Fs, 3) * ptr->Vas);
+	//Per = compute_efficiency(drvr) * 100.0;
+	//Par = 1/(compute_efficiency(drvr));
 
     // 3db ripple ripple
-    Rh = 20 * log ((Fb * ptr->Qts)/(0.4 * ptr->Fs));
-    Rh = abs(Rh);
+    //Rh = 20 * log ((Fb * ptr->Qts)/(0.4 * ptr->Fs));
+    //Rh = abs(Rh);
 
     cout << "Vented Box design values - flat alignment" << endl;
     cout << "-----------------------------------------------------------" << endl;
@@ -1061,17 +841,17 @@ void vented_freq_params(Speaker* drvr, float& Vbv, float& Fsb, float& Fb, float&
     cout << " Frequency range                  : " << ptr->Freq_Low << " - " << ptr->Freq_Hi << endl;
     cout << " Minimum vent diameter            : " << ptr->v_diam << endl;
     cout << " Vent length                      : " << ptr->v_length << endl;
-    cout << "-----------------------------------------------------------" << endl;
-    cout << "              Displacement Power Ratings                   " << endl;
-    cout << "-----------------------------------------------------------" << endl;
-    cout << " Limited Acoustic Power    :    " << Par << endl;
-    cout << " Limited Electrical Power  :    " << Per << endl;
+    //cout << "-----------------------------------------------------------" << endl;
+    //cout << "              Displacement Power Ratings                   " << endl;
+    //cout << "-----------------------------------------------------------" << endl;
+    //cout << " Electriccal Efficiency           : " << Per << " % " << endl;
+    //cout << " Limited Acoustical Power         : " << Par << " W " << endl;
     cout << "-----------------------------------------------------------" << endl;
         
     sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/
-void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float alpha) 
+void vented_freq_response(Speaker* drvr, double Fsb, double Fb, double Fn, double alpha) 
 /*--------------------------------------------------------------------------------------------*/
 /* vented_freq_response() is used to write the results of the frequency calculation to a CSV  */
 /* format text file. The file will be read by the GNUplot graphing utility and displayed.     */
@@ -1081,10 +861,10 @@ void vented_freq_response(Speaker* drvr, float Fsb, float Fb, float Fn, float al
     struct Speaker *ptr;
     ptr = drvr;
 
-    float A, B, C, D;                            // Intermediate placeholders variables
-    float a, b, c, d;                            // Intermediate placeholders
+    double A, B, C, D;                            // Intermediate placeholders variables
+    double a, b, c, d;                            // Intermediate placeholders
     
-    float R;                                     // Decibel value for plotting
+    double R;                                     // Decibel value for plotting
 
     int i;                                       // loop frequncy countrt
 
@@ -1163,7 +943,7 @@ void graph_performance() {
     cout << "Display graphical performance..." << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
-void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet)
+void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass)
 /*--------------------------------------------------------------------------------------------*/
 /* save_speaker_data is used to write the contents of the speaker list to a file on locally or*/
 /* on the network drive.                                                                      */
@@ -1174,12 +954,14 @@ void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet)
     struct Speaker *low;
     struct Speaker *bpass;
     struct Speaker *high;
+    struct Speaker *passive;
 
     int i;
 
     low = drvr;
     bpass = mid;
     high = tweet;
+	passive = pass;
 
     system("clear");
 
@@ -1207,6 +989,13 @@ void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet)
     } else {
          save_data_ptr(high);
     }
+    
+    if (passive == NULL) {
+         cout << "Passive pointer is null..." << endl;
+         sleep(2);
+    } else {
+         save_data_ptr(passive);
+    }
 }
 /*--------------------------------------------------------------------------------------------*/
 void save_data_ptr(Speaker* drvr)
@@ -1217,13 +1006,6 @@ void save_data_ptr(Speaker* drvr)
 {
     struct Speaker *ptr;
     char file_name[40];
-
-    /*
-    cout << "In save_data_ptr() call..." << endl;
-    cout << drvr->Part_num << endl;
-    cout << drvr->Type << endl;
-    sleep(2);
-    */
 
     drvr_dba = drvr->Part_num;
 
@@ -1241,6 +1023,7 @@ void save_data_ptr(Speaker* drvr)
         while (ptr != NULL) {
             outfile << ptr->Part_num << ";";
             outfile << ptr->Type << ";";
+            outfile << ptr->Build << ";";
             outfile << ptr->Vas << ";";
             outfile << ptr->Cms << ";";
             outfile << ptr->Bl << ";";
@@ -1275,6 +1058,7 @@ void save_data_ptr(Speaker* drvr)
     }
 }
 /*--------------------------------------------------------------------------------------------*/
+//void read_bass_driver(Speaker*& drvr, std::string& speaker)
 void read_bass_driver(Speaker*& drvr)
 /*--------------------------------------------------------------------------------------------*/
 /* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
@@ -1285,12 +1069,12 @@ void read_bass_driver(Speaker*& drvr)
 {
     struct Speaker *ptr, *temp;
 
-    char line[64];
+    char line[256];
     char *token;
     
     int i, j, k;
 
-    float num;
+    double num;
 
     string cmd_str;
     string filesdb = "";
@@ -1327,12 +1111,13 @@ void read_bass_driver(Speaker*& drvr)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        //cout << "Data: " << line << endl;
 	    sleep(2);
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
         strcpy(temp->Type, token);
+        token = strtok(NULL, ";");
+        strcpy(temp->Build, token);
         token = strtok(NULL, ";");
         temp->Vas = atof(token);
         token = strtok(NULL, ";");
@@ -1387,6 +1172,7 @@ void read_bass_driver(Speaker*& drvr)
         temp->b_height = atof(token);
         token = strtok(NULL, ";");
         temp->depth = atof(token);
+        token = strtok(NULL, ";");
         temp->next = NULL;
     
         sleep(2);
@@ -1407,12 +1193,12 @@ void read_midrange_driver(Speaker*& midr)
 {
     struct Speaker *ptr, *temp;
 
-    char line[64];
+    char line[256];
     char *token;
     
     int i, j, k;
 
-    float num;
+    double num;
 
     string cmd_str;
     string filesdb = "";
@@ -1449,11 +1235,12 @@ void read_midrange_driver(Speaker*& midr)
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        //cout << "Data: " << line << endl;
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
         strcpy(temp->Type, token);
+        token = strtok(NULL, ";");
+        strcpy(temp->Build, token);
         token = strtok(NULL, ";");
         temp->Vas = atof(token);
         token = strtok(NULL, ";");
@@ -1508,6 +1295,7 @@ void read_midrange_driver(Speaker*& midr)
         temp->b_height = atof(token);
         token = strtok(NULL, ";");
         temp->depth = atof(token);
+        token = strtok(NULL, ";");
         temp->next = NULL;
     
         sleep(2);
@@ -1528,12 +1316,12 @@ void read_tweet_driver(Speaker*& tweet)
 {
     struct Speaker *ptr, *temp;
 
-    char line[64];
+    char line[256];
     char *token;
     
     int i, j, k;
 
-    float num;
+    double num;
 
     string cmd_str;
     string filesdb = "";
@@ -1548,7 +1336,8 @@ void read_tweet_driver(Speaker*& tweet)
 
     cout << "-------------------------------" << endl;
     sleep(2);
-	cmd_str = "cat *.sdb | grep Twet";
+    cmd_str = "cat *.sdb | grep Tweet";
+    cmd_str = "./driver.csh Tweet";
 
     cout << "Select a speaker from the list below..." << endl;
     cout << "+-----------------------------" << endl;
@@ -1567,15 +1356,15 @@ void read_tweet_driver(Speaker*& tweet)
     
     input.open(drvr_dba, ios::in);
 
-    //system("cat drvr_dba");
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
-        //cout << "Data: " << line << endl;
         token = strtok(line, ";");
         strcpy(temp->Part_num, token);
         token = strtok(NULL, ";");
         strcpy(temp->Type, token);
+        token = strtok(NULL, ";");
+        strcpy(temp->Build, token);
         token = strtok(NULL, ";");
         temp->Vas = atof(token);
         token = strtok(NULL, ";");
@@ -1630,6 +1419,7 @@ void read_tweet_driver(Speaker*& tweet)
         temp->b_height = atof(token);
         token = strtok(NULL, ";");
         temp->depth = atof(token);
+        token = strtok(NULL, ";");
         temp->next = NULL;
     
         sleep(2);
@@ -1638,6 +1428,129 @@ void read_tweet_driver(Speaker*& tweet)
     }
 
     //sleep(3);
+}
+/*--------------------------------------------------------------------------------------------*/
+void read_passive_driver(Speaker*& passive)
+/*--------------------------------------------------------------------------------------------*/
+/* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
+/* on the network drive.                                                                      */
+/* Input: Struct Speaker - passed by reference                                                */
+/*                         reads the complete list of driver elements.                        */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr, *temp;
+
+    char line[256];
+    char *token;
+    
+    int i, j, k;
+
+    double num;
+
+    string cmd_str;
+    string filesdb = "";
+
+    ifstream infile;
+    ifstream input;
+
+    passive = NULL;
+    system("clear");
+    drvr_dba = "";
+
+    cout << "-------------------------------" << endl;
+    sleep(3);
+    cmd_str = "./driver.csh Pass";
+
+    cout << "Select a speaker from the list below..." << endl;
+    cout << "+-----------------------------" << endl;
+
+    system(cmd_str.c_str());
+
+    sleep(2);
+
+    cout << endl;
+    cout << "Mid-range Speaker... : ";
+    cin >> drvr_dba;
+
+    drvr_dba = drvr_dba + ".sdb";
+    
+    sleep(2);
+    
+    input.open(drvr_dba, ios::in);
+
+    //system("cat drvr_dba");
+    temp = (struct Speaker *)malloc(sizeof(struct Speaker));
+
+    while (input >> line) {
+        token = strtok(line, ";");
+        strcpy(temp->Part_num, token);
+        token = strtok(NULL, ";");
+        strcpy(temp->Type, token);
+        token = strtok(NULL, ";");
+        strcpy(temp->Build, token);
+        token = strtok(NULL, ";");
+        temp->Vas = atof(token);
+        token = strtok(NULL, ";");
+        temp->Cms = atof(token);
+        token = strtok(NULL, ";");
+        temp->Bl = atof(token);
+        token = strtok(NULL, ";");
+        temp->Qts = atof(token);
+        token = strtok(NULL, ";");
+        temp->Qes = atof(token);
+        token = strtok(NULL, ";");
+        temp->Qms = atof(token);
+        token = strtok(NULL, ";");
+        temp->Fs = atof(token);
+        token = strtok(NULL, ";");
+        temp->Re = atof(token);
+        token = strtok(NULL, ";");
+        temp->Rms = atof(token);
+        token = strtok(NULL, ";");
+        temp->Z_nom = atof(token);
+        token = strtok(NULL, ";");
+        temp->Le = atof(token);
+        token = strtok(NULL, ";");
+        temp->Xmax = atof(token);
+        token = strtok(NULL, ";");
+        temp->Diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->Nom_Pwr = atof(token);
+        token = strtok(NULL, ";");
+        temp->Max_Pwr = atof(token);
+        token = strtok(NULL, ";");
+        temp->Freq_Low = atof(token);
+        token = strtok(NULL, ";");
+        temp->Freq_Hi = atof(token);
+        token = strtok(NULL, ";");
+        temp->Sensitivity = atof(token);
+        token = strtok(NULL, ";");
+        temp->Vbs = atof(token);
+        token = strtok(NULL, ";");
+        temp->Vbv = atof(token);
+        token = strtok(NULL, ";");
+        temp->f3_seal = atof(token);
+        token = strtok(NULL, ";");
+        temp->f3_vent = atof(token);
+        token = strtok(NULL, ";");
+        temp->v_diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->v_length = atof(token);
+        token = strtok(NULL, ";");
+        temp->b_diam = atof(token);
+        token = strtok(NULL, ";");
+        temp->b_height = atof(token);
+        token = strtok(NULL, ";");
+        temp->depth = atof(token);
+        token = strtok(NULL, ";");
+        temp->next = NULL;
+    
+        sleep(2);
+        passive = temp;
+        ptr = passive;
+    }
+
+    //sleep(2);
 }
 /*--------------------------------------------------------------------------------------------*/
 void write_design_data(Speaker* drvr, Cabinet* box, Filter lowpass, Filter bandpass, Filter highpass)
@@ -1671,7 +1584,7 @@ void write_design_data(Speaker* drvr, Cabinet* box, Filter lowpass, Filter bandp
     outfile << " Frequency Rolloff (Hz)   : " << box->rolloff << endl;
     outfile << " Sensitivity (SPL)        : " << box->Sensitivity << endl;
     outfile << " Acoustic Power (W)       : " << box->PAR << endl;
-    outfile << " Electrical Power (W)     : " << box->PER << endl;
+    outfile << " Electrical Power (%)     : " << box->PER << endl;
     outfile << "+--------------------------------------------+" << endl;
     outfile << endl;
     outfile << "+--------------------------------------------+" << endl;
@@ -1717,13 +1630,13 @@ void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& hig
     char xovr[8];     /* response to modify high pass cut-off frequency. */
     char loop[8];     /* control parameter to determine correctness of solution. */
 
-    float res_freq;   /* resonant frequency of the bandpass filter */
-    float gain;       /* Gain at cut-off frequency for filter.  */
-    float xover;      /* Cross-ver or frequency cut-off for filter(s)  - high/low pass */
-    float f3db1;      /* -3db cut-off frequency for 2-way speaker. */
+    double res_freq;   /* resonant frequency of the bandpass filter */
+    double gain;       /* Gain at cut-off frequency for filter.  */
+    double xover;      /* Cross-ver or frequency cut-off for filter(s)  - high/low pass */
+    double f3db1;      /* -3db cut-off frequency for 2-way speaker. */
 
-    float C1, C2;     /* User defined value for capacitance for filter cut-off */
-    float R1, R2;     /* Computed resistance for given capacitance and crossover frequency. */
+    double C1, C2;     /* User defined value for capacitance for filter cut-off */
+    double R1, R2;     /* Computed resistance for given capacitance and crossover frequency. */
     int i;            /* Counter value for storing the values in the number of cascading stages. */
     int stages;       /* Number of stages used to determine the order of the filter. */
                       /* Default is 1 (1st order Butterworth Filter). */
@@ -1854,14 +1767,14 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowp
     char mdle[8];             /* response to modify band pass cut-off frequency. */
     char loop[8];             /* control parameter to determine correctness of solution.  */
 
-    float res_freq;           /* resonant frequency of the bandpass filter */
+    double res_freq;           /* resonant frequency of the bandpass filter */
 
-    float gain;               /* Gain at cut-off frequency for filter. */
-    float xover;              /* Cross-ver or frequency cut-off for filter(s) - high/low pass */
-    float f3db1, f3bd_2;      /* -3db cut-off frequency for 3-way speaker. */
+    double gain;               /* Gain at cut-off frequency for filter. */
+    double xover;              /* Cross-ver or frequency cut-off for filter(s) - high/low pass */
+    double f3db1, f3bd_2;      /* -3db cut-off frequency for 3-way speaker. */
 
-    float C1, C2, C3; /* User defined value for capacitance for filter cut-off */
-    float R1, R2, R3; /* Computed resistance for given capacitance and crossover frequency. */
+    double C1, C2, C3; /* User defined value for capacitance for filter cut-off */
+    double R1, R2, R3; /* Computed resistance for given capacitance and crossover frequency. */
 
     int co_1, co_2;   /* crossover point. */
     int i;            /* Counter value for storing the values in the number of N-order stages.*/
@@ -1986,14 +1899,14 @@ void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& high
     char xovr[8];     /* response to modify high pass cut-off frequency. */
     char loop[8];     /* control parameter to determine correctness of solution. */
 
-    float res_freq;   /* resonant frequency of the bandpass filter */
-    float gain;       /* Gain at cut-off frequency for filter. */
-    float xover;      /* Cross-ver or frequency cut-off for filter(s)  - high/low pass */
-    float f3db1;      /* -3db cut-off frequency for 2-way speaker. */
+    double res_freq;   /* resonant frequency of the bandpass filter */
+    double gain;       /* Gain at cut-off frequency for filter. */
+    double xover;      /* Cross-ver or frequency cut-off for filter(s)  - high/low pass */
+    double f3db1;      /* -3db cut-off frequency for 2-way speaker. */
 
-    float C1, C2;     /* User defined value for capacitance for filter cut-off */
-    float R1, R2;     /* Computed resistance for given capacitance and crossover frequency. */
-    float R3, R4;
+    double C1, C2;     /* User defined value for capacitance for filter cut-off */
+    double R1, R2;     /* Computed resistance for given capacitance and crossover frequency. */
+    double R3, R4;
 
     int i;            /* Counter value for storing the values in the number of cascading stages. */
     int stages;       /* Number of stages used to determine the order of the filter.             */
@@ -2141,14 +2054,14 @@ void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpa
     char mdle[8];             /* response to modify band pass cut-off frequency. */
     char loop[8];             /* control parameter to determine correctness of solution. */
 
-    float res_freq;           /* resonant frequency of the bandpass filter */
+    double res_freq;           /* resonant frequency of the bandpass filter */
 
-    float gain;               /* Gain at cut-off frequency for filter. */
-    float xover;              /* Cross-ver or frequency cut-off for filter(s) - high/low pass */
-    float f3db1, f3bd_2;      /* -3db cut-off frequency for 3-way speaker. */
+    double gain;               /* Gain at cut-off frequency for filter. */
+    double xover;              /* Cross-ver or frequency cut-off for filter(s) - high/low pass */
+    double f3db1, f3bd_2;      /* -3db cut-off frequency for 3-way speaker. */
 
-    float C1, C2, C3; /* User defined value for capacitance for filter cut-off                */
-    float R1, R2, R3; /* Computed resistance for given capacitance and crossover frequency.   */
+    double C1, C2, C3; /* User defined value for capacitance for filter cut-off                */
+    double R1, R2, R3; /* Computed resistance for given capacitance and crossover frequency.   */
 
     int co_1, co_2;   /* crossover point. */
     int i;            /* Counter value for storing the values in the number of N-order stages.*/
@@ -2271,3 +2184,348 @@ void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpa
 
     sleep(5);
 }
+/*--------------------------------------------------------------------------------------------*/
+void design_low_sealed(Speaker*& drvr, Cabinet*& box, double& Vd)
+/*--------------------------------------------------------------------------------------------*/
+/* this procedure will design a closed box system, and refactors code pulled in from the      */
+/* closed_box_design() procedure call. This procedure works on the bass and midr speaker      */
+/* drivers.                                                                                   */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+    ptr = drvr;
+
+	struct Cabinet *bptr, *temp;
+	bptr = box;
+
+    temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
+
+	char fill[4];
+    char l_cmd[8];
+    char d_cmd[8];
+
+    double Qa;                     // These two *values* are used to determine the 'filling'
+    double gamma;                  // constants for a closed-box design. Qa = 10/5 - lambda = 1/1.2
+	
+	/* intermediate internal values */
+    double alpha;                   // ratio of Driver compliance vs enclosure volume (Vol_vent)
+    double A1;
+    double f3;
+    double fc;                      // Resonance frequency of a closed box system
+    double Fsb;                     // Driver resonance freq mounted in enclosure
+    double L;
+    double peak;
+    double Par, Per;                // Displacement limited power ratings
+    double Qtc, Qtcp;               // Q factor values used for closed-box measurements
+	double Rh;                      // 3db ripple
+    double Vab;                     // box volume derived from compliance (Vas) and alpha/gamma
+    double Vbs;                     // Temporary value of box volume derived from Vol_seal
+
+    int bdesign;                    // Value entered for switch statement choosing deign flow
+	int empty_val;                  // value used to checking for missing values.
+	int flag;
+
+    std::string cab_type;
+
+	flag = 0;
+
+    cout << "Test procedure design_low()" << endl;
+
+	if ((ptr->f3_seal <= 0) || (ptr->Vbs <= 0)) {
+        empty_val = 2;
+    }
+
+    while (!flag) {
+        cout << "Use acoustic filling - Y/N? :";
+        cin >> fill;
+
+        if ((strcmp(fill, "Y") == 0) || (strcmp(fill, "y") == 0)) {
+            gamma = 1.0;
+            Qa = 10.0;
+        } else {
+            gamma = 1.2;
+            Qa = 5.0;
+        }
+
+        cout << "Choose design based on:" << endl;
+        cout << "    1) default speaker values" << endl;
+        cout << "    2) box volume" << endl;
+        cout << "    3) Enter Q(tc)" << endl;
+        cout << "    4) Use default value of Q(tc) = 1" << endl;
+        cout << "-------------------------------------" << endl;
+        cin >> bdesign;
+
+        switch (bdesign) {
+            case 1:
+                cout << "Choose design based on default values : " << endl;
+                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per, Rh, Vd);
+                break;
+            case 2:
+                cout << "Choose design based on box volume : " << endl;
+                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per, Rh, Vd);
+                break;
+            case 3:
+				Qtc = 0.0;
+                cout << "Choose design based on user specified value of Q(tc) : " << endl;
+                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per, Rh, Vd);
+                break;
+            default:
+                cout << "Choose design based on default value of Q(tc) to 0.707" << endl;
+                closed_box_param_set(drvr, bdesign, Vbs, alpha, gamma, Qa, Fsb, Vab, L, Qtc, Qtcp, fc, A1, f3, peak, Par, Per, Rh, Vd);
+                break;
+	    }
+
+    cout << "+-------------------------------------------+" << endl;
+    cout << "| Intermediate values for sealed box design |" << endl;
+    cout << "+-------------------------------------------+" << endl;
+    cout << " Acoustic Filling (Y/N)        : " << fill << endl;
+	cout << " Part Number                   : " << ptr->Part_num << endl;
+    cout << " Driver compliance (Vas)       : " << ptr->Vas << endl;
+    cout << " Box Volume (dm^3)             : " << Vbs << endl;
+    cout << " Cabinet Volume derived (Vab)  : " << Vab << endl;
+    cout << " Volume ratio (alpha)          : " << alpha << endl;
+    cout << " Filling value (gamma)         : " << gamma << endl;
+    cout << " Filling value (Qa)            : " << Qa << endl;
+    cout << " Driver Q (Qtc)                : " << Qtc << endl;
+    cout << " Derived Driver Q (Qtcp)       : " << Qtcp << endl;
+    cout << " Resonance Frequncy Fc         : " << Fsb << endl;
+    cout << " Driver resonance Fs           : " << ptr->Fs << endl;
+    cout << " Driver resonance Fsb          : " << Fsb << endl;
+    cout << " Q driver ratio L              : " << L << endl;
+    cout << " 3db down response f3 (Hz)     : " << f3 << endl;
+    cout << " Peak db                       : " << peak << endl;
+    cout << " Power Efficiency              : " << Per << " % " << endl;
+    cout << " Electrical Power              : " << Par << " W " << endl;
+	cout << " Estimated 3db ripple          : " << Rh << endl;
+    cout << "--------------------------------------------" << endl;
+
+
+    strcpy(temp->Part_num, ptr->Part_num);
+    temp->cab_volume = Vbs;
+    temp->freq_lo = ptr->Freq_Low;
+    temp->freq_hi = ptr->Freq_Hi;
+    temp->Sensitivity = ptr->Sensitivity;
+    temp->res_freq = Fsb;
+    temp->rolloff = f3;
+    temp->imp_Nom = ptr->Z_nom;
+    temp->diam = drvr->b_diam;
+    temp->height = drvr->b_height;
+    temp->depth = drvr->depth;
+    temp->vent_diam = 0;
+    temp->vent_length = 0;
+    temp->PAR = Par;
+    temp->PER = Per;
+	temp->Rh = Rh;
+
+    bptr = temp;
+
+    sleep(5);
+
+    cout << "Accept results (Y/y)? :" << endl;
+    cin >> l_cmd;
+
+    if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
+            cout << "Speaker Design completed..." << endl;
+            flag = 1;
+    } else {
+            cout << "compute closed box design..." << endl;
+    }
+
+    sleep(5);
+	}
+
+    // reuse the flag value and reset to 0
+    flag = 0;
+
+    while (!flag) {
+        cout << "define cabinet dimensions..." << endl;
+        cab_type = "closed";
+        cabinet_design(drvr, bptr, "sealed", drvr->Type);
+        // make sure to set flag to true
+        flag = 1;
+    }
+}
+/*--------------------------------------------------------------------------------------------*/
+void design_low_vented(Speaker*& drvr, Cabinet*& box, double& Vd)
+/*--------------------------------------------------------------------------------------------*/
+/* this procedure will design a closed box system, and refactors code pulled in from the      */
+/* closed_box_design() procedure call. This procedure works on the bass and midr speaker      */
+/* drivers.                                                                                   */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+    ptr = drvr;
+
+	struct Cabinet *temp, *bptr;
+	bptr = box;
+
+    temp=(struct Cabinet *)malloc(sizeof(struct Cabinet));
+
+    char l_cmd[8];
+    char d_cmd[8];
+	
+    double Qa;                     // These two *values* are used to determine the 'filling'
+    double gamma;                  // constants for a closed-box design. Qa = 10/5 - lambda = 1/1.2
+
+	double a, b, c, d, e, f;       // value holders for frequency response measurement
+    double alpha;                  // ratio of Driver compliance vs enclosure volume (Vol_vent)
+	double Dv, Lv, L_prm;          // Vent diameter, length in mm
+    double f3;                     // frequency rolloff
+    double Fsb;                    // Driver resonance freq mounted in enclosure
+    double Fb;                     // Enclosure resonance requency - not to be confused with Fsb
+	double Fn;                     // Normalized frequency ratio - f(req)/Fsb
+	double Par, Per;               // Displacement limited power ratings
+	double Rh;                     // Ripple response (in db)
+	double Vbv;                    // Computed volume of cabinet - liters || dm^3
+
+
+	double Ap;                     // Area of the port opening
+	double Lp;                     // Length of the port
+    int bdesign;                   // Value entered for switch statement choosing deign flow
+	int empty_val;                 // value used to checking for missing values.
+	int flag;
+	int vol_flag;                  // Initially set to '0', but one the user makes a first pass
+                                   // through the design process, then the flag will be toggled
+                                   // to '1'. The flag will be reset to '0' upon exit.
+
+
+    std::string cab_type;
+
+    cout << "Test procedure design_low()" << endl;
+
+    flag  = 0;
+    vol_flag = 0;
+
+    /* Default flat values */
+    //Dv = 50.0; // Set Vent diameter to 50mm by default;
+    //Lv = 50.0;
+
+    if (ptr->Vbv <= 0) {
+        a = pow(ptr->Qts, 3.3);
+
+        ptr->Vbv = pow(ptr->Qts, 3.3) * (ptr->Vas) * 20.0;
+    }
+
+    alpha = ptr->Vas/ptr->Vbv;
+    Fsb = (ptr->f3_vent)/pow(alpha, 0.44);
+    Fb = (ptr->f3_vent)/pow(alpha, 0.13);
+
+    system("clear");
+    cout << "Design a vented box speaker..." << endl;
+    sleep(5);
+
+    while (!flag) {
+        vented_freq_params(drvr, Vbv, Fsb, Fb, Fn, Vd, Rh, Par, Per, L_prm, a, b, c, d, alpha);
+
+        sleep(5); 
+        //----------------------------
+        // Compute freq response here
+        //----------------------------
+
+        vented_freq_response(drvr, Fsb, Fb, Fn, alpha);
+        cout << "Accept results (Y/y)? :" << endl;
+        cin >> l_cmd;
+        system("clear");
+ 
+        if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
+            cout << "Speaker Design completed..." << endl;
+            flag = 1;
+            vol_flag = 0;
+        } else {
+            cout << "Specify new Enclosure Internal Volume - " << endl;
+            cout << "Enter value in dm^3 (aka liters): ";
+            cin >> ptr->Vbv;
+            cout << "Enter new Vent diameter (mm) > 50(mm) - default is " << ptr->v_diam << "mm: ";
+            cin >> ptr->v_diam;
+            cout << "Enter new Vent length (mm) > 50(mm) - default is " << ptr->v_length << "mm: ";
+            cin >> ptr->v_length;
+        }
+    }
+    sleep(5);
+
+    // Displacement limited power ratings
+    Per = compute_efficiency(drvr) * 100.0;
+    Par = 1/(compute_efficiency(drvr));
+
+    // 3db ripple
+	Lp = ptr->v_length;
+	Ap = M_PI * pow(((ptr->v_diam)/2), 2);
+	Rh = (0.159 * sqrt(Ap))/(ptr->Vbv * Lp);
+    //Rh = 20 * log ((Fb * ptr->Qts)/(0.4 * ptr->Fs));
+    Rh = abs(Rh);
+
+    cout << "+-------------------------------------------+" << endl;
+    cout << "| Intermediate values for vented box design |" << endl;
+    cout << "+-------------------------------------------+" << endl;
+    cout << " Driver compliance (Vas)  : " << ptr->Vas << endl;
+    cout << " Box Volume (dm^3)        : " << ptr->Vbv << endl;
+    cout << " Volume compliance (Vb)   : " << ptr->Cms << endl;
+    cout << " Volume ratio (alpha)     : " << alpha << endl;
+    cout << " Filling value (gamma)    : " << gamma << endl;
+    cout << " Resonance Frequncy Fc    : " << Fsb << endl;
+    cout << " Driver resonance Fs      : " << ptr->Fs << endl;
+    cout << " Driver resonance Fsb     : " << Fsb << endl;
+    cout << " 3db down response f3 (Hz): " << ptr->f3_vent << endl;
+    cout << " Efficiency Power         : " << Per << " % " << endl;
+    cout << " Acoustic Power           : " << Par << " W " << endl;
+	cout << " Estimated 3db ripple     : " << Rh  << " Rh " << endl;
+    cout << "--------------------------------------------" << endl;
+
+    strcpy(temp->Part_num, ptr->Part_num);
+    temp->cab_volume = ptr->Vbv;
+    temp->freq_lo = ptr->Freq_Low;
+    temp->freq_hi = ptr->Freq_Hi;
+    temp->Sensitivity = ptr->Sensitivity;
+    temp->res_freq = Fsb;
+    temp->rolloff = ptr->f3_vent;
+    temp->imp_Nom = ptr->Z_nom;;
+    temp->vent_diam = ptr->v_diam;
+    temp->vent_length = ptr->v_length;
+    temp->PAR = Par;
+    temp->PER = Per;
+	temp->Rh = Rh;
+
+    box = temp;
+
+    sleep(5);
+
+    // reuse the flag value and reset to 0
+    flag = 0;
+
+    while (!flag) {
+        cout << "define cabinet dimensions..." << endl;
+        cab_type = "vented";
+        cabinet_design(drvr, box, "vented", drvr->Type);
+
+        flag = 1;
+    }
+}
+/*--------------------------------------------------------------------------------------------*/
+void design_tweeter_sealed(Speaker*& drvr, Cabinet*& box, double& Vd)
+/* this procedure will design a closed box system, and refactors code pulled in from the      */
+/* closed_box_design() procedure call. This procedure works on the treble speaker driver only.*/
+/* drivers.                                                                                   */
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+	struct Cabinet *tptr;
+
+    ptr = drvr;
+	tptr = box;
+
+    cout << "Test procedure design_tweeter()" << endl;
+
+	strcpy(tptr->Part_num, ptr->Part_num);
+	strcpy(tptr->Build, ptr->Build);
+	tptr->height = ptr->b_height;
+	tptr->diam = ptr->b_diam;
+	tptr->depth = ptr->depth;
+	tptr->H = (tptr->height + BUFFER);
+	tptr->W = (tptr->diam + BUFFER);
+	tptr->D = (tptr->depth + BUFFER);
+
+	// Compute the volume of the cabinet based on speaker geometry
+	tptr->cab_volume = (tptr->H * tptr->W * tptr->D) + ptr->Vbs;
+
+}
+/*--------------------------------------------------------------------------------------------*/
