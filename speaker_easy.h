@@ -68,12 +68,12 @@ extern struct Cabinet
 /*--------------------------------------------------------------------------------------------*/
 {
     char Part_num[128]; //*
-	char Build[16]; //*           // Construction type: cone or ribbon/electrostatic 
+    char Build[16]; //*           // Construction type: cone or ribbon/electrostatic 
     double vent_diam;
     double vent_length;
     double diam; //*              // Overall basket diameter - used for designing physical cabinet
     double depth; //*             // Overall driver depth - used for designing physical cabinet
-	double height; //*            // overall driver height - used for designing physical cabinet
+    double height; //*            // overall driver height - used for designing physical cabinet
     double cab_volume; //*
     double freq_lo;
     double freq_hi;
@@ -84,9 +84,9 @@ extern struct Cabinet
     double rolloff;
     double crossover_lo;
     double crossover_hi;
-	double PAR;                   // Acostic power
-	double PER;                   // Electirical efficiency
-	double Rh;                    // 3db ripple
+    double PAR;                   // Acostic power
+    double PER;                   // Electirical efficiency
+    double Rh;                    // 3db ripple
     double H, W, D;
     Cabinet *next;
 };
