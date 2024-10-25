@@ -29,7 +29,7 @@ extern struct Speaker
 {
     char Part_num[128];       // Product part number
     char Type[16];            // Speaker type. One of Woof, Pass, Twet or Midr
-	char Build[16];           // Construction type: cone or ribbon/electrostatic
+    char Build[16];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
     double Cms;               // Compliance
     double Bl;                // BL Product (aka Force Factor)
@@ -55,9 +55,9 @@ extern struct Speaker
     double v_diam;            // vent diameter (from data sheet - default)
     double v_length;          // vent length (from data sheet - default)
     double b_diam;            // Overall basket diameter or diaphragm width if 
-	                          // ribbon - used for designing physical cabinet
+	                      // ribbon - used for designing physical cabinet
     double b_height;          // driver height. Used primarily for ribbon tweeters. 
-	                          // defaults to b_diam for mid/bass/cone tweeters
+	                      // defaults to b_diam for mid/bass/cone tweeters
     double depth;             // Overall driver depth - used for designing physical cabinet
     Speaker *next;
 };
