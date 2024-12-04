@@ -27,9 +27,9 @@
 /*--------------------------------------------------------------------------------------------*/
 extern struct Speaker
 {
-    char Part_num[128];       // Product part number
-    char Type[16];            // Speaker type. One of Woof, Pass, Twet or Midr
-    char Build[16];           // Construction type: cone or ribbon/electrostatic
+    char Part_num[23];        // Product part number
+    char Type[23];            // Speaker type. One of Woof, Pass, Twet or Midr
+	char Build[23];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
     double Cms;               // Compliance
     double Bl;                // BL Product (aka Force Factor)
@@ -55,9 +55,9 @@ extern struct Speaker
     double v_diam;            // vent diameter (from data sheet - default)
     double v_length;          // vent length (from data sheet - default)
     double b_diam;            // Overall basket diameter or diaphragm width if 
-	                      // ribbon - used for designing physical cabinet
+	                          // ribbon - used for designing physical cabinet
     double b_height;          // driver height. Used primarily for ribbon tweeters. 
-	                      // defaults to b_diam for mid/bass/cone tweeters
+	                          // defaults to b_diam for mid/bass/cone tweeters
     double depth;             // Overall driver depth - used for designing physical cabinet
     Speaker *next;
 };
@@ -67,26 +67,28 @@ extern struct Cabinet
 /* struct Cabinet is used to store and display the final cabinet values for the speaker design*/
 /*--------------------------------------------------------------------------------------------*/
 {
-    char Part_num[128]; //*
-    char Build[16]; //*           // Construction type: cone or ribbon/electrostatic 
+    char Part_num[23]; //*
+	char Build[23]; //*           // Construction type: cone or ribbon/electrostatic 
+	char Enclosure[16];           // Sealed or Ported
     double vent_diam;
     double vent_length;
     double diam; //*              // Overall basket diameter - used for designing physical cabinet
     double depth; //*             // Overall driver depth - used for designing physical cabinet
-    double height; //*            // overall driver height - used for designing physical cabinet
+	double height; //*            // overall driver height - used for designing physical cabinet
     double cab_volume; //*
     double freq_lo;
     double freq_hi;
     double imp_Nom;
     double res_freq;
     double DC_resist;
+	double Qt;                    // Total damping factor - Closed or Ported
     double Sensitivity;
     double rolloff;
     double crossover_lo;
     double crossover_hi;
-    double PAR;                   // Acostic power
-    double PER;                   // Electirical efficiency
-    double Rh;                    // 3db ripple
+	double PAR;                   // Acostic power
+	double PER;                   // Electirical efficiency
+	double Rh;                    // 3db ripple
     double H, W, D;
     Cabinet *next;
 };
@@ -105,13 +107,84 @@ extern struct Filter
     double FB_R1, FB_R2;        // Feedback values used in active filter design Vg = 1 + R2/R1 
 	                            // where R1 -> infinity 
     double R1, R2, R3, R4;
-    //double L1, L2, L3, L4;    // Inductors are NOT in use, but are kept in place for future use. 
+    double L1, L2, L3, L4;      // Inductors are NOT in use, but are kept in place for future use. 
     double C1, C2, C3, C4;
     double Fres;                // resonant frequency - used for bandpass filters only
     double f3db1, f3db2;
 };
 /*--------------------------------------------------------------------------------------------*/
-/*    Constants                                                                               */
+extern struct Field_Pad
+/*--------------------------------------------------------------------------------------------*/
+/* struct Field_Pad is used to format and display the values of char lengths for the fields   */
+/* cintained ti the Speaker structure.                                                        */
+/*--------------------------------------------------------------------------------------------*/
+{
+    char Part_num[23];       // Product part number
+    char Type[23];           // Speaker type. One of Woof, Pass, Twet or Midr
+	char Build[23];          // Construction type: cone or ribbon/electrostatic
+    char Vas[23];            // Equivalent Volume of cabinet dm^3
+    char Cms[23];            // Compliance
+    char Bl[23];             // BL Product (aka Force Factor)
+    char Qts[23];            // Total Q factor
+    char Qes[23];            // Electrical Q factor
+    char Qms[23];            // Mechanical Q factor
+    char Fs[23];             // Resonant Frequency
+    char Re[23];             // DC Resistance
+    char Rms[23];            // Mechanical resistance
+    char Z_nom[23];          // Nominal impedance (aka Impedance)
+    char Le[23];             // Voice Coil inductance (aka Lbm)
+    char Xmax[23];           // Maximum Linear Excursion
+    char Diam[23];           // Voice Coil Diameter
+    char Nom_Pwr[23];        // Nominal Power (aka RMS power)
+    char Max_Pwr[23];        // Maximum Power (aka Long-term max power)
+    char Freq_Low[23];       // Low-end of Freq Response
+    char Freq_Hi[23];        // Upper limit of Frequency Response (F_low -- F_high)
+    char Sensitivity[23];    // Sensitivity
+    char Vbs[23];            // Sealed Volume (user define dm^3)
+    char Vbv[23];            // Vented Volume (user define dm^3)
+    char f3_seal[23];        // 3db down point (rolloff)
+    char f3_vent[23];        // 3db down point (rolloff)
+    char v_diam[23];         // vent diameter (from data sheet - default)
+    char v_length[23];       // vent length (from data sheet - default)
+    char b_diam[23];         // Overall basket diameter or diaphragm width if 
+	                         // ribbon - used for designing physical cabinet
+    char b_height[23];       // driver height. Used primarily for ribbon tweeters. 
+	                         // defaults to b_diam for mid/bass/cone tweeters
+    char depth[23];          // Overall driver depth - used for designing physical cabinet
+	Field_Pad *next;
+};
+/*--------------------------------------------------------------------------------------------*/
+extern struct Cab_Pad
+/*--------------------------------------------------------------------------------------------*/
+/* struct Cabinet is used to store and display the final cabinet values for the speaker design*/
+/*--------------------------------------------------------------------------------------------*/
+{
+    char Part_num[23]; //*
+	char Build[23]; //*           // Construction type: cone or ribbon/electrostatic 
+	char Enclosure[23];           // Sealed or Ported
+    char vent_diam[23];
+    char vent_length[23];
+    char diam[23]; //*              // Overall basket diameter - used for designing physical cabinet
+    char depth[23]; //*             // Overall driver depth - used for designing physical cabinet
+	char height[23]; //*            // overall driver height - used for designing physical cabinet
+    char cab_volume[23]; //*
+    char freq_lo[23];
+    char freq_hi[23];
+    char imp_Nom[23];
+    char res_freq[23];
+    char DC_resist[23];
+    char Sensitivity[23];
+    char rolloff[23];
+    char crossover_lo[23];
+    char crossover_hi[23];
+	char PAR[23];                   // Acostic power
+	char PER[23];                   // Electirical efficiency
+	char Rh[23];                    // 3db ripple
+    char H[23], W[23], D[23];
+	Cab_Pad *next;
+};
+/*--------------------------------------------------------------------------------------------*/
+/*                                         Constants                                          */
 /*--------------------------------------------------------------------------------------------*/
 const double C = 343.0;         // Speed of sound in m/s
 const double QTC = 0.707;
@@ -119,6 +192,9 @@ const double liter_to_cubicInch = 61.0237;
 const double met_to_decmet = 1000.0;
 const double liter_to_cubic_cm = 1000.0;
 const double mm_to_inch = 0.0393701;
+const double cm_to_mm = 10.0;
+const double rho = 1.2;         // kg/m^3
+const double R_WOOL = 30;       // Pa * s/m^3
 
 const double feedback_1 = 1000000.00;
 const double feedback_2 = 100.00;
@@ -135,6 +211,14 @@ const std::string SUB = "    |          Sub-woofer Design Menu          |";
 const std::string DUAL = "    |            Two-way Design Menu           |";
 const std::string THREE =  "    |           Three-way Design Menu          |";
 
+const std::string HEADER =  "+--------";
+const std::string TYPE = "| Type   ";
+const int HEADR_LGTH = 9;
+
+const std::string FIELD = "-----------------------";
+const int FIELD_LGTH = 23;
+
+const std::string VERSION = "Version 1.0.0";
 /*--------------------------------------------------------------------------------------------*/
 void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet, Speaker*& pass);
 /*--------------------------------------------------------------------------------------------*/
@@ -146,19 +230,28 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass);
 /*--------------------------------------------------------------------------------------------*/
 void print_part(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
+void print_speaker(Field_Pad* speaker, std::ofstream& output);
+/*--------------------------------------------------------------------------------------------*/
+void print_cabinet(Cabinet* speaker, std::ofstream& output);
+/*--------------------------------------------------------------------------------------------*/
 void closed_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
 void passive_box_design(Speaker*& drvr, Cabinet*& box, Cabinet*& pass);
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_param_set(Speaker* drvr, int& bdesign, double& Vbs, double& alpha, double& gamma, double Qa, double& Fsb, double& Vab, double& L, double& Qtc, double& Qtcp, double& fc, double& A1, double& f3, double& peak, double& Par, double& Per, double& Rh, double& Vd);
+void closed_box_param_set(Speaker* drvr, int& bdesign, double& Vbs, double& alpha, double& gamma, \
+double Qa, double& Fsb, double& Vab, double& L, double& Qtc, double& Qtcp, double& fc, double& A1, 
+double& f3, double& peak, double& Par, double& Per, double& Rh, double& Vd);
 /*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
-void vented_freq_params(Speaker* drvr, double& Vbv, double& Fsb, double& Fb, double& Fn, double& Vd, double& Rh, double& Par, double& Per, double& L_prm, double& a, double& b, double& c, double& d, double& alpha);
+void vented_freq_params(Speaker* drvr, double& Vbv, double& Fsb, double& Fb, double& Fn, \
+double& Vd, double& L_prm, double& alpha);
 /*--------------------------------------------------------------------------------------------*/
 void vented_freq_response(Speaker* drvr, double Fsb, double Fb, double Fn, double alpha);
 /*--------------------------------------------------------------------------------------------*/
-void closed_freq_params(Speaker* drvr, double& Qa, double& gamma, double& alpha, double& A1, double& Fsb, double& Fcb, double& Fs, double& f3, double& Fb, double& Fc, double& L, double& Vd, double& Qtc, double& Qtcp, double& Vab, double& Rh, double& R, double& Par, double& Per);
+void closed_freq_params(Speaker* drvr, double& Qa, double& gamma, double& alpha, double& A1, \
+double& Fsb, double& Fcb, double& Fs, double& f3, double& Fb, double& Fc, double& L, double& Vd, \
+double& Qtc, double& Qtcp, double& Vab, double& Rh, double& R, double& Par, double& Per);
 /*--------------------------------------------------------------------------------------------*/
 void closed_freq_response(Speaker* drvr, double A1, double f3, double fc, double Fsb);
 /*--------------------------------------------------------------------------------------------*/
@@ -166,7 +259,6 @@ void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
 void graph_performance();
 /*--------------------------------------------------------------------------------------------*/
-//void read_bass_driver(Speaker*& drvr,  std::string& speaker);
 void read_bass_driver(Speaker*& drvr);
 /*--------------------------------------------------------------------------------------------*/
 void read_midrange_driver(Speaker*& mid);
@@ -175,7 +267,9 @@ void read_tweet_driver(Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
 void read_passive_driver(Speaker*& passive);
 /*--------------------------------------------------------------------------------------------*/
-void write_design_data(Speaker* drvr, Cabinet* box, Filter lowpass, Filter bandpass, Filter highpass);
+void create_data_fields(Speaker* drvr, Field_Pad*& datum, std::ofstream& outfile);
+/*--------------------------------------------------------------------------------------------*/
+void create_cab_fields(Cabinet* cptr, Cab_Pad*& cdatum, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
 void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
@@ -189,7 +283,19 @@ void design_low_sealed(Speaker*& drvr, Cabinet*& box, double& Vd);
 /*--------------------------------------------------------------------------------------------*/
 void design_low_vented(Speaker*& drvr, Cabinet*& box, double& Vd);
 /*--------------------------------------------------------------------------------------------*/
-void design_tweeter_sealed(Speaker*& drvr, Cabinet*& box, double& Vd);
+void design_tweeter_sealed(Speaker*& drvr, Cabinet*& cptr, double& Vd);
+/*--------------------------------------------------------------------------------------------*/
+void write_design_data(Field_Pad* P0, Field_Pad* P1, Field_Pad* P2, Field_Pad* P3, std::ofstream& outfile);
+/*--------------------------------------------------------------------------------------------*/
+void write_cabinet_data(Cabinet* P0, Cabinet* P1, Cabinet* P2, Cabinet* P3, std::ofstream& outfile);
+/*--------------------------------------------------------------------------------------------*/
+void write_filter_data(Filter low, Filter band, Filter high, int xover, std::ofstream& outfile);
+/*--------------------------------------------------------------------------------------------*/
+void print_crossover(Filter crossover, std::ofstream& outfile);
+/*--------------------------------------------------------------------------------------------*/
+void purge_data(Speaker* drvr);
+/*--------------------------------------------------------------------------------------------*/
+void clear_formatting(Field_Pad* datum);
 /*--------------------------------------------------------------------------------------------*/
 /*                                 end of speaker_easy.h                                      */
 /*--------------------------------------------------------------------------------------------*/

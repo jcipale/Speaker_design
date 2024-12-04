@@ -143,11 +143,7 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
 
     int done;
 
-
-    cout << "Test function..." << endl;
-
     /* The 3rd argument determines what speaker type is being built (sealed vs vented) */
-    //if (strcmp(cab_type, "sealed") == 0) {
     if (cab_type == "sealed") {
         vol = ptr->Vbs;
     } else {
@@ -197,7 +193,7 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
             cout << " Speaker height: " << spkr_height << " inches " << endl;
 
 		} else {
-            if (cab_type == "sealed") {
+            if (cab_type == "vented") {
                 cout <<" Cabinet volume: " << vol << " liters" << endl;
             } else {
                 cout <<" Cabinet volume: " << vol << " liters" << endl;
@@ -207,19 +203,20 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
             cout << " Speaker diameter: " << spkr_diam << " mm " << endl;
             cout << " Speaker depth: " << spkr_depth << " mm " << endl;
             cout << " Speaker height: " << spkr_height << " mm " << endl;
-
 		}
-        // Compute baffle width
-        Front = 1.5 * spkr_diam;
 
-        // Compute cabinet depth
-        Depth = 2.0 * spkr_depth;
- 
-        // Compute Height ht = Vas/(w * d)
+        // Compute baffle width
+        Depth = spkr_depth + (spkr_depth/2.0);
+        Front = spkr_diam + (spkr_diam/8);
         Height = vol/(Front * Depth);
 
-        // Check with user id for correct dimensions
-
+		cout << "+--------------------------+" << endl;
+		cout << "|   Speaker measurements   |" << endl;
+		cout << "+--------------------------+" << endl;
+		cout << "| Width  : " << Front << endl;
+		cout << "| Depth  : " << Depth << endl;
+		cout << "| Height : " << Height << endl;
+		cout << "+---------------------------+" << endl;
         cout << "Accept dimensions? (Y/N): " << endl;
         cin >> flag;
 
@@ -228,23 +225,165 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
             done = 1;
         } else {
             cout << "compute closed box design..." << endl;
+			//done = 0;
         }
-
-        cptr->D = Depth;
-        cptr->W = Front;
-        cptr->H = Height;
-
-        cout << "--------------------------------------------" << endl;
-        cout << "            Speaker Dimensions              " << endl;
-        cout << "--------------------------------------------" << endl;
-        cout << "  Width:  " << cptr->W << endl;
-        cout << "  Depth:  " << cptr->D << endl;
-        cout << "  Height: " << cptr->H << endl;
-        cout << "--------------------------------------------" << endl;
-
-        sleep(5);
     }
+
+    cptr->D = Depth;
+    cptr->W = Front;
+    cptr->H = Height;
+
+    cout << "--------------------------------------------" << endl;
+    cout << "            Speaker Dimensions              " << endl;
+    cout << "--------------------------------------------" << endl;
+    cout << "  Width:  " << cptr->W << endl;
+    cout << "  Depth:  " << cptr->D << endl;
+    cout << "  Height: " << cptr->H << endl;
+    cout << "--------------------------------------------" << endl;
+
+	box = cptr;
 
     sleep(2);
 }
 /*--------------------------------------------------------------------------------------------*/
+void tweeter_cabinet_design(Speaker* drvr, Cabinet* box)
+/*--------------------------------------------------------------------------------------------*/
+{
+    struct Speaker *ptr;
+    struct Cabinet *cptr;
+
+    ptr = drvr;
+    cptr = box;
+   
+    char flag[4];
+    char type[4];
+    char unit[4];
+	
+    double vol;
+    double spkr_diam;
+    double spkr_depth;
+    double spkr_height;
+    double vent_length;
+    double vent_diam;
+    double Depth;
+    double Front;
+    double Height;
+
+    int done;
+
+    /* The 3rd argument determines what speaker type is being built (sealed vs vented) */
+    vol = ptr->Vbs;
+
+    cout << "Use Metric (M) or Imperial (I) units of measure? (Metric is default): ";
+    cin >> unit;
+	
+    if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0)) {
+        vol = vol * liter_to_cubicInch;
+	    spkr_diam = ptr->b_diam * mm_to_inch;
+	    spkr_depth = ptr->depth * mm_to_inch;
+	    spkr_height = ptr->b_height * mm_to_inch;
+    } else {
+        vol = vol;
+	    spkr_diam = ptr->b_diam;
+	    spkr_depth = ptr->depth;
+	    spkr_height = ptr->b_height;
+    }
+
+	done = 0;
+
+    while (!done) {
+        // Loop to determine box dimensions
+        cout << "Driver dimensions: " << endl;
+        cout <<" Part Number: " << cptr->Part_num << endl;
+        cout <<" Nominal impedance: " << cptr->imp_Nom << endl;
+        cout <<" Frequency - low: " << cptr->freq_lo << endl;
+        cout <<" Frequency - high: " << cptr->freq_hi << endl;
+        cout <<" Frequency rolloff: " << cptr->rolloff << endl;
+        cout <<" Resonant frequncy: " << cptr->res_freq << endl;
+		if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0 )) {
+            cout <<" Cabinet volume: " << vol << " in^3" << endl;
+            cout << " Speaker diameter: " << spkr_diam << " inches " << endl;
+            cout << " Speaker depth: " << spkr_depth << " inches " << endl;
+            cout << " Speaker height: " << spkr_height << " inches " << endl;
+
+		} 
+
+        /* Compute baffle width */
+		/* Since the tweeter doesnt need a large cabinet space, the height/width are identical */
+        Depth = spkr_depth + (spkr_depth/2.0);
+        Height = Depth;
+        Front = spkr_diam + (spkr_diam/8);
+
+		cout << "+--------------------------+" << endl;
+		cout << "|   Speaker measurements   |" << endl;
+		cout << "+--------------------------+" << endl;
+		cout << "| Width  : " << Front << endl;
+		cout << "| Depth  : " << Depth << endl;
+		cout << "| Height : " << Height << endl;
+		cout << "+---------------------------+" << endl;
+        cout << "Accept dimensions? (Y/N): " << endl;
+        cin >> flag;
+
+        if ((strcmp(flag, "Y") == 0) || (strcmp(flag, "y") == 0)) {
+            cout << "Speaker Design completed..." << endl;
+            done = 1;
+        } else {
+            cout << "compute closed box design..." << endl;
+			//done = 0;
+        }
+    }
+
+    cptr->D = Depth;
+    cptr->W = Front;
+    cptr->H = Height;
+
+    cout << "--------------------------------------------" << endl;
+    cout << "            Speaker Dimensions              " << endl;
+    cout << "--------------------------------------------" << endl;
+    cout << "  Width:  " << cptr->W << endl;
+    cout << "  Depth:  " << cptr->D << endl;
+    cout << "  Height: " << cptr->H << endl;
+    cout << "--------------------------------------------" << endl;
+
+	box = cptr;
+
+    sleep(2);
+}
+/*--------------------------------------------------------------------------------------------*/
+void center_field(char *field_data)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure centers the data to display the contents of the driver fields into a        */
+/* cleaner display to make readability of the output cleaner.                                 */
+/*--------------------------------------------------------------------------------------------*/
+{
+	char dest[FIELD_LGTH] = "";
+
+	int src_len = strlen(field_data);
+	int dest_len = sizeof(dest) - 1;
+
+    // Calculate starting index for centering
+    int start_index = (dest_len - src_len) / 2;
+
+
+    // Fill dest with spaces
+    memset(dest, ' ', dest_len);
+    dest[dest_len] = '\0';            // Null-terminate dest
+
+	// Copy src into dest starting at start_index to center it
+    memcpy(&dest[start_index], field_data, src_len);
+
+	// Copy dest back to src (datum.Part_num)
+    strcpy(field_data, dest);
+
+	sleep(5);
+}
+/*--------------------------------------------------------------------------------------------*/
+double compute_qt(double Qes, double Qms)
+/*--------------------------------------------------------------------------------------------*/
+{
+    double Q;
+
+    Q = (Qes * Qms)/(Qms + Qes);
+
+    return(Q);
+}

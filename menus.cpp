@@ -55,7 +55,7 @@ void splash_screen()
     cout << "    |         p                                                               |" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    |                             Version 1.0.001                             |" << endl;
+	cout << "    |                              " << VERSION << "                              |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
 
     // This is used to define the wait time to display the splash screen

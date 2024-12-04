@@ -82,7 +82,9 @@ char w_cmd[8];
 char tw_cmd[8];
 char th_cmd[8];
 
-int sptype;                   // This int is used to determine what type of 
+std::string design_file;
+
+int xover;                    // This int is used to determine what type of 
                               // speaker is being read from the file system
 
 double Vd;                     // driver displacement volume. Added to overall cabinet volume;
@@ -97,22 +99,32 @@ int main()
 
     sleep(3);
 
+    Speaker *pasv = NULL;
     Speaker *drvr = NULL;
     Speaker *mid = NULL;
     Speaker *tweet = NULL;
-    Speaker *pasv = NULL;
     
     
+	Cabinet *pass = NULL;
     Cabinet *bass = NULL;
     Cabinet *midr = NULL;
     Cabinet *treb = NULL;
-	Cabinet *pass = NULL;
+
+    Field_Pad *Passive = NULL;
+    Field_Pad *Bass = NULL;
+    Field_Pad *Midrange = NULL;
+    Field_Pad *Tweeter = NULL;
+
+    Cab_Pad *Low = NULL;
+    Cab_Pad *Mid = NULL;
+    Cab_Pad *High = NULL;
+    Cab_Pad *LowV = NULL;
 
     Filter crossover;
     Filter lowpass;
     Filter bandpass;
     Filter highpass;
-
+	
     while (strcmp(t_cmd, "Q\n") != 0) {
 
         strcpy(t_cmd, "");
@@ -276,29 +288,34 @@ int main()
             
             strcpy(x_cmd, "");
             while (strcmp(x_cmd, "E\n") != 0) {
+				xover = 0;               // Default value for subwoofer with or without passive speaker
                 crossover_screen();
 		        cin >> x_cmd;
 
                 if (strcmp(x_cmd, "1") == 0) {
                     cout << "Passive xover design - Two-way Speaker..." << endl;
+					xover = 1;
 		            passive_two_way(drvr, tweet, lowpass, highpass);
 		            sleep(2);
                 }
 
                 if (strcmp(x_cmd, "2") == 0) {
                     cout << "Active xover design - Two-way Speaker..." << endl;
+					xover = 1;
 		            active_two_way(drvr, tweet, lowpass, highpass);
 		            sleep(2);
                 }
 
                 if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive xover design - Three-way Speaker..." << endl;
+					xover = 2;
 		            passive_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
 		            sleep(2);
                 }
 
                 if (strcmp(x_cmd, "4") == 0) {
                     cout << "Active xover design - Three-way Speaker..." << endl;
+					xover = 2;
 		            active_three_way(drvr, mid, tweet, lowpass, bandpass, highpass);
 		            sleep(2);
                 }
@@ -329,10 +346,7 @@ int main()
 
                 if ((strcmp(s_cmd, "B") == 0) || (strcmp(s_cmd, "b") == 0) || (strcmp(s_cmd, "1") == 0)) {
                     cout << "Bass selection menu 1..." << endl;
-		            sptype = 1;
 					speaker = "Woof";
-					//strcpy(speaker, "Woof");
-		            //read_bass_driver(drvr, speaker);
 		            read_bass_driver(drvr);
 
 		            sleep(2);
@@ -340,7 +354,6 @@ int main()
 
                 if ((strcmp(s_cmd, "M") == 0) || (strcmp(s_cmd, "m") == 0) || (strcmp(s_cmd, "2") == 0)) {
                     cout << "Midrange selection menu 2..." << endl;
-		            sptype = 2;
 		            read_midrange_driver(mid);
 
 		            sleep(2);
@@ -348,7 +361,6 @@ int main()
 
                 if ((strcmp(s_cmd, "T") == 0) || (strcmp(s_cmd, "t") == 0) || (strcmp(s_cmd, "3") == 0)) {
                     cout << "Tweeter selection menu 3..." << endl;
-			        sptype = 3;
 			        read_tweet_driver(tweet);
 
 			        sleep(2);
@@ -358,8 +370,6 @@ int main()
                     cout << "Passive Radiator selection menu 4..." << endl;
 					cout << "This feature is not implemented at this time" << endl;
 					/*
-			        sptype = 4;
-					speaker = "Pass";
 			        read_passive_driver(pasv);
 					*/
 
@@ -374,14 +384,42 @@ int main()
             }
         }
 
-        if ((strcmp(t_cmd, "D") == 0) || (strcmp(t_cmd, "d") == 0) || (strcmp(t_cmd, "8") == 0)) {
+        if ((strcmp(t_cmd, "W") == 0) || (strcmp(t_cmd, "w") == 0) || (strcmp(t_cmd, "8") == 0)) {
             cout << "Save design data..." << endl;
 			/* this function needs to be revised to add in other driver data as well */
-	        write_design_data(drvr, bass, lowpass, bandpass, highpass);
+			cout << "Enter a destination file: : ";
+			cin >> design_file;
+			design_file = design_file + ".doc";
+
+			std::ofstream outfile(design_file);
+
+			create_data_fields(pasv, Passive, outfile);
+			create_data_fields(drvr, Bass, outfile);
+			create_data_fields(mid, Midrange, outfile);
+			create_data_fields(tweet, Tweeter, outfile);
+
+			create_cab_fields(pass, LowV, outfile);
+			create_cab_fields(bass, Low, outfile);
+			create_cab_fields(midr, Mid, outfile);
+			create_cab_fields(treb, High, outfile);
+
+	        write_design_data(Passive, Bass, Midrange, Tweeter, outfile);
+			////write_cabinet_data(pass, bass, midr, treb, outfile);
+
+			/* Need a scheme to determine what kind of filter is being used */
+			write_filter_data(lowpass, bandpass, highpass, xover, outfile);
         }
 
         if ((strcmp(t_cmd, "P") == 0) || (strcmp(t_cmd, "p") == 0) || (strcmp(t_cmd, "9") == 0)) {
-            cout << "Purge driver data and erad new drivers in.." << endl;
+            cout << "Purge driver data and read new drivers in.." << endl;
+			purge_data(drvr);
+			purge_data(mid);
+			purge_data(tweet);
+			// purge_data(pasv);
+			clear_formatting(Bass);
+			clear_formatting(Midrange);
+			clear_formatting(Tweeter);
+			//clear_formatting(Passive);
         }
 
         if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {
