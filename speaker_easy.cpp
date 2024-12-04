@@ -1153,7 +1153,7 @@ void save_speaker_data(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pas
 void save_data_ptr(Speaker* drvr)
 /*--------------------------------------------------------------------------------------------*/
 /* This function is used to write data to the file system if the pointer in the calling       */
-/* contains data.  
+/* contains data.                                                                             */
 /*--------------------------------------------------------------------------------------------*/
 {
     struct Speaker *ptr;
@@ -2722,26 +2722,30 @@ void design_low_vented(Speaker*& drvr, Cabinet*& box, double& Vd)
     double a, b, c, d, e, f;       // value holders for frequency response measurement
     double alpha;                  // ratio of Driver compliance vs enclosure volume (Vol_vent)
     double Vba;                    // Enclosure multiplier
-	double Ap;                     // Cross-sectional area of the port (mm)
+    double Ap;                     // Cross-sectional area of the port (mm)
     double Dv, Lv, L_prm;          // Vent diameter, length in mm
     double f3v;                    // frequency rolloff
     double Fsb;                    // Driver resonance freq mounted in enclosure
     double Fb;                     // Enclosure resonance requency - not to be confused with Fsb
     double Fn;                     // Normalized frequency ratio - f(req)/Fsb
-	double Fpk;                    // Frequency peak as determined using T/S values.
+    double Fpk;                    // Frequency peak as determined using T/S values.
     double Lp;                     // Length of the port
-	double Mb, Mp;                 // Acoustic mass pf the box and port, respectively;
+    double Mb, Mp;                 // Acoustic mass pf the box and port, respectively;
+    double Mms;                    // Moving mass of the driver
     double Ppt;                    // Acoustic Power radiated by the Port
-	double Pttl;                   // Total Acoustic Power
+    double Pttl;                   // Total Acoustic Power
     double Par, Per;               // Displacement limited power ratings
-	double Pd;                     // Pressure change factor - user input from 0.15 to 0.25
-	double Qb;                     // Box damping factor;
-	double Rb, Re, Rp, Rd;         // Acoustic resistance Rb includes empty, port, damping msterial)
+    double Pd;                     // Pressure change factor - user input from 0.15 to 0.25
+    double Qb;                     // Box damping factor;
+    double Qt, Qes, Qms, Qas;      // Box damping factor: Q(total), Q(elecrical damping
+                                   // Q(mechanical damping), Q(acoustic)
+    double Ra, Rv, Rl, Rab;        // Acoustic resistance Ra includes vent, leakage, damping msterial)
+    double Rb, Re, Rp, Rd;         // 
     double Rh;                     // Ripple response (in db)
     double Vbv;                    // Computed volume of cabinet - liters || dm^3
-	double Vpt;                    // Peak port volume velocity
-	double Apt;                    // Port cross-sectional area
-	double Vpk;                    // Peak Air Velocity
+    double Vpt;                    // Peak port volume velocity
+    double Apt;                    // Port cross-sectional area
+    double Vpk;                    // Peak Air Velocity
 
     int bdesign;                   // Value entered for switch statement choosing deign flow
     int empty_val;                 // value used to checking for missing values.
@@ -2875,6 +2879,27 @@ void design_low_vented(Speaker*& drvr, Cabinet*& box, double& Vd)
 				break;
 		}
 
+		/*---------------------------------------------------------*/
+		// Compute total damping -
+		// 1/Qt = 1/Qes + 1/Qms + 1/Qas
+		Qms = ptr->Qms;   // Determined from data spec sheet
+		Qes = ptr->Qes;   // Determined from data spec sheet
+
+		//a = ptr->Cms * (1*10e-3);                  // Convert mm/N to m/N
+		a = ptr->Cms * 10e-3;                        // Convert mm/N to m/N
+		b = pow((2 * M_PI * ptr->Fs), 2);           
+
+		Mms = 1/(a * b);
+		//Mms = Mms * (1*10e3);                      // Convert to grams
+		Mms = Mms * 10e3;                            // Convert to grams
+
+		// Solve for cabinet loss Ra = Rv(ent) + Rl(eak) + Rab(sorb)
+
+		// Reuse a to solve for box volume
+		a = (1/ptr->Vas) ;
+                c = rho * C;
+		d = 2 * M_PI * ptr->Fs * a * Vbv * ptr->Re;
+		/*---------------------------------------------------------*/
 		// Compute PAR/PER here
 		Ap = (Vbv * Fb)/(C * Pd);
 		Dv = 2 * sqrt(Ap/M_PI);
@@ -2906,16 +2931,16 @@ void design_low_vented(Speaker*& drvr, Cabinet*& box, double& Vd)
 		Per = Ppt/Pttl;
 
 		// Compute frequency response here
-	    //double Rb, Re, Rp, Rd;         
+	        //double Rb, Re, Rp, Rd;         
 		// Acoustic resistance Rb includes empty, port, damping msterial)
 		// Convert liters to m^3
-		Me = (rho * Vbv)/pow(C, 2);
-		Mp = (rho * C)/*Lp * Ap);
-		Md = 
+		//Me = (rho * Vbv)/pow(C, 2);
+		//Mp = (rho * C)/(Lp * Ap);
+		//Md = 
 		
 		// Mass of air port (vent)
-		Mb = rho * (Lp/Ap);
-		Mv = rho * (
+		//Mb = rho * (Lp/Ap);
+		//Mv = rho * (
 
 		//vented_freq_params(drvr, Vbv, Fsb, Fb, Fn, Vd, L_prm, a, b, c, d, alpha);
 

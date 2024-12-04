@@ -29,7 +29,7 @@ extern struct Speaker
 {
     char Part_num[23];        // Product part number
     char Type[23];            // Speaker type. One of Woof, Pass, Twet or Midr
-	char Build[23];           // Construction type: cone or ribbon/electrostatic
+    char Build[23];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
     double Cms;               // Compliance
     double Bl;                // BL Product (aka Force Factor)
