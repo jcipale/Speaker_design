@@ -28,6 +28,7 @@
 
 #define extern
 #include "speaker_easy.h"
+#include "menus.h"
 #undef extern
 
 using namespace std;
@@ -128,7 +129,7 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
     cptr = box;
    
     char flag[4];
-    char type[4];
+    //char type[4];
     char unit[4];
 	
     double vol;
@@ -160,6 +161,8 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
 	    spkr_height = ptr->b_height * mm_to_inch;
 	    vent_diam = ptr->v_diam * mm_to_inch;
 	    vent_length = ptr->v_length * mm_to_inch;
+	    //vent_diam = cptr->vent_diam * mm_to_inch;
+	    //vent_length = cptr->vent_length * mm_to_inch;
     } else {
         vol = vol;
 	    spkr_diam = ptr->b_diam;
@@ -167,6 +170,8 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
 	    spkr_height = ptr->b_height;
 	    vent_diam = ptr->v_diam;
 	    vent_length = ptr->v_length;
+	    //vent_diam = cptr->vent_diam;
+	    //vent_length = cptr->vent_length;
     }
 
 	done = 0;
@@ -216,6 +221,12 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
 		cout << "| Width  : " << Front << endl;
 		cout << "| Depth  : " << Depth << endl;
 		cout << "| Height : " << Height << endl;
+
+		if (cab_type == "vented") {
+		    cout << "| Vent diameter : " << vent_diam << endl;
+		    cout << "| vent_length   : " << vent_length << endl;
+		}
+
 		cout << "+---------------------------+" << endl;
         cout << "Accept dimensions? (Y/N): " << endl;
         cin >> flag;
@@ -224,21 +235,21 @@ void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::stri
             cout << "Speaker Design completed..." << endl;
             done = 1;
         } else {
-            cout << "compute closed box design..." << endl;
-			//done = 0;
+            cout << "compute box design..." << endl;
+			done = 0;
         }
     }
 
-    cptr->D = Depth;
-    cptr->W = Front;
-    cptr->H = Height;
+    cptr->Depth = Depth;
+    cptr->Width = Front;
+    cptr->Height = Height;
 
     cout << "--------------------------------------------" << endl;
     cout << "            Speaker Dimensions              " << endl;
     cout << "--------------------------------------------" << endl;
-    cout << "  Width:  " << cptr->W << endl;
-    cout << "  Depth:  " << cptr->D << endl;
-    cout << "  Height: " << cptr->H << endl;
+    cout << "  Width:  " << cptr->Width << endl;
+    cout << "  Depth:  " << cptr->Depth << endl;
+    cout << "  Height: " << cptr->Height << endl;
     cout << "--------------------------------------------" << endl;
 
 	box = cptr;
@@ -256,15 +267,15 @@ void tweeter_cabinet_design(Speaker* drvr, Cabinet* box)
     cptr = box;
    
     char flag[4];
-    char type[4];
+    //char type[4];
     char unit[4];
 	
     double vol;
     double spkr_diam;
     double spkr_depth;
     double spkr_height;
-    double vent_length;
-    double vent_diam;
+    //double vent_length;
+    //double vent_diam;
     double Depth;
     double Front;
     double Height;
@@ -333,16 +344,16 @@ void tweeter_cabinet_design(Speaker* drvr, Cabinet* box)
         }
     }
 
-    cptr->D = Depth;
-    cptr->W = Front;
-    cptr->H = Height;
+    cptr->Depth = Depth;
+    cptr->Width = Front;
+    cptr->Height = Height;
 
     cout << "--------------------------------------------" << endl;
     cout << "            Speaker Dimensions              " << endl;
     cout << "--------------------------------------------" << endl;
-    cout << "  Width:  " << cptr->W << endl;
-    cout << "  Depth:  " << cptr->D << endl;
-    cout << "  Height: " << cptr->H << endl;
+    cout << "  Width:  " << cptr->Width << endl;
+    cout << "  Depth:  " << cptr->Depth << endl;
+    cout << "  Height: " << cptr->Height << endl;
     cout << "--------------------------------------------" << endl;
 
 	box = cptr;
@@ -387,3 +398,237 @@ double compute_qt(double Qes, double Qms)
 
     return(Q);
 }
+/*--------------------------------------------------------------------------------------------*/
+double convert_units(double& target, double conversion)
+/*--------------------------------------------------------------------------------------------*/
+/* This function converts the units of a given variable back and forth based on the factor of */
+/* the conversion value. (i.e. to convert from mm to meters, the conversion value would be    */
+/* 1/1000 or 0.001. to convert back it would be 1000.00.                                      */
+/*--------------------------------------------------------------------------------------------*/
+{
+    target = target * conversion;
+	return(target);
+}
+/*--------------------------------------------------------------------------------------------*/
+double tuning_frequency(Speaker* drvr, std::string cab_type)
+/*--------------------------------------------------------------------------------------------*/
+/* This function calculate the tuning frequency of the port for a bass-reflex speaker         */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double F;                     // Tuning frequency based on cabinet parameters
+
+	return(0);
+}
+/*--------------------------------------------------------------------------------------------*/
+double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double kappa)
+/*--------------------------------------------------------------------------------------------*/
+/* This function computes the effective port length for the speaker. This is used by all of   */
+/* the vented speaker construction methods (bass reflex, QBR, ESS).                           */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double v1, v2, v3;                // temporary var buffers
+
+	v1 = 2350 * pow(Dp, 2);
+	v2 = Fb/Vbv;
+
+	v3 = (v1 * v2)/Fb - kappa;
+	return(v3);
+}
+/*--------------------------------------------------------------------------------------------*/
+void cabinet_initialize(Speaker* drvr, double& alpha)
+/*--------------------------------------------------------------------------------------------*/
+/* This function prompts the user for an initial cabinet volume.                              */
+/*--------------------------------------------------------------------------------------------*/
+{
+	char val[4];
+
+	double cab_val;               // cabinet val input
+	double Vbv;                    // non-normlaized volume
+
+    int flag;                     // Decision flag
+
+	flag = 0;
+
+	Vbv = drvr->Vbv * 1000.00;
+	//drvr->Vbv = 20 * drvr->Vas * pow(drvr->Qts, 3.3);
+
+	cout << "Manufacturer recommended cabinet size is " << Vbv << ". Specify a new value? (Y) " << endl;
+	cin >> val;
+
+	if ((strcmp(val, "Y") == 0) || (strcmp(val, "y") == 0)) {
+		// user specified cabinet volume
+		cout << "Enter new cabinet volume (liters): ";
+		cin >> Vbv;
+
+		drvr->Vbv = Vbv/1000.00;
+
+		alpha = drvr->Vas/drvr->Vbv;
+
+		drvr->f3_vent = drvr->Fs * pow(alpha, 0.44);
+
+		//drvr->Fb = drvr->f3_vent * pow(alpha, 0.31);
+	}
+	else {
+		// Natural flat alignment based on T/S params
+		drvr->f3_vent = 0.28 * drvr->Fs * pow(drvr->Qts, -1.4);
+
+		alpha = drvr->Vbv/drvr->Vas;
+
+	}
+
+	cout << "-----------------------------------------" << endl;
+	cout << " Cabinet Volume m^3 - " << drvr->Vbv << endl;
+	cout << " Vas/Vb ratio       - " << alpha << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void acoustic_compliance(Speaker* drvr, double& Ca)
+/*--------------------------------------------------------------------------------------------*/
+/* This function computes the acoustic compliance for a given driver/cabinet                  */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double var1, var2;                            // placeholder vars
+	
+	Ca = drvr->Vbv/drvr->Vas;
+
+	cout << " Acoustic compliance   - " << Ca << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void port_tuning(Speaker* drvr, int val)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure will compute the tuning frequency (Fb) for a given cabient and then         */
+/* design/define the port length of the port vent.                                            */
+/*--------------------------------------------------------------------------------------------*/
+{
+	double k;                          // ESB scaling fctor
+	double Va;                         // used to calculate the value of k(appa)
+
+
+	Va = sqrt(drvr->Vas/drvr->Vbv);
+
+	if (val == 1) {
+	    // For typical Bass Reflex use k(appa) as a ratio of the sq root of Va to Box Volume
+	    drvr->Fb = 0.42 * drvr->Fs;
+	} else if (val == 2) {
+	    // Moderately aggressive bass response
+	    drvr->Fb = 0.38 * drvr->Fs;
+	} else if (val == 3 ) {
+	    // Aggressive bass response
+	    drvr->Fb = 0.33 * drvr->Fs;
+	} else {
+		// assume Fb == Fs
+	    drvr->Fb = drvr->Fs;
+    }
+
+}
+/*--------------------------------------------------------------------------------------------*/
+void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure will compute the tuning frequency (Fb) for a given cabient and then         */
+/* design/define the port length of the port vent.                                            */
+/*--------------------------------------------------------------------------------------------*/
+{
+	double diff;                       // Difference between PR Fs vs Woof Fs
+	double k;                          // ESB scaling fctor
+	double Va;                         // used to calculate the value of k(appa)
+
+	double var1, var2, var3;           // values used for determining port tuning
+
+	Va = sqrt(drvr->Vas/drvr->Vbv);
+
+	diff = drvr->Fs - pasv_cpy->Fs;
+
+	cout << "Debug Resoance Frequency comparison for Mms computation..." << endl;
+	cout << diff << " Hz" << endl;
+
+	drvr->Fb = drvr->Fs;
+
+	var1 = pow((2 * M_PI * pasv_cpy->Fs), 2) * pasv_cpy->Cms;
+	pasv_cpy->Mms = 1/var1;
+
+
+	//pasv_cpy->Fs = var2 * sqrt(var3);
+
+}
+/*--------------------------------------------------------------------------------------------*/
+void port_length(Speaker* drvr, double kappa)
+/*--------------------------------------------------------------------------------------------*/
+/* port_length() is used to determine the effective port length for the specifed cabinet      */
+/* volume, tuning frequnecy and port correction factor (kappa) for units in mm.               */
+/* L(total) = L(eff) - L(correction) where:                                                   */
+/* L(eff) = (scale * (Dp)^2)/(Fb * Vb)                                                        */
+/* L(correct) =  -1.0 * (kappa * Dp)                                                          */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double Ap;                    // Port area computation A = 2* PI * Dp/2
+
+	double scale = 0.023562;        // constant value 0.023562 in mm
+	double length;                // port length calculation
+
+	double var1, var2, var3;      // temporary storage values
+
+	var1 = scale * pow(drvr->b_diam, 2);
+	var2 = pow(drvr->Fb, 2) * drvr->Vbv;
+	var3 = kappa * drvr->b_diam;
+	drvr->v_length = var1/var2 - var3;
+	
+}
+/*--------------------------------------------------------------------------------------------*/
+void port_length_slot(Speaker* drvr, double kappa, double& height, double& width)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure is used to determine the port length for a rectangular port on a speaker    */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double Ap;                    // Port area calculation
+
+	double d, var1, var2;         // intermediate values used for port length calculation
+	double k_cor;                 // Correction value 
+	double Ht;                    // Port height 
+
+
+	// Compute height and width of port vis driver surface area
+	Ap = drvr->Sd * 0.10;
+
+	// Compute slot area based on 3:1 ratio of height vs width
+	width = sqrt(Ap/3);
+	height = 3 * width;
+
+	d = 2 * M_PI * drvr->Fb;
+
+	k_cor = kappa * sqrt(Ap);
+	
+	var1 = pow((C/d), 2);
+
+	var2 = (var1 * drvr->Vbv)/Ap;
+
+	drvr->v_length = var2 - k_cor;
+
+	cout << "---------- DEBUG -------- " << endl;
+	cout << " kappa       : "<< kappa << endl;
+	cout << " Sd          : "<< drvr->Sd << endl;
+	cout << " Fb (tune)   : "<< drvr->Fb << endl;
+	cout << " Vbv (vol)   : "<< drvr->Vbv << endl;
+	cout << " Port area   : "<< Ap << endl;
+	cout << " port length : "<< drvr->v_length << endl;
+	cout << " port width  : "<< width << endl;
+	cout << " port height : "<< height << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void port_length_pr(Speaker* drvr, Speaker* pasv_cpy, double kappa)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure is used to determine the optimum mass for a passive radiator used in place  */
+/* of a slotted or circular port due to size restrictions.                                    */
+/*--------------------------------------------------------------------------------------------*/
+{
+    cout << "dummy name" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void data_normalize(Speaker* drvr)
+/*--------------------------------------------------------------------------------------------*/
+{
+	cout << "Normalize data... " << endl;
+
+    drvr->Vas = drvr->Vas/1000.00;
+    cout << "DEBUG: Vas(normalized) - " << drvr->Vas << endl;
+    sleep(5);
+}
+/*--------------------------------------------------------------------------------------------*/

@@ -32,6 +32,7 @@
 #include "speaker_easy.h"
 #undef extern
 
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -138,10 +139,110 @@ void cabinet_design_screen()
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) (S)ealed Cabinet                     |" << endl;
     cout << "    |  2) (V)ented Cabinet                     |" << endl;
-    cout << "    |  3) (P)assive Radiator                   |" << endl;
-    cout << "    |  4) Exit                                 |" << endl;
+    //cout << "    |  3) (P)assive Radiator                   |" << endl;
+    cout << "    |  3) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
+}
+/*--------------------------------------------------------------------------------------------*/
+void closed_design_menu()
+{
+        cout << "Choose design based on:" << endl;
+        cout << "    1) default speaker values" << endl;
+        cout << "    2) box volume" << endl;
+        cout << "    3) Enter Q(tc)" << endl;
+        cout << "    4) Use default value of Q(tc) = 1" << endl;
+        cout << "-------------------------------------" << endl;
+
+}
+/*--------------------------------------------------------------------------------------------*/
+void diffusion_menu(double &kappa)
+{
+    cout << "+-------------------------------------------------------------------------+" << endl;
+    cout << "|   Select the port diffusion value:                                      |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+    cout << "|   diffusion value (kappa) = 0.435 : 1 flanged and 1 unflanged port      |" << endl;
+    cout << "|   diffusion value (kappa) = 0.732 : 2 flanged ports - internal/external |" << endl;
+    cout << "|   diffusion value (kappa) = 0.85  : 2 unflanged ports                   |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+
+    cout << " kappa: ";
+    cin >> kappa;
+
+}
+/*--------------------------------------------------------------------------------------------*/
+double design_constant_bass_reflex(double &kappa)
+{
+    cout << "+-------------------------------------------------------------------------+" << endl;
+	cout << "|  Standard Bass Reflex design constant:                                  |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+	cout << "| Choose the design constant from the following range of values:          |" << endl;
+	cout << "| Deep Bass  design  - Br: 0.6 - 0.7                                      |" << endl;
+	cout << "| Balanced design    - Br: 0.8 - 1.0                                      |" << endl;
+	cout << "| High-output design - Br: 1.1 - 1.2                                      |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+
+	cout << "Beta: ";
+	cin >> kappa;
+
+	return(kappa);
+}
+/*--------------------------------------------------------------------------------------------*/
+double butterworth_constant(double &kappa)
+{
+    cout << "+-------------------------------------------------------------------------+" << endl;
+    cout << "|  Butterworth design constant:                                           |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+    cout << "| Choose the design constant from 0.7 <= Bb <= 0.9 (default = 0.8)        |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+
+	cout << "kappa: ";
+	cin >> kappa;
+
+	return(kappa);
+}
+/*--------------------------------------------------------------------------------------------*/
+void butterworth_cabinet_mulitplier()
+{
+    cout << "+-------------------------------------------------------------------------+" << endl;
+    cout << "|  Butterworth cabient multiplier:                                        |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+	cout << "| Chose a value from 0.5 <= Sb <= 1.0 (default = 0.8)                     |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+	
+	cout << "S-mulitplier: ";
+}
+/*--------------------------------------------------------------------------------------------*/
+void bass_shelf_multiplier(int &ESB)
+{
+    cout << "+-------------------------------------------------------------------------+" << endl;
+    cout << "|  Extended Bass Shelf multiplier:                                        |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+	cout << "| Chose from one of the following options:                                |" << endl;
+	cout << "| 1): ESB1 - Moderate bass extension - alpha = 1,25, beta = 0.7           |" << endl;
+    cout << "| 2): ESB2 - Extended bass extension - alpha = 1.5, beta = 0.6            |" << endl;
+    cout << "| 3): ESB3 - Maximum bass extension  - alpha = 2.0, beta = 0.5            |" << endl;
+    cout << "+-------------------------------------------------------------------------+" << endl;
+
+	cout << "ESB: ";
+	cin >> ESB;
+}
+/*--------------------------------------------------------------------------------------------*/
+void confirm_screen()
+{
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+	cout << "    | The effective Port Length, L(eff) is less than 0, therfore the design   |" << endl;
+	cout << "    | for this cabient (Volume, tuning frequency, port diameter) is incorrect.|" << endl;
+	cout << "    | Retry the design with the following changes:                            |" << endl;
+	cout << "    |    - Larger port diameter                                               |" << endl;
+	cout << "    |    - Lower tuning frequency Fb                                          |" << endl;
+	cout << "    |    - Smaller cabient volume                                             |" << endl;
+	cout << "    | If the simulation is unable to find a port length for the design, it    |" << endl;
+	cout << "    | may be better to try using a slotted port or a passive radiator design. |" << endl;
+	cout << "    +-------------------------------------------------------------------------+" << endl;
+	cout << "    | If a slotted port design is being used and the port length is longer    |" << endl;
+	cout << "    | than 0.5 meter (approx 19.5 inches) consider using a passive radiator.  |" << endl;
+    cout << "    +-------------------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void exit_screen()
