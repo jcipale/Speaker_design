@@ -29,7 +29,7 @@ extern struct Speaker
 {
     char Part_num[64];        // Product part number
     char Type[64];            // Speaker type. One of Woof, Pass, Twet or Midr
-	char Build[64];           // Construction type: cone or ribbon/electrostatic
+    char Build[64];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
     double Cms;               // Compliance
     double Mms;               // Derived from Cms, Fs used primarily for Passive drivers
@@ -37,7 +37,7 @@ extern struct Speaker
     double Qts;               // Total Q factor
     double Qes;               // Electrical Q factor
     double Qms;               // Mechanical Q factor
-	double Sd;                // Effective piston area cm^2
+    double Sd;                // Effective piston area cm^2
     double Fs;                // Resonant Frequency
     double Fb;                // Port tuning Frequency
     double Re;                // DC Resistance
@@ -46,7 +46,7 @@ extern struct Speaker
     double Le;                // Voice Coil inductance (aka Lbm)
     double Xmax;              // Maximum Linear Excursion
     double Diam;              // Voice Coil Diameter
-	double Vd;                // Speaker diameter (computed real-time from Sd).
+    double Vd;                // Speaker diameter (computed real-time from Sd).
     double Nom_Pwr;           // Nominal Power (aka RMS power)
     double Max_Pwr;           // Maximum Power (aka Long-term max power)
     double Freq_Low;          // Low-end of Freq Response
@@ -56,7 +56,10 @@ extern struct Speaker
     double Vbv;               // Vented Volume (user define liters)
     double f3_seal;           // 3db down point (rolloff)
     double f3_vent;           // 3db down point (rolloff)
+	double Pd;                // Port diameter - either a cylinder or slot
     double v_diam;            // vent diameter (from data sheet - default)
+	double v_height;          // port height - used ONLY for slotted designs
+	double v_width;           // port width - used ONLY for slotted designs
     double v_length;          // vent length (from data sheet - default)
     double b_diam;            // Overall basket diameter or diaphragm width if 
 	                          // ribbon - used for designing physical cabinet
@@ -74,7 +77,9 @@ extern struct Cabinet
     char Part_num[64]; 
 	char Build[64];               // Construction type: cone or ribbon/electrostatic 
 	char Enclosure[64];           // Sealed or Ported
-	double Fb_vent;               // Frequency of port (vented cabinet)
+	double Cms;                   // Complianc value of the PR driver (passive radiator specifically)
+	double Mms;                   // Total mass of driver (passive radiator specifically)
+	double Fb;                    // Frequency of cabinet
     double vent_diam;             // Can be used for port height if used as a ducted port
     double vent_width;            // Can be used for port width if used as a ducted port
     double vent_length;
@@ -92,6 +97,8 @@ extern struct Cabinet
     double rolloff;
     double crossover_lo;
     double crossover_hi;
+	double Ma;                    // Mass to add for passive radiator in addition to the 
+	                              // speaker mass
 	double PAR;                   // Acostic power
 	double PER;                   // Electirical efficiency
 	double Rh;                    // 3db ripple
@@ -130,6 +137,7 @@ extern struct Field_Pad
 	char Build[64];          // Construction type: cone or ribbon/electrostatic
     char Vas[23];            // Equivalent Volume of cabinet dm^3
     char Cms[23];            // Compliance
+    char Mms[23];            // Moving mass of driver
     char Bl[23];             // BL Product (aka Force Factor)
     char Qts[23];            // Total Q factor
     char Qes[23];            // Electrical Q factor
@@ -277,7 +285,8 @@ void read_midrange_driver(Speaker*& mid);
 /*--------------------------------------------------------------------------------------------*/
 void read_tweet_driver(Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
-void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd);
+//void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd);
+void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int flag, double Sd);
 /*--------------------------------------------------------------------------------------------*/
 void create_data_fields(Speaker* drvr, Field_Pad*& datum, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/

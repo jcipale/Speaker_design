@@ -218,31 +218,79 @@ void bass_shelf_multiplier(int &ESB)
     cout << "+-------------------------------------------------------------------------+" << endl;
     cout << "|  Extended Bass Shelf multiplier:                                        |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
-	cout << "| Chose from one of the following options:                                |" << endl;
-	cout << "| 1): ESB1 - Moderate bass extension - alpha = 1,25, beta = 0.7           |" << endl;
+    cout << "| Chose from one of the following options:                                |" << endl;
+    cout << "| 1): ESB1 - Moderate bass extension - alpha = 1,25, beta = 0.7           |" << endl;
     cout << "| 2): ESB2 - Extended bass extension - alpha = 1.5, beta = 0.6            |" << endl;
     cout << "| 3): ESB3 - Maximum bass extension  - alpha = 2.0, beta = 0.5            |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
 
-	cout << "ESB: ";
-	cin >> ESB;
+    cout << "ESB: ";
+    cin >> ESB;
 }
 /*--------------------------------------------------------------------------------------------*/
 void confirm_screen()
 {
     cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    | The effective Port Length, L(eff) is less than 0, therfore the design   |" << endl;
-	cout << "    | for this cabient (Volume, tuning frequency, port diameter) is incorrect.|" << endl;
-	cout << "    | Retry the design with the following changes:                            |" << endl;
-	cout << "    |    - Larger port diameter                                               |" << endl;
-	cout << "    |    - Lower tuning frequency Fb                                          |" << endl;
-	cout << "    |    - Smaller cabient volume                                             |" << endl;
-	cout << "    | If the simulation is unable to find a port length for the design, it    |" << endl;
-	cout << "    | may be better to try using a slotted port or a passive radiator design. |" << endl;
-	cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    | If a slotted port design is being used and the port length is longer    |" << endl;
-	cout << "    | than 0.5 meter (approx 19.5 inches) consider using a passive radiator.  |" << endl;
+    cout << "    | The effective Port Length, L(eff) is less than 0, therfore the design   |" << endl;
+    cout << "    | for this cabient (Volume, tuning frequency, port diameter) is incorrect.|" << endl;
+    cout << "    | Retry the design with the following changes:                            |" << endl;
+    cout << "    |    - Larger port diameter                                               |" << endl;
+    cout << "    |    - Lower tuning frequency Fb                                          |" << endl;
+    cout << "    |    - Smaller cabient volume                                             |" << endl;
+    cout << "    | If the simulation is unable to find a port length for the design, it    |" << endl;
+    cout << "    | may be better to try using a slotted port or a passive radiator design. |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
+    cout << "    | If a slotted port design is being used and the port length is longer    |" << endl;
+    cout << "    | than 0.5 meter (approx 19.5 inches) consider using a passive radiator.  |" << endl;
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void kappa_screen()
+{
+    cout << "    +-------------------------------------------------------------------------------+" << endl;
+    cout << "    | Define the scalar value for the Extended Bass Shelf design. kappa ranges from |" << endl;
+    cout << "    | 1.25 through 2.5 X Vas (Equivalent Cabinet Volume).                           |" << endl;
+    cout << "    +-------------------------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void aspect_kappa(double &ar, double &kappa)
+{
+    cout << "    +----------------------------------------------------------------------------+" << endl;
+    cout << "    | The port aspect ratio (W/H) is used to determine the over all port         |" << endl;
+    cout << "    | dimensions, port wall thickness, and kappa correction factor.              |" << endl;
+    cout << "    +----------------------------------------------------------------------------+" << endl;
+    cout << "    | Choose from the following specified ratios to specify the port constant:   |" << endl;
+    cout << "    +---------------+------------------------------------------------------------+" << endl;
+    cout << "    | Aspect Ratio  |                  Port Correction Factor                    |" << endl;
+    cout << "    +---------------+------------------------------------------------------------+" << endl;
+    cout << "    | W:H slot type |                 Diffusion value (kappa)                    |" << endl;
+    cout << "    +---------------+------------------------------------------------------------+" << endl;
+    cout << "    | 1 - 2 square  |               0.435 : flanged/unflanged port               |" << endl;
+    cout << "    | 3 - 5 medium  |               0.732 : 2 flanged ports                      |" << endl;
+    cout << "    | 6+ long       |               0.85  : 2 unflanged ports                    |" << endl;
+    cout << "    +---------------+------------------------------------------------------------+" << endl;
+    cout << "    | Aspect Raio always breaks down into a x:y ratio -                          |" << endl;
+    cout << "    | where y = 1, x = value from left column such as '4'.                       |" << endl;
+    cout << "    +----------------------------------------------------------------------------+" << endl;
+
+    cout << " Choose the desired aspect ratio from the left column (i.e. 4): ";
+    cin >> ar;
+    cout << endl;
+    cout << " Specify correction factor (kappa) from the table above " << endl;
+    cout << " (i.e. for a slotted port with 2 unflanged (smooth) portrs, enter 0.85) : ";
+    cin >> kappa;
+}
+/*--------------------------------------------------------------------------------------------*/
+void scalar_screen()
+{
+
+    cout << "    +-------------------------------------------------------------------------------+" << endl;
+    cout << "    | Specify choose the scaling factor desired for this design:                    |" << endl;
+    cout << "    | 1) Quasi-base Alignment (exended lo-freq response) : alpha  = 20, beta = 2.87 |" << endl;
+    cout << "    | 2) B4 (Maximally Flat Response)                    : alpha  = 15, beta = 2.87 |" << endl;
+    cout << "    | 3) Extended Base Shelf Alignment (deep low-end)    : alpha  = 25, beta = 3.3  |" << endl;
+    cout << "    +-------------------------------------------------------------------------------+" << endl;
+
 }
 /*--------------------------------------------------------------------------------------------*/
 void exit_screen()

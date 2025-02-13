@@ -26,19 +26,25 @@ double tuning_frequency(Speaker* drvr, std::string cab_type);
 /*--------------------------------------------------------------------------------------------*/
 double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double kappa);
 /*--------------------------------------------------------------------------------------------*/
-void cabinet_initialize(Speaker* drvr, double& alpha);
+void cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, double& Area, int bdesign);
 /*--------------------------------------------------------------------------------------------*/
 void acoustic_compliance(Speaker* drvr, double& Ca);
 /*--------------------------------------------------------------------------------------------*/
 void port_tuning(Speaker* drvr, int val);
 /*--------------------------------------------------------------------------------------------*/
-void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy);
+void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy, Cabinet* box);
 /*--------------------------------------------------------------------------------------------*/
-void port_length(Speaker* drvr, double kappa);
+void port_length(Speaker* drvr, double ap, double &kappa, int type);
 /*--------------------------------------------------------------------------------------------*/
-void port_length_slot(Speaker* drvr, double kappa, double& height, double& width);
+void port_length_slot(Speaker* drvr, double ap, double kappa);
 /*--------------------------------------------------------------------------------------------*/
 void port_length_pr(Speaker* drvr, Speaker* pasv_cpy, double kappa);
+/*--------------------------------------------------------------------------------------------*/
+void port_dynamics(Speaker* drvr, int type, double& PAR, double& PER);
+/*--------------------------------------------------------------------------------------------*/
+void cabinet_ripple(Speaker* drvr, Speaker* pasv_cpy, int i);
+/*--------------------------------------------------------------------------------------------*/
+double SolveMass(double drvr, double pr, double Fb, double Vb);
 /*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/

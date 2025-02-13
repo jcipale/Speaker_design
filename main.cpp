@@ -358,7 +358,8 @@ int main()
                 if ((strcmp(s_cmd, "B") == 0) || (strcmp(s_cmd, "b") == 0) || (strcmp(s_cmd, "1") == 0)) {
                     cout << "Bass selection menu 1..." << endl;
 					speaker = "Woof";
-		            read_bass_driver(drvr);
+			        read_driver(drvr, drvr_cpy, "Woof", 0, 0);
+		            //read_bass_driver(drvr);
 			        mem_copy(drvr, drvr_cpy);
 
 		            sleep(2);
@@ -366,7 +367,8 @@ int main()
 
                 if ((strcmp(s_cmd, "M") == 0) || (strcmp(s_cmd, "m") == 0) || (strcmp(s_cmd, "2") == 0)) {
                     cout << "Midrange selection menu 2..." << endl;
-		            read_midrange_driver(mid);
+			        read_driver(mid, mid_cpy, "Midr", 0, 0);
+		            //read_midrange_driver(mid);
 			        mem_copy(mid, mid_cpy);
 
 		            sleep(2);
@@ -374,7 +376,8 @@ int main()
 
                 if ((strcmp(s_cmd, "T") == 0) || (strcmp(s_cmd, "t") == 0) || (strcmp(s_cmd, "3") == 0)) {
                     cout << "Tweeter selection menu 3..." << endl;
-			        read_tweet_driver(tweet);
+			        read_driver(tweet, tweet_cpy, "Tweet", 0, 0);
+			        //read_tweet_driver(tweet);
 			        mem_copy(tweet, tweet_cpy);
 
 			        sleep(2);
@@ -383,7 +386,8 @@ int main()
                 if ((strcmp(s_cmd, "P") == 0) || (strcmp(s_cmd, "p") == 0) || (strcmp(s_cmd, "4") == 0)) {
                     cout << "Passive Radiator selection menu 4..." << endl;
 					// if reading in from primary, pass flag = 0 and Surface area of driver = 0
-			        read_passive_driver(pasv, pasv_cpy, 0, 0);
+			        //read_passive_driver(pasv, pasv_cpy, 0, 0);
+			        read_driver(pasv, pasv_cpy, "Pass", 0, 0);
 			        mem_copy(pasv, pasv_cpy);
 
 			        sleep(2);

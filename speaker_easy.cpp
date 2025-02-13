@@ -130,6 +130,8 @@ void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet, Speaker*& pass)
     cin >> temp->Vas;
     cout << "    Compliance                       : ";
     cin >> temp->Cms;
+    cout << "    Driver Mass                      : ";
+    cin >> temp->Mms;
     cout << "    BL (Force Factor)                : ";
     cin >> temp->Bl;
     cout << "    Qts (Total Q factor)             : ";
@@ -232,6 +234,7 @@ void mem_copy(Speaker*& drvr, Speaker*& clone)
 	    strcpy(clone->Build, drvr->Build);
 		clone->Vas = drvr->Vas/1000.00;
 		clone->Cms = drvr->Cms;
+		clone->Mms = drvr->Mms/1000.00;
 		clone->Bl = drvr->Bl;
 		clone->Qts = drvr->Qts;
 		clone->Qes = drvr->Qes;
@@ -352,6 +355,7 @@ void print_part(Speaker* drvr)
             cout << "Build                  : " << ptr->Build << endl;
             cout << "Vas (L || dm^3)        : " << ptr->Vas << endl;
             cout << "Cms                    : " << ptr->Cms << endl;
+            cout << "Mms                    : " << ptr->Mms << endl;
             cout << "Bl                     : " << ptr->Bl  << endl;
             cout << "Qts                    : " << ptr->Qts << endl;
             cout << "Qes                    : " << ptr->Qes << endl;
@@ -414,6 +418,7 @@ void print_speaker(Field_Pad* speaker, std::ofstream& outfile)
             outfile << "| Xmax   | " << speaker->Xmax << "|" << endl;
             outfile << "| Re     | " << speaker->Re << "|" << endl;
             outfile << "| Cms    | " << speaker->Cms << "|" << endl;
+            outfile << "| Mms    | " << speaker->Mms << "|" << endl;
             outfile << "| Bl     | " << speaker->Bl << "|" << endl;
             outfile << "+--------+-----------------------+" << endl;
 			outfile << endl;
@@ -1308,6 +1313,7 @@ void save_data_ptr(Speaker* drvr)
             outfile << ptr->Build << ";";
             outfile << ptr->Vas << ";";
             outfile << ptr->Cms << ";";
+            outfile << ptr->Mms << ";";
             outfile << ptr->Bl << ";";
             outfile << ptr->Qts << ";";
             outfile << ptr->Qes << ";";
@@ -1402,6 +1408,8 @@ void read_bass_driver(Speaker*& drvr)
         temp->Vas = atof(token);
         token = strtok(NULL, ";");
         temp->Cms = atof(token);
+        token = strtok(NULL, ";");
+        temp->Mms = atof(token);
         token = strtok(NULL, ";");
         temp->Bl = atof(token);
         token = strtok(NULL, ";");
@@ -1713,7 +1721,8 @@ void read_tweet_driver(Speaker*& tweet)
     //sleep(3);
 }
 /*--------------------------------------------------------------------------------------------*/
-void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd)
+//void read_passive_driver(Speaker*& drvr, Speaker*& drvr_cpy, int flag, double Sd)
+void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int flag, double Sd)
 /*--------------------------------------------------------------------------------------------*/
 /* read_speaker_data is used to write the contents of the speaker list to a file on locally or*/
 /* on the network drive.                                                                      */
@@ -1730,31 +1739,35 @@ void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd
     string cmd_str;
     string filesdb = "";
 
-	string driver_filter = "Pass";       // the tyoe of driver to search for
+	string driver_filter;       // the tyoe of driver to search for
+	//string driver_filter = "Pass";       // the tyoe of driver to search for
 
     ifstream infile;
     ifstream input;
 
-    pasv = NULL;
+    //pasv = NULL;
+    drvr = NULL;
+
     system("clear");
     drvr_dba = "";
 
     cout << "-------------------------------" << endl;
+
     sleep(3);
 
 	// Old system call to be replaced with python support script throughout
     //cmd_str = "./driver.csh Pass";
-
+	
 	if (flag == 1) {
 	   cout << "Check for driver area..." << endl;
 	   field_index = 10;                // Search for the 10th field - surface area of driver
 	   // Look for the passive driver with a specific Sd against the main bass driver
-       //cmd_str = "python driver_area.py" + driver_filter + " " + to_string(field_index);
-       cmd_str = "python3 driver_area.py Pass 10";
+
+       cmd_str = "/usr/bin/python3 driver_area.py " + drv_type + " " + to_string(field_index);
     } else {
 	   field_index = 0;                // Just search for passive radiator files
-       //cmd_str = "python driver_area.py" + driver_filter + " " + to_string(field_index);
-       cmd_str = "python3 driver_area.py Pass 0";
+
+       cmd_str = "/usr/bin/python3 driver_area.py " + drv_type + " " + to_string(field_index);
     }
 
     cout << "Select a speaker from the list below..." << endl;
@@ -1765,7 +1778,7 @@ void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd
     sleep(2);
 
     cout << endl;
-    cout << "Passive Speaker... : ";
+    cout << "Choose Speaker... : ";
     cin >> drvr_dba;
 
     //drvr_dba = drvr_dba + ".sdb";
@@ -1788,6 +1801,8 @@ void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd
         temp->Vas = atof(token);
         token = strtok(NULL, ";");
         temp->Cms = atof(token);
+        token = strtok(NULL, ";");
+        temp->Mms = atof(token);
         token = strtok(NULL, ";");
         temp->Bl = atof(token);
         token = strtok(NULL, ";");
@@ -1844,8 +1859,10 @@ void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd
         temp->next = NULL;
     
         sleep(2);
-        pasv = temp;
-        ptr = pasv;
+        //pasv = temp;
+        //ptr = pasv;
+        drvr = temp;
+        ptr = drvr;
     }
 }
 /*--------------------------------------------------------------------------------------------*/
@@ -2882,9 +2899,12 @@ void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 	                         // no flange 0.85, one flange 0.485, two flange 0.732 
 	double L_prm;
 	double Lp;
+	double scalar;           // Bass coefficient
 	double Va;               // Equivalent Compliance Volume
 	double Vbv;              // Box volume for this design scope
 	double Vas;              // Equivalent compliant volume (copied from ptr->Vas)
+	double PAR;              // Peak Airflow Ratio
+	double PER;              // Peak Excursion Ratio
 	
 	double height, width;    // Values used to compute the slot port
 
@@ -2892,6 +2912,7 @@ void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 	int cflag;               // exit flags to exit switch and while loops.
 	int flag;                // '0' styate means loop is active in loop scope
 	int kflag;
+	int pflag;
 
     std::string cab_type;
 	std::string plot_name;
@@ -2899,36 +2920,10 @@ void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 	cflag = 0;
     flag = 0;
     kflag = 0;
+    pflag = 0;
 
-	/*------------------------------------------------------------*/
-    /* Setup if values are missing from speaker data file */
-
-    if (ptr->f3_vent <= 0) {
-        ptr->f3_vent = 0.28 * ptr->Fs * pow(ptr->Qts, -1.4);
-    }
-
-    Fb = 1.5 * ptr->f3_vent * pow(ptr->Qts, 0.44);
-
-    /* If driver resonance frequency is missing, compute here */
-    if (Fsb <= 0) {
-        Fsb = ptr->f3_vent/(0.28 * pow(ptr->Qts, -1.4));
-    }
-
-    /* Vent design                                                   */
-    /* If vent parameters are missing or null, define minimal values */
-    if (ptr->v_diam <= 0) {
-        ptr->v_diam = (20 * sqrt(Vd))/(pow(ptr->Fs, 0.25));
-    }
-
-    if (ptr->v_length <= 0) {
-        L_prm = 2350/(pow(Fb, 2) * (ptr->f3_vent));
-
-        ptr->v_length = L_prm * pow(ptr->v_diam, 2) - (0.73 * ptr->v_diam);
-    }
-
-	if (ptr->Sd <= 0) {
-	    ptr->Sd = sqrt((2 * ptr->b_diam)/M_PI);
-	}
+	// retain a copy of the original default value for Vb
+	Vbv = drvr->Vbv;
 
 	/*----------------------------------------------------------------------*/
 	/* Check the value of 0.30 <= Qts <= 0.40. if Qts is not within this    */
@@ -2940,10 +2935,11 @@ void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 	    cout << "The selected driver, " << ptr->Part_num << " has a Qts " << ptr->Qts << " that " << endl;
 		cout << "does not work well for vented designs" << endl;
 		cout << endl;
-		cout << "Chose a more appropriate driver with a Qts that is between 0.30 <= Qts <= 0.40." << endl;
+		cout << "Choose a more appropriate driver with a Qts that is between 0.30 <= Qts <= 0.40." << endl;
+		cout << "or select a slotted port or passive radiator design option." << endl;
 		cout << endl;
 		sleep(3);
-		flag = 1;
+		cflag = 1;
     }
 
     /*---------------------------------------------------------------------------*/
@@ -2951,127 +2947,138 @@ void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
     /*---------------------------------------------------------------------------*/
 
     while (!flag) {
-	    /*---------------------------------------------------------------------------*/
-	    /* Prompt user for port diameter value in mm (normalized for computation)    */
-	    /*---------------------------------------------------------------------------*/
-	    cout << "Enter the desired port diamaeter in mm (10 mm = .4 in): ";
-	    cin >> Dp;
-	    ptr->v_diam = Dp/1000.00;
     
-	    // modify cabinet size if desired
-	    cabinet_initialize(drvr, alpha);
-
         cout << "Choose design based on:" << endl;
         cout << "    1) Standard Bass Reflex - Balanced system response" << endl;
-        cout << "    2) Quasi-Butterworth - Flat response/Low effeiciency" << endl;
-        cout << "    3) Extended Bass Shelf - " << endl;
-		cout << "    4) Slotted Port Design " << endl;
-		cout << "    5) Passive Radiator Design " << endl;
+        cout << "    2) Extended Bass Shelf - " << endl;
+	    cout << "    3) Slotted Port Design " << endl;
+	    cout << "    4) Passive Radiator Design " << endl;
         cout << "-------------------------------------" << endl;
         cin >> bdesign;
-
+    
         switch(bdesign) {
             case 1:
-                plot_name = "Bass-Reflex.vented";
-	            ptr->Vd = sqrt((2 * ptr->Sd)/M_PI);
+                cout << "Bass Reflex design..." << endl;
+				pflag = 0;
+			    cabinet_initialize(ptr, pptr, 3.0, Ap, bdesign);
 
-		        diffusion_menu(kappa);
-
-		        // Solve for port tuning frequency
-		        port_tuning(drvr, 1);
-    
-		        // Compute effective port length with correction
-		        port_length(drvr, kappa);
-    
                 break;
             case 2:
-                plot_name = "Quasi_Butterworth.vented";
-	            ptr->Vd = sqrt((2 * ptr->Sd)/M_PI);
-
-		        diffusion_menu(kappa);
-    
-		        // Solve for port tuning frequency
-		        port_tuning(drvr, 2);
-    
-		        // Compute effective port length with correction
-		        port_length(drvr, kappa);
-    
+                cout << "Extended-Bass Shelf design..." << endl;
+				pflag = 0;
+			    cabinet_initialize(ptr, pptr, 3.5, Ap, bdesign);
+            
                 break;
             case 3:
-                plot_name = "Bass_Shelf.vented";
-	            ptr->Vd = sqrt((2 * ptr->Sd)/M_PI);
+                cout << "Slotted Port design..." << endl;
 
-		        diffusion_menu(kappa);
-    
-		        // Solve for port tuning frequency
-		        port_tuning(drvr, 3);
-            
-		        // Compute effective port length with correction
-		        port_length(drvr, kappa);
-    
+				pflag = 0;
+			    cabinet_initialize(ptr, pptr, 0, Ap, bdesign);
+
                 break;
-		    case 4:
-                plot_name = "Slotted_Port.vented";
-	            ptr->Vd = sqrt((2 * ptr->Sd)/M_PI);
+            case 4:
 
-		        port_tuning(drvr, 4);
+                cout << "Passive Radiator design..." << endl;
+				if (pasv == NULL) {
+				    read_driver(pasv, pasv_cpy, "Pass", 0, 0);
+                    mem_copy(pasv, pasv_cpy);
+				}
+				pflag = 1;
+			    cabinet_initialize(ptr, pptr, 0, Ap, bdesign);
 
-		        // Compute effective port length with correction for one flanged end. 
-				// This overdides the previous selection
-				kappa = 0.732;
-		        port_length_slot(drvr, kappa, height, width);
-    
-			    break;
-			case 5:
-				passive_check(drvr, pasv, pasv_cpy);
-                plot_name = "Passive_Radiator.vented";
-	            ptr->Vd = sqrt((2 * ptr->Sd)/M_PI);
-
-		        port_tuning_pr(drvr, pasv_cpy);
-
-		        // Compute effective port length with correction
-		        port_length_pr(drvr, pasv_cpy, kappa);
-    
-			    break;
+                break;
             default :
-                cout << "Invalid selection. Please choose from one of the 3 options." << endl;
+                cout << "Invalid selection. Please choose from one of the above options." << endl;
                 break;
         }
 
-	// Solve for Acoustic Compliance
-	acoustic_compliance(drvr, Ca);
+		cout << " +-----------------------------------------------------------------+" << endl;
+		cout << " |                          Status Debug                           |" << endl;
+		cout << " +-----------------------------------------------------------------+" << endl;
+		cout << " |     Driver name : " << drvr->Part_num << endl;
+		cout << " +-----------------------------------------------------------------+" << endl;
+		cout << " | Type   : " << drvr->Type << endl;
+		cout << " | Vas    : " << drvr->Vas << endl;
+		cout << " | Sd     : " << drvr->Sd   << endl;
+		cout << " | Fb     : " << drvr->Fb   << endl;
+		cout << " | Fs     : " << drvr->Fs   << endl;
+		cout << " | Vbv    : " << drvr->Vbv  << endl;
+		cout << " | Height : " << drvr->v_height << endl;
+		cout << " | Width  : " << drvr->v_width << endl;
+		cout << " | Length : " << drvr->v_length << endl;
+		//cout << " | Port D : " << drvr->Pd << endl;
+		cout << " +-----------------------------------------------------------------+" << endl;
 
-	cout << "Debug: alpha " << alpha << " Cabinet volume " << drvr->Vbv << endl;
-	cout << "Debug: Fb " << drvr->Fb << " Port length " << drvr->v_length << " Piston area (mm^2) " << drvr->Sd << endl;
-	if (height > 0.0) {
-	    cout << "Debug: Port height " << height << endl;
-	    cout << "Debug: Port width " << width << endl;
-    }
+		if (pflag) {
+		    cout << " +-----------------------------------------------------------------+" << endl;
+		    cout << " |                          Status Debug                           |" << endl;
+		    cout << " +-----------------------------------------------------------------+" << endl;
+		    cout << " |     Driver name : " << pasv->Part_num << endl;
+		    cout << " +-----------------------------------------------------------------+" << endl;
+		    cout << " | Type   : " << pasv->Type << endl;
+		    cout << " | Vas    : " << pasv->Vas << endl;
+		    cout << " | Sd     : " << pasv->Sd   << endl;
+		    cout << " | Fb     : " << pasv->Fb   << endl;
+		    cout << " | Fs     : " << pasv->Fs   << endl;
+		    cout << " | Vbv    : " << pasv->Vbv  << endl;
+		    cout << " | Mass   : " << pasv->Mms << endl;
+		    cout << " +-----------------------------------------------------------------+" << endl;
+		}
 
-	/*-----------------------------*/
-	/* Confirm results are correct */
-	/*-----------------------------*/
+        // Compute effective port length with correction
+        // port_length(drvr, kappa, bdesign);
+    
+	    // Solve for Acoustic Compliance
+	    acoustic_compliance(drvr, Ca);
 
-	if ((drvr->v_length <= 0.0) || (drvr->v_length >= 0.5)) {
-	    confirm_screen();
-	}
+	    cout << "-------------------------------------------------------------" << endl;
+	    cout << " Define global data points for cabinet design. Configure box values " << endl;
+	    cout << "-------------------------------------------------------------" << endl;
 
-	cout << "Accept results? (Y/N) " << endl;
+	    cout << "Debug: alpha " << alpha << " Cabinet volume " << drvr->Vbv << endl;
+	    cout << "Debug: Fb " << drvr->Fb << " Port length " << drvr->v_length << " Port Area(mm^2) " << Ap << endl;
+	    cout << "Debug: PAR " << PAR << " PER " << PER << endl;
+
+	    if (height > 0.0) {
+	        cout << "Debug: Port height " << height << endl;
+	        cout << "Debug: Port width " << width << endl;
+        }
+
+	    cout << "-------------------------------------------------------------" << endl;
+
+	    /*-----------------------------*/
+	    /* Confirm results are correct */
+	    /*-----------------------------*/
+
+	    if ((drvr->v_length <= 0.0) || (drvr->v_length >= 0.5)) {
+	        confirm_screen();
+	    }
+
+	    // Frequency Response
+
+	    cout << "Accept results? (Y/N) " << endl;
         cin >> l_cmd;
+
 
         if ((strcmp(l_cmd, "Y") == 0) || (strcmp(l_cmd, "y") == 0)) {
             flag = 1;
         } else {
+			// Reset compute values to 0
             flag = 0;
+			drvr->Fb = 0;
+			drvr->Vbv = Vbv;
+			drvr->v_diam = 0;
+			drvr->f3_vent = 0;
+			drvr->v_height = 0;
+			drvr->v_width = 0;
+			drvr->v_length = 0;
         }
     }
 
-	// Compute PAR and PER
-	//instantaneous_power_ratings(drvr, 
+    // Compute PAR and PER
+    //instantaneous_power_ratings(drvr, 
 
-	// Compute 3db Ripple
-
-	// Compute Freq Resp
+    // Compute Freq Resp
 
 }
 /*--------------------------------------------------------------------------------------------*/
@@ -3177,7 +3184,8 @@ void passive_check(Speaker* drvr, Speaker*& pasv, Speaker*& pasv_cpy)
 
     if (pasv == NULL)  {
 	    cout << "No passive radiator is loaded into the applicatin. Please select from the following drivers..." << endl;
-		read_passive_driver(pasv, pasv_cpy, 1, drvr->Sd);
+		read_driver(pasv, pasv_cpy, "Pass", 1, drvr->Sd);
+		//read_passive_driver(pasv, pasv_cpy, 1, drvr->Sd);
         mem_copy(pasv, pasv_cpy);
 
 		cout << "--------------------------" << endl;

@@ -29,6 +29,7 @@
 #define extern
 #include "speaker_easy.h"
 #include "menus.h"
+#include "compute.h"
 #undef extern
 
 using namespace std;
@@ -435,50 +436,256 @@ double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double ka
 	return(v3);
 }
 /*--------------------------------------------------------------------------------------------*/
-void cabinet_initialize(Speaker* drvr, double& alpha)
+void cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, double& Area, int bdesign)
 /*--------------------------------------------------------------------------------------------*/
-/* This function prompts the user for an initial cabinet volume.                              */
+/* This function will determine the cabinet volume and the tuning frequency of the bass       */
+/* cabinet/subwoofer.                                                                         */
 /*--------------------------------------------------------------------------------------------*/
 {
-	char val[4];
+    char val[4];
+    char sys[4];
+    char pdm[4];
 
-	double cab_val;               // cabinet val input
-	double Vbv;                    // non-normlaized volume
+    double ap;                    // Aspect ratio of slotted port
+    double Ap;                    // Area of circular port
+    double Alp, Bet;              // alpha value for passive radiator design
+    double var1, var2, var3;      // Temp values used to determine Vb and Fb
+
+    double cab_val;               // cabinet val input
+
+    double kappa;                 // Scaling factor for Extended base Shelf designs 
+	                              // - default is 2.125
+	double length;                // port length
+    double scalar;                // Scale factor for cabinet alignment - slotted design only 
+	                              // - default is 15
+	double Mma;                   // Mass to add for passive radiator to tune to target frequency
+	double Mttl;                  // Total mass of the passive radiator determined by the Fb value
+    double Qtc;                   // Total system Q - approx 0.37 for stanfard vented design
+    double Vbv;                   // non-normlaized volume
 
     int flag;                     // Decision flag
+	int option;                   // used by switch statment
 
-	flag = 0;
+    flag = 0;
+    Vbv = drvr->Vbv * 1000.00;
 
-	Vbv = drvr->Vbv * 1000.00;
-	//drvr->Vbv = 20 * drvr->Vas * pow(drvr->Qts, 3.3);
+    if (bdesign == 1) {
+        cout << "Recommended cabinet size is " << Vbv << " Liters. " << endl;
+		cout << " * Choose a new cabinet value? (Y/N) : ";
+		cin >>sys;
 
-	cout << "Manufacturer recommended cabinet size is " << Vbv << ". Specify a new value? (Y) " << endl;
-	cin >> val;
+        if ((strcmp(sys, "Y") == 0) || (strcmp(sys, "y") == 0)) {
+		    cout << "Specify new cabinet volume: " << endl;
+			cout << " 1) Keep default value " << Vbv << endl;
+			cout << " 2) Specify based on mulitiplier of " << coeff << " * Vas " << endl;
+			cout << " 3) User specified value " << endl;
+			cin >> option;
 
-	if ((strcmp(val, "Y") == 0) || (strcmp(val, "y") == 0)) {
-		// user specified cabinet volume
-		cout << "Enter new cabinet volume (liters): ";
-		cin >> Vbv;
+			switch(option) {
+                case 1:
+				    cout << "Default value is " << Vbv << endl;
+					drvr->Vbv = Vbv/1000.00;
 
-		drvr->Vbv = Vbv/1000.00;
+					break;
+                case 2:
+				    cout << "Coefficient value is " << coeff << endl;
+					drvr->Vbv = (coeff * drvr->Vas);
+					
+					break;
+                case 3:
+				    cout << "Enter desired cabinet size: ";
+					cin >> drvr->Vbv;
+					drvr->Vbv = drvr->Vbv/1000.00;
+					
+					break;
+				default:
+				    cout << "Invalid selection..." << endl;
 
-		alpha = drvr->Vas/drvr->Vbv;
+					break;
+		    }
+		}
 
-		drvr->f3_vent = drvr->Fs * pow(alpha, 0.44);
+		// Enter and normalize diameter/slot size to m^3
+        cout << "+-----------------------------------+" << endl;
+        cout << "| Specify the port area in mm^2:    |" << endl;
+        cout << "| 1 cm <==> 10 mm                   |" << endl;
+        cout << "+-----------------------------------+" << endl;
+        cin >> drvr->v_diam;
+        drvr->v_diam = drvr->v_diam/1000.0;
 
-		//drvr->Fb = drvr->f3_vent * pow(alpha, 0.31);
-	}
-	else {
-		// Natural flat alignment based on T/S params
-		drvr->f3_vent = 0.28 * drvr->Fs * pow(drvr->Qts, -1.4);
+	    diffusion_menu(kappa);
 
-		alpha = drvr->Vbv/drvr->Vas;
+		// Solve for port area opening
+		Area = M_PI * pow((drvr->v_diam/2), 2);
 
-	}
+		drvr->Fb = drvr->Fs * sqrt(drvr->Vas/drvr->Vbv);
 
-	cout << "-----------------------------------------" << endl;
-	cout << " Cabinet Volume m^3 - " << drvr->Vbv << endl;
-	cout << " Vas/Vb ratio       - " << alpha << endl;
+		var1 = pow(C, 2)/(4 * pow(M_PI, 2) * pow(drvr->Fb, 2));
+		var2 = Area/drvr->Vbv;
+
+		length = var1 * var2;
+		
+		drvr->v_length = length - (kappa * drvr->v_diam);
+
+    } else if (bdesign == 2 ) {
+        cout << "Recommended cabinet size is " << Vbv << " Liters. " << endl;
+		cout << " * Choose a new cabinet value? (Y/N) : ";
+		cin >>sys;
+
+        if ((strcmp(sys, "Y") == 0) || (strcmp(sys, "y") == 0)) {
+		    cout << "Specify new cabinet volume: " << endl;
+			cout << " 1) Keep default value " << Vbv << endl;
+			cout << " 2) Specify based on mulitiplier of " << coeff << " * Vas " << endl;
+			cout << " 3) User specified value " << endl;
+			cin >> option;
+
+			switch(option) {
+                case 1:
+				    cout << "Default value is " << Vbv << endl;
+					drvr->Vbv = Vbv/1000.00;
+
+					break;
+                case 2:
+				    cout << "Coefficient value is " << coeff << endl;
+					drvr->Vbv = (coeff * drvr->Vas);
+					
+					break;
+                case 3:
+				    cout << "Enter desired cabinet size: ";
+					cin >> drvr->Vbv;
+					drvr->Vbv = drvr->Vbv/1000.00;
+					
+					break;
+				default:
+				    cout << "Invalid selection..." << endl;
+
+					break;
+		    }
+		}
+
+		// Enter and normalize diameter/slot size to m^3
+        cout << "+-----------------------------------+" << endl;
+        cout << "| Specify the port area in mm^2:    |" << endl;
+        cout << "| 1 cm <==> 10 mm                   |" << endl;
+        cout << "+-----------------------------------+" << endl;
+        cin >> drvr->v_diam;
+        drvr->v_diam = drvr->v_diam/1000.0;
+
+	    diffusion_menu(kappa);
+
+		// Solve for port area opening
+		Area = M_PI * pow((drvr->v_diam/2), 2);
+
+		drvr->Fb = drvr->Fs * sqrt(drvr->Vas/drvr->Vbv);
+
+		var1 = pow(C, 2)/(4 * pow(M_PI, 2) * pow(drvr->Fb, 2));
+		var2 = Area/drvr->Vbv;
+
+		length = var1 * var2;
+		
+		drvr->v_length = length - (kappa * drvr->v_diam);
+
+    } else if (bdesign == 3) {
+        cout << "Recommended cabinet size is " << Vbv << " Liters. " << endl;
+		cout << " * Choose a new cabinet value? (Y/N) : ";
+		cin >> sys;
+
+        if ((strcmp(sys, "Y") == 0) || (strcmp(sys, "y") == 0)) {
+		    cout << "Specify new cabinet volume: " << endl;
+			cout << " 1) Keep default value " << Vbv << endl;
+			cout << " 2) Specify based on mulitiplier of " << 3.0 << " * Vas " << endl;
+			cout << " 3) Specify based on mulitiplier of " << 3.5 << " * Vas " << endl;
+			cout << " 4) User specified value " << endl;
+			cin >> option;
+
+			switch(option) {
+                case 1:
+				    cout << "Default value is " << Vbv << endl;
+					drvr->Vbv = Vbv/1000.00;
+
+					break;
+                case 2:
+				    cout << "Coefficient value is 3.0" << endl;
+					drvr->Vbv = (3.0 * drvr->Vas);
+					
+					break;
+                case 3:
+				    cout << "Coefficient value is 3.5 (deeper bass)" << endl;
+					drvr->Vbv = (3.5 * drvr->Vas);
+					
+					break;
+                case 4:
+				    cout << "Enter desired cabinet size: ";
+					cin >> drvr->Vbv;
+					drvr->Vbv = drvr->Vbv/1000.00;
+					
+					break;
+				default:
+				    cout << "Invalid selection..." << endl;
+
+					break;
+		    }
+		}
+
+		// Solve for port area opening
+		Area = drvr->Sd * 0.05;
+		Ap = Area * 1e6;
+        cout << "+--------------------------------------+" << endl;
+		cout << "| Recommended slot area is: " << Ap << " mm^2 |" << endl;
+        cout << "| Specify the slot area in mm^2: (Y/N) |" << endl;
+        cout << "| 1 cm <==> 10 mm                      |" << endl;
+        cout << "+--------------------------------------+" << endl;
+		cin >> sys;
+
+		if (( strcmp(sys, "Y") == 0 )||(strcmp(sys, "y") == 0 )) {
+            //cin >> drvr->v_diam;
+            //drvr->v_diam = drvr->v_diam/1000.0;
+            cin >> Area;
+            Area = Area/1000.0;
+		}
+
+		// user selected value for kappa and aspect ratio of slotted port
+		aspect_kappa(ap, kappa);
+
+		drvr->Fb = drvr->Fs * sqrt(drvr->Vas/drvr->Vbv);
+
+		// Solve for slot dimensions
+		drvr->v_height = sqrt(Area/ap);
+		drvr->v_width = ap * drvr->v_height;
+
+		// solve for port length
+		var1 = pow(C, 2)/(4 * pow(M_PI, 2) * pow(drvr->Fb, 2));
+		var2 = Area/drvr->Vbv;
+
+		length = var1 * var2;
+
+		drvr->v_length = length - (kappa * Area);
+		
+    } else if (bdesign == 4) {
+        cout << "Recommended cabinet size is " << Vbv << " Liters. " << endl;
+        cout << "Specify a new value based on Thiel/Small Specifications? (Y/N) " << endl;
+        cin >> val;
+
+        if ((strcmp(val, "Y") == 0) || (strcmp(val, "y") == 0)) {
+            cin >> drvr->Vbv;
+		    drvr->Vbv = coeff *drvr->Vbv/1000.00;
+		}
+
+        // Solve for total mass of Passive Radiator
+		var1 = 1.42e5 * pasv->Sd;
+		var2 = pow((2 * M_PI * drvr->Fb), 2) * drvr->Vbv;
+
+		Mttl = var1/var2;
+
+		var3 = pasv->Mms;
+
+		pasv->Mms = Mttl - var3;
+    }
+
+    cout << "-----------------------------------------" << endl;
+    cout << " Cabinet Volume m^3 - " << drvr->Vbv << endl;
+    cout << " Tuned frequency    - " << drvr->Fb << endl;
+    //cout << " Vas/Vb ratio       - " << alpha << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void acoustic_compliance(Speaker* drvr, double& Ca)
@@ -488,9 +695,9 @@ void acoustic_compliance(Speaker* drvr, double& Ca)
 {
     double var1, var2;                            // placeholder vars
 	
-	Ca = drvr->Vbv/drvr->Vas;
+    Ca = drvr->Vbv/drvr->Vas;
 
-	cout << " Acoustic compliance   - " << Ca << endl;
+    cout << " Acoustic compliance   - " << Ca << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void port_tuning(Speaker* drvr, int val)
@@ -499,58 +706,92 @@ void port_tuning(Speaker* drvr, int val)
 /* design/define the port length of the port vent.                                            */
 /*--------------------------------------------------------------------------------------------*/
 {
-	double k;                          // ESB scaling fctor
-	double Va;                         // used to calculate the value of k(appa)
+    double k;                          // ESB scaling fctor
+    double Va;                         // used to calculate the value of k(appa)
 
+    Va = sqrt(drvr->Vas/drvr->Vbv);
 
-	Va = sqrt(drvr->Vas/drvr->Vbv);
-
-	if (val == 1) {
-	    // For typical Bass Reflex use k(appa) as a ratio of the sq root of Va to Box Volume
-	    drvr->Fb = 0.42 * drvr->Fs;
-	} else if (val == 2) {
-	    // Moderately aggressive bass response
-	    drvr->Fb = 0.38 * drvr->Fs;
-	} else if (val == 3 ) {
-	    // Aggressive bass response
-	    drvr->Fb = 0.33 * drvr->Fs;
-	} else {
-		// assume Fb == Fs
-	    drvr->Fb = drvr->Fs;
+    if (val == 1) {
+        // For typical Bass Reflex use k(appa) as a ratio of the sq root of Va to Box Volume
+        //drvr->Vbv = 20 * drvr->Vas * pow(drvr->Qts, 3.3);
+        drvr->Fb = 0.42 * drvr->Fs;
+    } else if (val == 2) {
+        // Moderately aggressive bass response
+        drvr->Fb = 0.38 * drvr->Fs;
+    } else if (val == 3 ) {
+        // Aggressive bass response
+        drvr->Fb = 0.33 * drvr->Fs;
+    } else if (val == 4 ) {
+        // assume Fb == Fs
+        drvr->Fb = drvr->Fs;
     }
-
 }
 /*--------------------------------------------------------------------------------------------*/
-void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy)
+void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy, Cabinet* box)
 /*--------------------------------------------------------------------------------------------*/
 /* This procedure will compute the tuning frequency (Fb) for a given cabient and then         */
 /* design/define the port length of the port vent.                                            */
 /*--------------------------------------------------------------------------------------------*/
 {
-	double diff;                       // Difference between PR Fs vs Woof Fs
-	double k;                          // ESB scaling fctor
+	char ans[4];                       // Y/N to change Fb
+	double diff, split;                // Difference between PR Fs vs Woof Fs
+	double Fb;                         // New target tuning frequency
+	double Mms;                        // Required mass to meet Fb requirments of Passive Radiator
+	double ms_df;                      // Amount of mass that needs to be added to the 
+	                                   // passive readiator to meet the design goals
 	double Va;                         // used to calculate the value of k(appa)
 
 	double var1, var2, var3;           // values used for determining port tuning
 
-	Va = sqrt(drvr->Vas/drvr->Vbv);
+	int flag;                          // flag used to determine Fb for design
 
-	diff = drvr->Fs - pasv_cpy->Fs;
-
-	cout << "Debug Resoance Frequency comparison for Mms computation..." << endl;
-	cout << diff << " Hz" << endl;
+	flag = 0;
 
 	drvr->Fb = drvr->Fs;
 
-	var1 = pow((2 * M_PI * pasv_cpy->Fs), 2) * pasv_cpy->Cms;
-	pasv_cpy->Mms = 1/var1;
+	cout << "Debug Resoance Frequency comparison for Mms computation..." << endl;
+	cout << "Bass Fs - " << drvr->Fs << " Passive Fs - " << pasv_cpy->Fs << endl;
 
+	while (!flag) {
+	    cout << "Recommended Fb is " << drvr->Fb << " Hz. Keep or specify a new Fb value? (Y/N)" << endl;
+		cin >> ans;
 
-	//pasv_cpy->Fs = var2 * sqrt(var3);
+		if ((strcmp(ans, "Y") == 0) || (strcmp(ans, "y") == 0)) {
+		     cout << "Enter target Fb for cabinet: ";
+			 cin >> drvr->Fb;
+		}
 
+		flag = 1;
+	}
+
+	// Set the PR space to the same frequency tuning
+	box->Fb = drvr->Fb;
+	
+	box->Mms = SolveMass(drvr->Sd, pasv_cpy->Sd, drvr->Fb, drvr->Vbv);
+
+	//ms_df = Mms - pasv_cpy->Mms;
+	ms_df = box->Mms - pasv_cpy->Mms;
+
+	cout << "Passive Radiator Mass is = " << pasv_cpy->Mms << endl;
+	cout << "Total Mass to adjust Passive Radiator to new Fb = " << ms_df << endl;
+	cout << "Total adjusted mass of PR " << box->Mms;
+	cout << "Mass delta = " << ms_df << endl;
+
+	var1 = (1/2 * M_PI);
+	box->Cms = pasv_cpy->Cms;
+	var2 = sqrt(1/(box->Mms * box->Cms));
+	box->Fb = var1 * var2;
+
+	cout << "DEBUG " << endl;
+	cout << "-------------------------------------" << endl;
+	cout << "Passive Fb    : " << pasv_cpy->Fb << endl;
+	cout << "Bass Fb       : " << drvr->Fb << endl;
+	cout << "PassRad Mass  : " << pasv_cpy->Mms << endl;
+	cout << "Pass init mass: " << drvr->Mms << endl;
+	cout << "PassRad Cms   : " << pasv_cpy->Cms << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
-void port_length(Speaker* drvr, double kappa)
+void port_length(Speaker* drvr, double ap, double &kappa, int type)
 /*--------------------------------------------------------------------------------------------*/
 /* port_length() is used to determine the effective port length for the specifed cabinet      */
 /* volume, tuning frequnecy and port correction factor (kappa) for units in mm.               */
@@ -559,21 +800,44 @@ void port_length(Speaker* drvr, double kappa)
 /* L(correct) =  -1.0 * (kappa * Dp)                                                          */
 /*--------------------------------------------------------------------------------------------*/
 {
-    double Ap;                    // Port area computation A = 2* PI * Dp/2
+    double Ap;                    // Port area computation A = PI * (Dp/2)^2
+    double ar;                    // Port aspect ratio
 
-	double scale = 0.023562;        // constant value 0.023562 in mm
-	double length;                // port length calculation
+    //double scale = 0.023562;        // constant value 0.023562 in mm
+    double scale = 23562;        // constant value 0.023562 in mm
+    double length;                // port length calculation
+    
 
-	double var1, var2, var3;      // temporary storage values
+    double var1, var2, var3;      // temporary storage values
 
-	var1 = scale * pow(drvr->b_diam, 2);
-	var2 = pow(drvr->Fb, 2) * drvr->Vbv;
-	var3 = kappa * drvr->b_diam;
-	drvr->v_length = var1/var2 - var3;
-	
+    if ((type == 1) || (type == 2) || (type == 3)) {
+        // Standard port design
+        Ap = M_PI * pow((drvr->Pd/2), 2);
+        var1 = pow(C, 2)/(4 * pow(M_PI, 2) * pow(drvr->Fb, 2));
+        var2 = drvr->Vbv/Ap;
+        var3 = kappa * (drvr->Pd/2);
+
+        drvr->v_length = var1 * var2 - var3;
+
+        cout << "D E B U G : diameter = " << drvr->v_diam << endl;
+        cout << "D E B U G : length = " << drvr->v_length << endl;
+    } else {
+        // Slotted Port design
+        aspect_kappa(ar, kappa);
+
+        //drvr->Pd = drvr->Sd/3;
+        drvr->Pd = 0.05 * drvr->Vbv;
+
+        drvr->v_height = sqrt(drvr->Pd/ar);
+        drvr->v_width = ar * drvr->v_height;
+        cout << "D E B U G : height = " << drvr->v_height << endl;
+        cout << "D E B U G : width  = " << drvr->v_width << endl;
+        cout << "D E B U G : length = " << drvr->v_length << endl;
+    }
+
 }
 /*--------------------------------------------------------------------------------------------*/
-void port_length_slot(Speaker* drvr, double kappa, double& height, double& width)
+void port_length_slot(Speaker* drvr, double ap, double kappa)
 /*--------------------------------------------------------------------------------------------*/
 /* This procedure is used to determine the port length for a rectangular port on a speaker    */
 /*--------------------------------------------------------------------------------------------*/
@@ -585,12 +849,13 @@ void port_length_slot(Speaker* drvr, double kappa, double& height, double& width
 	double Ht;                    // Port height 
 
 
-	// Compute height and width of port vis driver surface area
+	// Compute height and width of port via driver surface area
 	Ap = drvr->Sd * 0.10;
 
 	// Compute slot area based on 3:1 ratio of height vs width
-	width = sqrt(Ap/3);
-	height = 3 * width;
+	Ap = sqrt(Ap/3);
+	drvr->v_height = sqrt(Ap/3);
+	drvr->v_width = ap * drvr->v_height;
 
 	d = 2 * M_PI * drvr->Fb;
 
@@ -609,17 +874,105 @@ void port_length_slot(Speaker* drvr, double kappa, double& height, double& width
 	cout << " Vbv (vol)   : "<< drvr->Vbv << endl;
 	cout << " Port area   : "<< Ap << endl;
 	cout << " port length : "<< drvr->v_length << endl;
-	cout << " port width  : "<< width << endl;
-	cout << " port height : "<< height << endl;
+	cout << " port width  : "<< drvr->v_width << endl;
+	cout << " port height : "<< drvr->v_height << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
-void port_length_pr(Speaker* drvr, Speaker* pasv_cpy, double kappa)
+void port_dynamics(Speaker* drvr, int type, double& PAR, double& PER)
 /*--------------------------------------------------------------------------------------------*/
-/* This procedure is used to determine the optimum mass for a passive radiator used in place  */
-/* of a slotted or circular port due to size restrictions.                                    */
+/* This procedure is used to determine the PAR and PER for various vented configurations.     */
+/* This procedure is not executed for the passive radiator design option.                     */
 /*--------------------------------------------------------------------------------------------*/
 {
-    cout << "dummy name" << endl;
+	double Dp;                // Port diameter
+	double Sv;                // Area of the vent
+	double Vpm;               // Air velocity (max) at the port
+	double Vdm;               // Air velocity (max) at the diaphragm
+
+    cout << "Compute PAR/PER values for vented designs..." << endl;
+
+	if (type == 0) {
+	    cout << "compute PAR based on ported design..." << endl;
+
+		// Solve port velocity based on a cylindrical port
+		Dp = 2 * sqrt(drvr->Sd/M_PI);
+
+		// Solve for cross sectional area od vent
+		Sv = (M_PI * pow(drvr->v_diam, 2))/4;
+
+		// Solve for air velocity max @ the port
+		Vpm = (drvr->Xmax * drvr->Sd)/Sv;
+
+		// Solve for air velocity max @ the diaphragm
+		Vdm = drvr->Xmax * drvr->Sd;
+
+		// compute PAR
+		PAR = Vpm/Vdm;
+
+	    // Compute Peak Excursion Ratio
+	    PER = drvr->Xmax * (drvr->Fb/drvr->Fs);
+    } else if (type == 1) {
+	    cout << "compute PAR based on slotted design..." << endl;
+
+		// Solve port velocity based on a cylindrical port
+		Dp = 2 * sqrt(drvr->Sd/M_PI);
+
+		// Solve for cross sectional area od vent
+		Sv = (M_PI * pow(drvr->v_diam, 2))/4;
+
+		// Solve for air velocity max @ the port
+		Vpm = (drvr->Xmax * drvr->Sd)/Sv;
+
+		// Solve for air velocity max @ the diaphragm
+		Vdm = drvr->Xmax * drvr->Sd;
+
+		// compute PAR
+		PAR = Vpm/Vdm;
+
+	    // Compute Peak Excursion Ratio
+	    PER = drvr->Xmax * (drvr->Fb/drvr->Fs);
+    } else {
+		// PAR does not exist for a passive radiator
+		PAR = 0;
+
+	    // compute Peak Excustion Ratio
+	    PER = drvr->Xmax * (drvr->Fb/drvr->Fs);
+	}
+}
+/*--------------------------------------------------------------------------------------------*/
+void cabinet_ripple(Speaker* drvr, Speaker* pasv_cpy, int i)
+/*--------------------------------------------------------------------------------------------*/
+/* This function calculate the -3db ripple for all of the vented cabinet designs.             */
+/*--------------------------------------------------------------------------------------------*/
+{
+	double Mair;          // Mass of air in the cabinet
+
+    // Determine the proper expresion got -3db ripple
+	if (i == 1) {
+	    drvr->f3_vent = drvr->Fb * sqrt(1 - (1/(4 * pow(drvr->Qts, 2))));
+	} else {
+		// Compute the Total Q for a Passive Radiator
+	    pasv_cpy->Qts = drvr->Qts/(sqrt(1 + (1.8 * drvr->Vbv/pasv_cpy->Mms)));
+		
+	    drvr->f3_vent = drvr->Fb * sqrt(1 - (1/(4 * pow(drvr->Qts, 2))));
+	}    
+}
+/*--------------------------------------------------------------------------------------------*/
+double SolveMass(double drvr, double pr, double Fb, double Vb)
+/*--------------------------------------------------------------------------------------------*/
+/* This function solves the necessary mass of the passive rafiator to meet the needed Fb value*/
+/* for a given cabinet size, speaker area and passive radiator area.                          */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double var1, var2, var3;           // Temporary values used for computation
+
+	var1 = (pow(C, 2) * drvr);
+
+	var2 = pow((2 * M_PI * Fb), 2);
+
+	var3 = pr/Vb;
+
+	return(var1/(var2 * var3));
 }
 /*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr)
