@@ -139,7 +139,6 @@ void cabinet_design_screen()
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) (S)ealed Cabinet                     |" << endl;
     cout << "    |  2) (V)ented Cabinet                     |" << endl;
-    //cout << "    |  3) (P)assive Radiator                   |" << endl;
     cout << "    |  3) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
@@ -242,6 +241,17 @@ void confirm_screen()
     cout << "    +-------------------------------------------------------------------------+" << endl;
     cout << "    | If a slotted port design is being used and the port length is longer    |" << endl;
     cout << "    | than 0.5 meter (approx 19.5 inches) consider using a passive radiator.  |" << endl;
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void passive_screen()
+{
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+	cout << "    | The amount of weight needed to adjust the passive radiator is negative. |" << endl;
+	cout << "    | Choose feom the following solutions:                                    |" << endl;
+	cout << "    |    - A different passive radiator                                       |" << endl;
+	cout << "    |    - A different vented design                                          |" << endl;
+	cout << "    |    - A diffent bass driver.                                             |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/

@@ -33,6 +33,7 @@ extern struct Speaker
     double Vas;               // Equivalent Volume of cabinet dm^3
     double Cms;               // Compliance
     double Mms;               // Derived from Cms, Fs used primarily for Passive drivers
+    double Mas;               // Added mass to meet design needs, primarily for Passive drivers
     double Bl;                // BL Product (aka Force Factor)
     double Qts;               // Total Q factor
     double Qes;               // Electrical Q factor
@@ -57,10 +58,14 @@ extern struct Speaker
     double f3_seal;           // 3db down point (rolloff)
     double f3_vent;           // 3db down point (rolloff)
 	double Pd;                // Port diameter - either a cylinder or slot
-    double v_diam;            // vent diameter (from data sheet - default)
-	double v_height;          // port height - used ONLY for slotted designs
-	double v_width;           // port width - used ONLY for slotted designs
-    double v_length;          // vent length (from data sheet - default)
+	double Area;              // Port/slot area;
+	double Volume;            // Volume of port: HxWxL for slot or pi*r*L for cylnder port
+	double Vol_gross;         // Total volume of the box (Vb), the Driver (Vdrv) and the port/slot
+	                          // (if a vented design).
+    double v_diam;            // vent diameter - aka vertical diam or port height
+	double w_height;          // port height - aka horizontal diam or port height
+	double w_width;           // port width - used ONLY for slotted designs
+    double p_length;          // vent length (from data sheet - default)
     double b_diam;            // Overall basket diameter or diaphragm width if 
 	                          // ribbon - used for designing physical cabinet
     double b_height;          // driver height. Used primarily for ribbon tweeters. 
@@ -75,18 +80,22 @@ extern struct Cabinet
 /*--------------------------------------------------------------------------------------------*/
 {
     char Part_num[64]; 
+	char Type[64];                // Speaker type. One of Woof, Pass, Twet or Midr
 	char Build[64];               // Construction type: cone or ribbon/electrostatic 
 	char Enclosure[64];           // Sealed or Ported
 	double Cms;                   // Complianc value of the PR driver (passive radiator specifically)
 	double Mms;                   // Total mass of driver (passive radiator specifically)
 	double Fb;                    // Frequency of cabinet
-    double vent_diam;             // Can be used for port height if used as a ducted port
-    double vent_width;            // Can be used for port width if used as a ducted port
-    double vent_length;
+	double port_area;             // Area of slot/port opening in mm^2
+    double port_diam;             // Can be used for port height if used as a ducted port
+    double port_width;            // Can be used for port width if used as a ducted port
+    double port_length;
     double diam;                  // Overall basket diameter - used for designing physical cabinet
     double depth;                 // Overall driver depth - used for designing physical cabinet
 	double height;                // overall driver height - used for designing physical cabinet
     double cab_volume;            // This includes the volume for ducted/ported designs as well
+	double port_volume;           // Volume of the port - circular or slotted
+	double gross_volume;          // This covers all aspects of space consumption (drivers, ports, etc)
     double freq_lo;
     double freq_hi;
     double imp_Nom;
@@ -159,7 +168,7 @@ extern struct Field_Pad
     char f3_seal[23];        // 3db down point (rolloff)
     char f3_vent[23];        // 3db down point (rolloff)
     char v_diam[23];         // vent diameter (from data sheet - default)
-    char v_length[23];       // vent length (from data sheet - default)
+    char p_length[23];       // vent length (from data sheet - default)
     char b_diam[23];         // Overall basket diameter or diaphragm width if 
 	                         // ribbon - used for designing physical cabinet
     char b_height[23];       // driver height. Used primarily for ribbon tweeters. 
@@ -176,8 +185,9 @@ extern struct Cab_Pad
     char Part_num[64]; //*
 	char Build[64]; //*           // Construction type: cone or ribbon/electrostatic 
 	char Enclosure[23];           // Sealed or Ported
-    char vent_diam[23];
-    char vent_length[23];
+    char port_area[23];
+    char port_diam[23];
+    char port_length[23];
     char diam[23]; //*              // Overall basket diameter - used for designing physical cabinet
     char depth[23]; //*             // Overall driver depth - used for designing physical cabinet
 	char height[23]; //*            // overall driver height - used for designing physical cabinet
@@ -206,6 +216,7 @@ const double liter_to_cubicInch = 61.0237;
 const double met_to_decmet = 1000.0;
 const double liter_to_cubic = 1000.0;
 const double mm_to_inch = 0.0393701;
+const double m_to_inch = 39.3701;
 const double cm_to_mm = 10.0;
 const double mm_to_m = 1000.0;
 const double rho = 1.2;         // kg/m^3
@@ -285,7 +296,6 @@ void read_midrange_driver(Speaker*& mid);
 /*--------------------------------------------------------------------------------------------*/
 void read_tweet_driver(Speaker*& tweet);
 /*--------------------------------------------------------------------------------------------*/
-//void read_passive_driver(Speaker*& pasv, Speaker*& pasv_cpy, int flag, double Sd);
 void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int flag, double Sd);
 /*--------------------------------------------------------------------------------------------*/
 void create_data_fields(Speaker* drvr, Field_Pad*& datum, std::ofstream& outfile);
@@ -319,6 +329,8 @@ void print_crossover(Filter crossover, std::ofstream& outfile);
 void purge_data(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void clear_formatting(Field_Pad* datum);
+/*--------------------------------------------------------------------------------------------*/
+void display_vented_data(Speaker* drvr, Cabinet* box);
 /*--------------------------------------------------------------------------------------------*/
 /*                                 end of speaker_easy.h                                      */
 /*--------------------------------------------------------------------------------------------*/

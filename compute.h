@@ -12,7 +12,7 @@ void data_field(Speaker* drvr, std::string& data_display);
 /*--------------------------------------------------------------------------------------------*/
 double compute_efficiency(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
-void cabinet_design(Speaker* drvr, Cabinet* box, std::string cab_type, std::string speaker_type);
+void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type, std::string speaker_type);
 /*--------------------------------------------------------------------------------------------*/
 void tweeter_cabinet_design(Speaker* drvr, Cabinet* box);
 /*--------------------------------------------------------------------------------------------*/
@@ -26,9 +26,13 @@ double tuning_frequency(Speaker* drvr, std::string cab_type);
 /*--------------------------------------------------------------------------------------------*/
 double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double kappa);
 /*--------------------------------------------------------------------------------------------*/
-void cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, double& Area, int bdesign);
+void vented_cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, int bdesign);
 /*--------------------------------------------------------------------------------------------*/
 void acoustic_compliance(Speaker* drvr, double& Ca);
+/*--------------------------------------------------------------------------------------------*/
+void power_dynamics(Speaker* drvr, double& PAR, double& PER, double& Rh);
+/*--------------------------------------------------------------------------------------------*/
+void frequency_response_vented(Speaker* drvr, std::string plot);
 /*--------------------------------------------------------------------------------------------*/
 void port_tuning(Speaker* drvr, int val);
 /*--------------------------------------------------------------------------------------------*/
@@ -47,4 +51,6 @@ void cabinet_ripple(Speaker* drvr, Speaker* pasv_cpy, int i);
 double SolveMass(double drvr, double pr, double Fb, double Vb);
 /*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr);
+/*--------------------------------------------------------------------------------------------*/
+void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign, double PAR, double PER, double Rh);
 /*--------------------------------------------------------------------------------------------*/

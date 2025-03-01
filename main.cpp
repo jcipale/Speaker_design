@@ -138,7 +138,6 @@ int main()
 
         if ((strcmp(t_cmd, "B") == 0) || (strcmp(t_cmd, "b") == 0) || (strcmp(t_cmd, "1") == 0)) {
             build(drvr, mid, tweet, pasv);
-			cout << "DBG - copy data reference..." << endl;
 			sleep(3);
 
 			mem_copy(pasv, pasv_cpy);
@@ -181,16 +180,6 @@ int main()
 							cout << "leaving vented case" << endl;
 						    sleep(2);
 					    }
-
-						/*
-                        if ((strcmp(w_cmd, "P") == 0) || (strcmp(w_cmd, "p") == 0) || (strcmp(w_cmd, "3") == 0)) {
-					        cout << "In passive design space..." << endl;
-							cout << "This feature is not implemented at this time" << endl;
-							closed_box_design(drvr_cpy, bass);
-							passive_box_design(pasv_cpy, bass, pass);
-						    sleep(2);
-					    }
-						*/
 
                         if ((strcmp(w_cmd, "E") == 0) || (strcmp(w_cmd, "e") == 0) || (strcmp(w_cmd, "3") == 0)) {
 					        cout << "Exit subwoofer design..." << endl;
@@ -386,7 +375,6 @@ int main()
                 if ((strcmp(s_cmd, "P") == 0) || (strcmp(s_cmd, "p") == 0) || (strcmp(s_cmd, "4") == 0)) {
                     cout << "Passive Radiator selection menu 4..." << endl;
 					// if reading in from primary, pass flag = 0 and Surface area of driver = 0
-			        //read_passive_driver(pasv, pasv_cpy, 0, 0);
 			        read_driver(pasv, pasv_cpy, "Pass", 0, 0);
 			        mem_copy(pasv, pasv_cpy);
 
@@ -421,7 +409,6 @@ int main()
 			create_cab_fields(treb, High, outfile);
 
 	        write_design_data(Passive, Bass, Midrange, Tweeter, outfile);
-			////write_cabinet_data(pass, bass, midr, treb, outfile);
 
 			/* Need a scheme to determine what kind of filter is being used */
 			write_filter_data(lowpass, bandpass, highpass, xover, outfile);
