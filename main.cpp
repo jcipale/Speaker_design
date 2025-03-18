@@ -46,6 +46,11 @@
 /* Final code cleanup. Reduce/remove extraneous sleep times. Commit code to github under      */
 /* Ver_1.0                                                                                    */
 /*--------------------------------------------------------------------------------------------*/
+/* 03/18/2024:                                                                                */
+/* Completed code optimization of following:                                                  */
+/*     - Vented and Sealed speaker designs.                                                   */
+/*     - Cleaned up code base to remove extraneous/unused functions/procedures.               */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
@@ -201,27 +206,18 @@ int main()
                         if ((strcmp(tw_cmd, "S") == 0) || (strcmp(tw_cmd, "s") == 0) || (strcmp(tw_cmd, "1") == 0)) {
 					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr_cpy, bass);
-							closed_box_design(tweet_cpy, treb);
+							//closed_box_design(tweet_cpy, treb);
+							closed_midrange_design(tweet_cpy, treb, bass->Width);
 						    sleep(2);
 					    }
 
                         if ((strcmp(tw_cmd, "V") == 0) || (strcmp(tw_cmd, "v") == 0) || (strcmp(tw_cmd, "2") == 0)) {
 					        cout << "In vented design space..." << endl;
 							closed_box_design(drvr_cpy, bass);
-							closed_box_design(tweet_cpy, treb);
+							//closed_box_design(tweet_cpy, treb);
+							closed_midrange_design(tweet_cpy, treb, bass->Width);
 						    sleep(2);
 					    }
-
-						/*
-                        if ((strcmp(w_cmd, "P") == 0) || (strcmp(w_cmd, "p") == 0) || (strcmp(w_cmd, "3") == 0)) {
-					        cout << "In passive design space..." << endl;
-							cout << "This feature is not implemented at this time" << endl;
-							closed_box_design(drvr_cpy, bass);
-							passive_box_design(pasv_cpy, bass, pass);
-							vented_box_design(tweet_cpy, treb);
-						    sleep(2);
-					    }
-						*/
 
                         if ((strcmp(tw_cmd, "E") == 0) || (strcmp(tw_cmd, "e") == 0) || (strcmp(tw_cmd, "3") == 0)) {
 					        cout << "Exit two-way speaker design..." << endl;
@@ -243,30 +239,22 @@ int main()
                         if ((strcmp(th_cmd, "S") == 0) || (strcmp(th_cmd, "s") == 0) || (strcmp(th_cmd, "1") == 0)) {
 					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr_cpy, bass);
-							closed_box_design(mid_cpy, midr);
-							closed_box_design(tweet_cpy, treb);
+							//closed_box_design(mid_cpy, midr);
+							//closed_box_design(tweet_cpy, treb);
+							closed_midrange_design(mid_cpy, midr, bass->Width);
+							closed_midrange_design(tweet_cpy, treb, bass->Width);
 						    sleep(2);
 					    }
 
                         if ((strcmp(th_cmd, "V") == 0) || (strcmp(th_cmd, "v") == 0) || (strcmp(th_cmd, "2") == 0)) {
 					        cout << "In vented design space..." << endl;
 							vented_box_design(drvr_cpy, pasv, pasv_cpy, bass, pass);
-							closed_box_design(mid_cpy, midr);
-							closed_box_design(tweet_cpy, treb);
+							closed_midrange_design(mid_cpy, midr, bass->Width);
+							closed_midrange_design(tweet_cpy, treb, bass->Width);
+							//closed_box_design(mid_cpy, midr);
+							//closed_box_design(tweet_cpy, treb);
 						    sleep(2);
 					    }
-
-						/*
-                        if ((strcmp(w_cmd, "P") == 0) || (strcmp(w_cmd, "p") == 0) || (strcmp(w_cmd, "3") == 0)) {
-					        cout << "In passive design space..." << endl;
-							cout << "This feature is not implemented at this time" << endl;
-							closed_box_design(drvr_cpy, bass);
-							passive_box_design(pasv_cpy, bass, pass);
-							closed_box_design(mid_cpy, midr);
-							vented_box_design(tweet_cpy, treb);
-						    sleep(2);
-					    }
-						*/
 
                         if ((strcmp(th_cmd, "E") == 1) || (strcmp(th_cmd, "e") == 0) || (strcmp(th_cmd, "3") == 0)) {
 					        cout << "Exit three-way speaker design..." << endl;
@@ -348,7 +336,6 @@ int main()
                     cout << "Bass selection menu 1..." << endl;
 					speaker = "Woof";
 			        read_driver(drvr, drvr_cpy, "Woof", 0, 0);
-		            //read_bass_driver(drvr);
 			        mem_copy(drvr, drvr_cpy);
 
 		            sleep(2);
@@ -357,7 +344,6 @@ int main()
                 if ((strcmp(s_cmd, "M") == 0) || (strcmp(s_cmd, "m") == 0) || (strcmp(s_cmd, "2") == 0)) {
                     cout << "Midrange selection menu 2..." << endl;
 			        read_driver(mid, mid_cpy, "Midr", 0, 0);
-		            //read_midrange_driver(mid);
 			        mem_copy(mid, mid_cpy);
 
 		            sleep(2);
@@ -366,7 +352,6 @@ int main()
                 if ((strcmp(s_cmd, "T") == 0) || (strcmp(s_cmd, "t") == 0) || (strcmp(s_cmd, "3") == 0)) {
                     cout << "Tweeter selection menu 3..." << endl;
 			        read_driver(tweet, tweet_cpy, "Tweet", 0, 0);
-			        //read_tweet_driver(tweet);
 			        mem_copy(tweet, tweet_cpy);
 
 			        sleep(2);

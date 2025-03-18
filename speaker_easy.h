@@ -21,6 +21,16 @@
 /*    parts_list()                                                                            */
 /*    read_bass_driver()/read_midrange_driver()/read_tweeter_driver()                         */
 /*--------------------------------------------------------------------------------------------*/
+/* 03/18/2024:                                                                                */
+/* Completed code optimization of following:                                                  */
+/*     - vented_box_design()                                                                  */
+/*     - closed_box_design()                                                                  */
+/*     - added in code logic to incorporate passive radiators into design.                    */
+/*     - cleaned up and optimzied code to design vented and slotted speakers.                 */
+/*     - closed_midrange_design(): Optimzed code to design dome/ribbon mid/treble speakers    */
+/*     - Finished revision/optimization of frequency_response_sealed() and                    */
+/*       frequency_response_vented.                                                           */
+/*--------------------------------------------------------------------------------------------*/
 /*                           Classes, Objects and Methods                                     */
 /*--------------------------------------------------------------------------------------------*/
 /* struct Speaker is the pointer for the Speaker Driver list.                                 */
@@ -31,6 +41,7 @@ extern struct Speaker
     char Type[64];            // Speaker type. One of Woof, Pass, Twet or Midr
     char Build[64];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
+	double Vab;               // Compliance value of a sealed speaker
     double Cms;               // Compliance
     double Mms;               // Derived from Cms, Fs used primarily for Passive drivers
     double Mas;               // Added mass to meet design needs, primarily for Passive drivers
@@ -39,8 +50,9 @@ extern struct Speaker
     double Qes;               // Electrical Q factor
     double Qms;               // Mechanical Q factor
     double Sd;                // Effective piston area cm^2
+    double Fb;                // Vented Box Resonance Frequency 
+    double Fc;                // Sealed Box Resonance Frequency
     double Fs;                // Resonant Frequency
-    double Fb;                // Port tuning Frequency
     double Re;                // DC Resistance
     double Rms;               // Mechanical resistance
     double Z_nom;             // Nominal impedance (aka Impedance)
@@ -60,8 +72,12 @@ extern struct Speaker
 	double Pd;                // Port diameter - either a cylinder or slot
 	double Area;              // Port/slot area;
 	double Volume;            // Volume of port: HxWxL for slot or pi*r*L for cylnder port
+	double Spkr_Vol;          // Volume of air moved by the speker (cone)
 	double Vol_gross;         // Total volume of the box (Vb), the Driver (Vdrv) and the port/slot
 	                          // (if a vented design).
+	double Per;               // Displacement limited power rating
+	double Par;               // Displacement limited power rating
+	double Rh;                // Response ripple
     double v_diam;            // vent diameter - aka vertical diam or port height
 	double w_height;          // port height - aka horizontal diam or port height
 	double w_width;           // port width - used ONLY for slotted designs
@@ -85,7 +101,6 @@ extern struct Cabinet
 	char Enclosure[64];           // Sealed or Ported
 	double Cms;                   // Complianc value of the PR driver (passive radiator specifically)
 	double Mms;                   // Total mass of driver (passive radiator specifically)
-	double Fb;                    // Frequency of cabinet
 	double port_area;             // Area of slot/port opening in mm^2
     double port_diam;             // Can be used for port height if used as a ducted port
     double port_width;            // Can be used for port width if used as a ducted port
@@ -96,6 +111,11 @@ extern struct Cabinet
     double cab_volume;            // This includes the volume for ducted/ported designs as well
 	double port_volume;           // Volume of the port - circular or slotted
 	double gross_volume;          // This covers all aspects of space consumption (drivers, ports, etc)
+	double Fb;                    // Resoance frequnecy of vented box
+	double Fc;                    // Resonace frequency of sealed box
+	double lambda;                // Baffle step compensation
+	double sw_freq;               // standing wave frequency
+	double bfl_freq;              // Baffle frequency
     double freq_lo;
     double freq_hi;
     double imp_Nom;
@@ -244,7 +264,7 @@ const int HEADR_LGTH = 9;
 const std::string FIELD = "-----------------------";
 const int FIELD_LGTH = 23;
 
-const std::string VERSION = "Version 1.0.0";
+const std::string VERSION = "Version 1.0.0-alpha";
 /*--------------------------------------------------------------------------------------------*/
 void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet, Speaker*& pass);
 /*--------------------------------------------------------------------------------------------*/
@@ -264,27 +284,11 @@ void print_cabinet(Cabinet* speaker, std::ofstream& output);
 /*--------------------------------------------------------------------------------------------*/
 void closed_box_design(Speaker*& drvr, Cabinet*& box);
 /*--------------------------------------------------------------------------------------------*/
+void closed_midrange_design(Speaker*& drvr, Cabinet*& box, double baffle);
+/*--------------------------------------------------------------------------------------------*/
 void passive_box_design(Speaker*& drvr, Cabinet*& box, Cabinet*& pass);
 /*--------------------------------------------------------------------------------------------*/
-void closed_box_param_set(Speaker* drvr, int& bdesign, double& Vbs, double& alpha, double& gamma, \
-double Qa, double& Fsb, double& Vab, double& L, double& Qtc, double& Qtcp, double& fc, double& A1, 
-double& f3, double& peak, double& Par, double& Per, double& Rh, double& Vd);
-/*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabinet*& bass, Cabinet*& pass);
-/*--------------------------------------------------------------------------------------------*/
-void vented_freq_params(Speaker* drvr, double& Vbv, double& Fsb, double& Fb, double& Fn, \
-double& Vd, double& L_prm, double& alpha);
-/*--------------------------------------------------------------------------------------------*/
-void vented_freq_response(Speaker* drvr, double Fsb, double Fb, double Fn, double alpha);
-/*--------------------------------------------------------------------------------------------*/
-void frequency_response(double Fb, double Fs, double Qts, double alpha, std::string plot_file, \
-std::string cab_type);
-/*--------------------------------------------------------------------------------------------*/
-void closed_freq_params(Speaker* drvr, double& Qa, double& gamma, double& alpha, double& A1, \
-double& Fsb, double& Fcb, double& Fs, double& f3, double& Fb, double& Fc, double& L, double& Vd, \
-double& Qtc, double& Qtcp, double& Vab, double& Rh, double& R, double& Par, double& Per);
-/*--------------------------------------------------------------------------------------------*/
-void closed_freq_response(Speaker* drvr, double A1, double f3, double fc, double Fsb);
 /*--------------------------------------------------------------------------------------------*/
 void crossover_design();
 /*--------------------------------------------------------------------------------------------*/
@@ -310,9 +314,7 @@ void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& high
 /*--------------------------------------------------------------------------------------------*/
 void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
-void design_low_sealed(Speaker*& drvr, Cabinet*& box, double& Vd);
-/*--------------------------------------------------------------------------------------------*/
-void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabinet*& bass, Cabinet*& pass, double& Vd);
+void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabinet*& bass, Cabinet*& pass);
 /*--------------------------------------------------------------------------------------------*/
 void passive_check(Speaker* drvr, Speaker*& pasv, Speaker*& pasv_cpy);
 /*--------------------------------------------------------------------------------------------*/

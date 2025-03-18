@@ -8,11 +8,16 @@
 /* Began code development of classes, methods and objects                                     */
 /* Begin development of field_pad() functions.                                                */
 /*--------------------------------------------------------------------------------------------*/
+/* 03/18/2025:                                                                                */
+/* completed revision of frequency_response_sealed() and frequency_response_vented().         */
+/* Revised port_tuning for vented/slottted and passive radiators.                             */
+/* Revised cabinet ripple r(h) and solved math errors.                                        */
+/*--------------------------------------------------------------------------------------------*/
 void data_field(Speaker* drvr, std::string& data_display);
 /*--------------------------------------------------------------------------------------------*/
-double compute_efficiency(Speaker* drvr);
+double compute_efficiency(Speaker* drvr, double type);
 /*--------------------------------------------------------------------------------------------*/
-void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type, std::string speaker_type);
+void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type);
 /*--------------------------------------------------------------------------------------------*/
 void tweeter_cabinet_design(Speaker* drvr, Cabinet* box);
 /*--------------------------------------------------------------------------------------------*/
@@ -28,9 +33,9 @@ double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double ka
 /*--------------------------------------------------------------------------------------------*/
 void vented_cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, int bdesign);
 /*--------------------------------------------------------------------------------------------*/
-void acoustic_compliance(Speaker* drvr, double& Ca);
+void power_dynamics(Speaker* drvr, int type);
 /*--------------------------------------------------------------------------------------------*/
-void power_dynamics(Speaker* drvr, double& PAR, double& PER, double& Rh);
+void frequency_response_sealed(Speaker* drvr, std::string plot);
 /*--------------------------------------------------------------------------------------------*/
 void frequency_response_vented(Speaker* drvr, std::string plot);
 /*--------------------------------------------------------------------------------------------*/
@@ -52,5 +57,5 @@ double SolveMass(double drvr, double pr, double Fb, double Vb);
 /*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
-void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign, double PAR, double PER, double Rh);
+void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign);
 /*--------------------------------------------------------------------------------------------*/

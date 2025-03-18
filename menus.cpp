@@ -13,6 +13,10 @@
 /* Completed testing/debugging of driver selection (read) menu.                               */
 /* Completed testing/debugging of Crossover Desgin menu.                                      */
 /*--------------------------------------------------------------------------------------------*/
+/* 03/18/2025                                                                                 */
+/* Implemented new menus for closed/vented designs, vented/slotted coefficients, cabinet      */
+/* design specifications.                                                                     */
+/*--------------------------------------------------------------------------------------------*/
 #include <algorithm>
 #include <forward_list>
 #include <iostream>
@@ -56,7 +60,7 @@ void splash_screen()
     cout << "    |         p                                                               |" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    |                              " << VERSION << "                              |" << endl;
+	cout << "    |                           " << VERSION << "                           |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
 
     // This is used to define the wait time to display the splash screen
@@ -134,8 +138,24 @@ void cabinet_screen()
 
 }
 /*--------------------------------------------------------------------------------------------*/
+void midrange_cabinet_screen()
+{
+    system("clear");
+	cout << endl;
+    cout << "    +------------------------------------------+" << endl;
+	cout << "    |      Midrange Cabinet Design Ratio       |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+	cout << "    | 1) 1:1.25:1.6 - Minimizes standing waves |" << endl;
+	cout << "    | 2) 1:1.4:2.0  - Compact cabinet space    |" << endl;
+	cout << "    | 3) 1:1.6:2.6  - Maximum resonance conrol |" << endl;
+    cout << "    +------------------------------------------+" << endl;
+	cout << "    SpeakEasy: :";
+}
+/*--------------------------------------------------------------------------------------------*/
 void cabinet_design_screen()
 {
+    cout << "    +------------------------------------------+" << endl;
+	cout << "    |             Cabinet Design               |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) (S)ealed Cabinet                     |" << endl;
     cout << "    |  2) (V)ented Cabinet                     |" << endl;
@@ -146,13 +166,50 @@ void cabinet_design_screen()
 /*--------------------------------------------------------------------------------------------*/
 void closed_design_menu()
 {
-        cout << "Choose design based on:" << endl;
-        cout << "    1) default speaker values" << endl;
-        cout << "    2) box volume" << endl;
-        cout << "    3) Enter Q(tc)" << endl;
-        cout << "    4) Use default value of Q(tc) = 1" << endl;
-        cout << "-------------------------------------" << endl;
+        cout << "+-----------------------------------------+" << endl;
+        cout << "| Choose cabinet design based on:         |" << endl;
+        cout << "| 1) Design with default speaker values   |" << endl;
+        cout << "| 2) Design with box volume               |" << endl;
+        cout << "| 3) Design with specified Q(tc)          |" << endl;
+        cout << "+-----------------------------------------+" << endl;
 
+}
+/*--------------------------------------------------------------------------------------------*/
+void Qtc_design_menu()
+{
+	cout << "+-------------------------------------------------------+" << endl;
+	cout << "|                Qt Design Options:                     |" << endl;
+	cout << "+-------------------------------------------------------+" << endl;
+	cout << "| 0.5 - Critically damped, slow roll-off (lowest F3).   |" << endl;
+	cout << "| 0.577 - Bessel-like response. Smoothest response.     |" << endl;
+	cout << "| 0.707 - Maximum flat response. Flattest response.     |" << endl;
+	cout << "| 1.2+ - Boomier response. More resonant. Loose bass.   |" << endl;
+	cout << "+-------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void midrange_Qdesign_menu()
+{
+	cout << "+-------------------------------------------------------+" << endl;
+    cout << "| Specify System Damping Factor Qt between 0.5 and 0.9  |" << endl;
+    cout << "| Qtc < 0.5 - to much damping/weak bass                 |" << endl;
+    cout << "| Qtc > 0.9 - system is 'boomy' and lacks definition    |" << endl;
+    cout << "| Qtc = 0.707 - best value for flattest response        |" << endl;
+	cout << "+-------------------------------------------------------+" << endl;
+    cout << " Qtc default is 0.707: ";
+
+}
+/*--------------------------------------------------------------------------------------------*/
+void ribbon_design()
+{
+    cout << "+---------------------------------------------------------+" << endl;
+	cout << "|                   Speaker Ribbon Type                   |" << endl;
+    cout << "+---------------------------------------------------------+" << endl;
+	cout << "| 1) Open-back (dipole) construction (example):           |" << endl;
+	cout << "| (Raal Dipole, Mundorf AMT19CM1.1-C, etc)                |" << endl;
+	cout << "| 2) Closed back (monopole) construction (example):       |" << endl;
+	cout << "| (Fountek NeoCd2.0M-blk, LCY-K100. etc)                  |" << endl;
+    cout << "+---------------------------------------------------------+" << endl;
+	cout << " Type : ";
 }
 /*--------------------------------------------------------------------------------------------*/
 void diffusion_menu(double &kappa)
