@@ -101,7 +101,8 @@ void crossover_screen()
     cout << "    |  2) 2-way - active speaker               |" << endl;
     cout << "    |  3) 3-way - passive speaker              |" << endl;
     cout << "    |  4) 3-way - active speaker               |" << endl;
-    cout << "    |  5) Exit                                 |" << endl;
+    cout << "    |  5) Subwoofer - lowpass speaker          |" << endl;
+    cout << "    |  6) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }
@@ -358,6 +359,17 @@ void scalar_screen()
     cout << "    | 3) Extended Base Shelf Alignment (deep low-end)    : alpha  = 25, beta = 3.3  |" << endl;
     cout << "    +-------------------------------------------------------------------------------+" << endl;
 
+}
+/*--------------------------------------------------------------------------------------------*/
+void frequency_limit_screen()
+{
+    cout << "    +-------------------------------------------------------------+" << endl;
+    cout << "    |                    Frequnecy Cut-off Menu                   |" << endl;
+    cout << "    +-------------------------------------------------------------+" << endl;
+	cout << "    | 1) Simple frequency stop                                    |" << endl;
+	cout << "    | 2) Fixed-stop selector                                      |" << endl;
+	cout << "    | 3) Variable-switch selector                                 |" << endl;
+    cout << "    +-------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void exit_screen()

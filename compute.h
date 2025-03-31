@@ -17,7 +17,7 @@ void data_field(Speaker* drvr, std::string& data_display);
 /*--------------------------------------------------------------------------------------------*/
 double compute_efficiency(Speaker* drvr, double type);
 /*--------------------------------------------------------------------------------------------*/
-void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type);
+void cabinet_design(Speaker* drvr, Cabinet*& cptr, std::string cab_type);
 /*--------------------------------------------------------------------------------------------*/
 void tweeter_cabinet_design(Speaker* drvr, Cabinet* box);
 /*--------------------------------------------------------------------------------------------*/
@@ -35,7 +35,9 @@ void vented_cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, int b
 /*--------------------------------------------------------------------------------------------*/
 void power_dynamics(Speaker* drvr, int type);
 /*--------------------------------------------------------------------------------------------*/
-void frequency_response_sealed(Speaker* drvr, std::string plot);
+void frequency_response_sealed(Speaker* drvr, double Qtc, std::string plot);
+/*--------------------------------------------------------------------------------------------*/
+void high_frequency_sealed(Speaker* drvr, double Qtc, std::string plot);
 /*--------------------------------------------------------------------------------------------*/
 void frequency_response_vented(Speaker* drvr, std::string plot);
 /*--------------------------------------------------------------------------------------------*/

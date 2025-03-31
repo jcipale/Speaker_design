@@ -133,6 +133,7 @@ int main()
     Filter lowpass;
     Filter bandpass;
     Filter highpass;
+	Filter zobel;
 	
     while (strcmp(t_cmd, "Q\n") != 0) {
 
@@ -206,15 +207,13 @@ int main()
                         if ((strcmp(tw_cmd, "S") == 0) || (strcmp(tw_cmd, "s") == 0) || (strcmp(tw_cmd, "1") == 0)) {
 					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr_cpy, bass);
-							//closed_box_design(tweet_cpy, treb);
 							closed_midrange_design(tweet_cpy, treb, bass->Width);
 						    sleep(2);
 					    }
 
                         if ((strcmp(tw_cmd, "V") == 0) || (strcmp(tw_cmd, "v") == 0) || (strcmp(tw_cmd, "2") == 0)) {
 					        cout << "In vented design space..." << endl;
-							closed_box_design(drvr_cpy, bass);
-							//closed_box_design(tweet_cpy, treb);
+							vented_box_design(drvr_cpy, pasv, pasv_cpy, bass, pass);
 							closed_midrange_design(tweet_cpy, treb, bass->Width);
 						    sleep(2);
 					    }
@@ -239,8 +238,6 @@ int main()
                         if ((strcmp(th_cmd, "S") == 0) || (strcmp(th_cmd, "s") == 0) || (strcmp(th_cmd, "1") == 0)) {
 					        cout << "In sealed design space..." << endl;
 							closed_box_design(drvr_cpy, bass);
-							//closed_box_design(mid_cpy, midr);
-							//closed_box_design(tweet_cpy, treb);
 							closed_midrange_design(mid_cpy, midr, bass->Width);
 							closed_midrange_design(tweet_cpy, treb, bass->Width);
 						    sleep(2);
@@ -251,8 +248,6 @@ int main()
 							vented_box_design(drvr_cpy, pasv, pasv_cpy, bass, pass);
 							closed_midrange_design(mid_cpy, midr, bass->Width);
 							closed_midrange_design(tweet_cpy, treb, bass->Width);
-							//closed_box_design(mid_cpy, midr);
-							//closed_box_design(tweet_cpy, treb);
 						    sleep(2);
 					    }
 
@@ -308,7 +303,15 @@ int main()
 		            sleep(2);
                 }
 
-                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "5") == 0)) {
+                if (strcmp(x_cmd, "5") == 0) {
+                    cout << "Passive low-pass design - Subwoofer Speaker..." << endl;
+					xover = 2;
+		            subwoofer_passive(drvr_cpy, lowpass, zobel);
+		            sleep(2);
+                }
+
+
+                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "6") == 0)) {
                     cout << "Crossover design menu - Exit sub-menu..." << endl;
 		            sleep(2);
                     strcpy(x_cmd, "E\n");
@@ -412,7 +415,7 @@ int main()
 			clear_formatting(Bass);
 			clear_formatting(Midrange);
 			clear_formatting(Tweeter);
-			//clear_formatting(Passive);
+			clear_formatting(Passive);
         }
 
         if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {

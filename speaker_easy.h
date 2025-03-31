@@ -142,15 +142,20 @@ extern struct Filter
 {
     std::string xover_type;     // sets the type of crossover network: active or passive for 
 	                            // the final design
+	std::string vind;           // Variable (adjustable) inductor used to adjust frequuncy stop
+	std::string vcap;           // Variable (adjustable) capacitor used to adjust frequency stop
+
     double stages;
     double gain;                // gain is computed by Vg = 1 + R2/R1 where R1 is significantly 
 	                            // larger than R2 
-    double xover1, xover2;
+	double xover1, xover2;
+	double xover[5];
+    double freq[5];
     double FB_R1, FB_R2;        // Feedback values used in active filter design Vg = 1 + R2/R1 
 	                            // where R1 -> infinity 
-    double R1, R2, R3, R4;
-    double L1, L2, L3, L4;      // Inductors are NOT in use, but are kept in place for future use. 
-    double C1, C2, C3, C4;
+    double filt_c[5];
+    double filt_r[5];
+    double filt_l[5];           // Inductors are NOT in use, but are kept in place for future use. 
     double Fres;                // resonant frequency - used for bandpass filters only
     double f3db1, f3db2;
 };
@@ -232,7 +237,8 @@ extern struct Cab_Pad
 /*--------------------------------------------------------------------------------------------*/
 const double C = 343.0;         // Speed of sound in m/s
 const double QTC = 0.707;
-const double liter_to_cubicInch = 61.0237;
+const double liter_to_cubicInch = 61.024;
+const double cuMeter_to_cubicInch = 61020;
 const double met_to_decmet = 1000.0;
 const double liter_to_cubic = 1000.0;
 const double mm_to_inch = 0.0393701;
@@ -314,11 +320,9 @@ void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& high
 /*--------------------------------------------------------------------------------------------*/
 void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
-void design_low_vented(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabinet*& bass, Cabinet*& pass);
+void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel);
 /*--------------------------------------------------------------------------------------------*/
 void passive_check(Speaker* drvr, Speaker*& pasv, Speaker*& pasv_cpy);
-/*--------------------------------------------------------------------------------------------*/
-void design_tweeter_sealed(Speaker*& drvr, Cabinet*& cptr, double& Vd);
 /*--------------------------------------------------------------------------------------------*/
 void write_design_data(Field_Pad* P0, Field_Pad* P1, Field_Pad* P2, Field_Pad* P3, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
