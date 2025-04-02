@@ -1360,3 +1360,29 @@ void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign)
 	sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/
+double solve_inductance(Speaker* drvr, int freq)
+/*--------------------------------------------------------------------------------------------*/
+/* this function passes in the frequency and inductance of the LC filter and returns the      */
+/* inductance required to make the filter circuit.                                            */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double induct;          // Value of inductance returned
+
+	induct = drvr->Z_nom/(2 * M_PI * freq);
+
+	return induct;
+}
+/*--------------------------------------------------------------------------------------------*/
+double solve_capacitance(Speaker* drvr, int freq)
+/*--------------------------------------------------------------------------------------------*/
+/* this function passes in the frequency and inductance of the LC filter and returns the      */
+/* capacitance required to make the filter circuit.                                           */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double cap;          // Value of capacitance returned
+
+	cap = 1/(pow((2 * M_PI * freq), 2) * drvr->Z_nom);
+
+	return cap;
+}
+/*--------------------------------------------------------------------------------------------*/

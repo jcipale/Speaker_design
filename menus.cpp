@@ -372,6 +372,25 @@ void frequency_limit_screen()
     cout << "    +-------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
+void freq_crossover_screen()
+/*--------------------------------------------------------------------------------------------*/
+{
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+	cout << "    | Crossover point based on the band-overlap of chosen specified drivers:  |" << endl;
+    cout << "    +-------------------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+//void lpad_msg(Speaker* drvr, char lpad, char type)
+void lpad_msg(Speaker* drvr, Filter crossover, char* type)
+/*--------------------------------------------------------------------------------------------*/
+{
+    cout << "-----------------------------------------------------------------------------------" << endl;
+    cout << "The load for the " << drvr->Part_num << " requires a " << crossover.lpad << " ohm Dual-ganged " << endl;
+    cout << "potentiometer wired into the " << type << " portion of the cross-over network to provide  " << endl;
+    cout << "proper load matching between Woofer and Tweeter.                                   " << endl;
+    cout << "-----------------------------------------------------------------------------------" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
 void exit_screen()
 {
 	cout << endl;

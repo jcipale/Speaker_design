@@ -278,7 +278,7 @@ int main()
                 if (strcmp(x_cmd, "1") == 0) {
                     cout << "Passive xover design - Two-way Speaker..." << endl;
 					xover = 1;
-		            passive_two_way(drvr_cpy, tweet_cpy, lowpass, highpass);
+		            passive_two_way(drvr_cpy, tweet_cpy, zobel, lowpass, highpass);
 		            sleep(2);
                 }
 
@@ -292,7 +292,7 @@ int main()
                 if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive xover design - Three-way Speaker..." << endl;
 					xover = 2;
-		            passive_three_way(drvr_cpy, mid_cpy, tweet_cpy, lowpass, bandpass, highpass);
+		            passive_three_way(drvr_cpy, mid_cpy, tweet_cpy, zobel, lowpass, bandpass, highpass);
 		            sleep(2);
                 }
 

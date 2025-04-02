@@ -140,6 +140,7 @@ extern struct Filter
 /* struct crossover is used to store and display the components needs for crossover design.   */
 /*--------------------------------------------------------------------------------------------*/
 {
+	char lpad[8];               // Potentiometer value for lpad
     std::string xover_type;     // sets the type of crossover network: active or passive for 
 	                            // the final design
 	std::string vind;           // Variable (adjustable) inductor used to adjust frequuncy stop
@@ -155,9 +156,11 @@ extern struct Filter
 	                            // where R1 -> infinity 
     double filt_c[5];
     double filt_r[5];
-    double filt_l[5];           // Inductors are NOT in use, but are kept in place for future use. 
+    double filt_l[5];           
     double Fres;                // resonant frequency - used for bandpass filters only
-    double f3db1, f3db2;
+    double f3db[5];
+    double f3db1;
+    double f3db2;
 };
 /*--------------------------------------------------------------------------------------------*/
 extern struct Field_Pad
@@ -312,9 +315,9 @@ void create_data_fields(Speaker* drvr, Field_Pad*& datum, std::ofstream& outfile
 /*--------------------------------------------------------------------------------------------*/
 void create_cab_fields(Cabinet* cptr, Cab_Pad*& cdatum, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
+void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& zobel, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
-void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
+void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobel, Filter& lowpass, Filter& bandpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
 void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
