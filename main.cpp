@@ -272,6 +272,8 @@ int main()
             strcpy(x_cmd, "");
             while (strcmp(x_cmd, "E\n") != 0) {
 				xover = 0;               // Default value for subwoofer with or without passive speaker
+				/* Disable the filters until they are used and data fields are populated. */
+
                 crossover_screen();
 		        cin >> x_cmd;
 
@@ -283,35 +285,23 @@ int main()
                 }
 
                 if (strcmp(x_cmd, "2") == 0) {
-                    cout << "Active xover design - Two-way Speaker..." << endl;
-					xover = 1;
-		            active_two_way(drvr_cpy, tweet_cpy, lowpass, highpass);
-		            sleep(2);
-                }
-
-                if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive xover design - Three-way Speaker..." << endl;
 					xover = 2;
 		            passive_three_way(drvr_cpy, mid_cpy, tweet_cpy, zobel, lowpass, bandpass, highpass);
 		            sleep(2);
                 }
 
-                if (strcmp(x_cmd, "4") == 0) {
-                    cout << "Active xover design - Three-way Speaker..." << endl;
-					xover = 2;
-		            active_three_way(drvr_cpy, mid_cpy, tweet_cpy, lowpass, bandpass, highpass);
-		            sleep(2);
-                }
-
-                if (strcmp(x_cmd, "5") == 0) {
+                if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive low-pass design - Subwoofer Speaker..." << endl;
 					xover = 2;
+					//zobel.enabled = 1;
+					//lowpass.enabled = 0;
 		            subwoofer_passive(drvr_cpy, lowpass, zobel);
 		            sleep(2);
                 }
 
 
-                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "6") == 0)) {
+                if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "4") == 0)) {
                     cout << "Crossover design menu - Exit sub-menu..." << endl;
 		            sleep(2);
                     strcpy(x_cmd, "E\n");
@@ -399,7 +389,7 @@ int main()
 	        write_design_data(Passive, Bass, Midrange, Tweeter, outfile);
 
 			/* Need a scheme to determine what kind of filter is being used */
-			write_filter_data(lowpass, bandpass, highpass, xover, outfile);
+			write_filter_data(drvr, zobel, lowpass, bandpass, highpass, outfile);
         }
 
         if ((strcmp(t_cmd, "P") == 0) || (strcmp(t_cmd, "p") == 0) || (strcmp(t_cmd, "9") == 0)) {
