@@ -154,6 +154,8 @@ extern struct Filter
     double gain;                // gain is computed by Vg = 1 + R2/R1 where R1 is significantly 
 	                            // larger than R2 
 	double Rz, Lz, Cz;          // Zobel filter values
+	double Z_nom;
+	double Sensitivity;
 	double xover1, xover2;
 	double xover[5];
     double freq[5];
@@ -324,10 +326,6 @@ void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& zobel, Filter& lowpa
 /*--------------------------------------------------------------------------------------------*/
 void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobel, Filter& lowpass, Filter& bandpass, Filter& highpass);
 /*--------------------------------------------------------------------------------------------*/
-void active_two_way(Speaker* drvr, Speaker* tweet, Filter& lowpass, Filter& highpass);
-/*--------------------------------------------------------------------------------------------*/
-void active_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& lowpass, Filter& bandpass, Filter& highpass);
-/*--------------------------------------------------------------------------------------------*/
 void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel);
 /*--------------------------------------------------------------------------------------------*/
 void passive_check(Speaker* drvr, Speaker*& pasv, Speaker*& pasv_cpy);
@@ -336,11 +334,13 @@ void write_design_data(Field_Pad* P0, Field_Pad* P1, Field_Pad* P2, Field_Pad* P
 /*--------------------------------------------------------------------------------------------*/
 void write_cabinet_data(Cabinet* P0, Cabinet* P1, Cabinet* P2, Cabinet* P3, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void write_filter_data(Speaker* drvr, Filter zobel, Filter lowpass, Filter bandpass, Filter highpass, std::ofstream& outfile);
+void write_filter_data(Filter zobel, Filter lowpass, Filter bandpass, Filter highpass, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
 void print_zobel(Filter zobel, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void print_crossover(Filter crossover, std::ofstream& outfile);
+void print_twoway_crossover(Filter zobel, Filter lowpass, Filter highpass, std::ofstream& outfile);
+/*--------------------------------------------------------------------------------------------*/
+void print_threeway_crossover(Filter zobel, Filter lowpass, Filter highpass, Filter bandpass, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
 void purge_data(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/

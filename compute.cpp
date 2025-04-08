@@ -449,16 +449,6 @@ double convert_units(double& target, double conversion)
 	return(target);
 }
 /*--------------------------------------------------------------------------------------------*/
-double tuning_frequency(Speaker* drvr, std::string cab_type)
-/*--------------------------------------------------------------------------------------------*/
-/* This function calculate the tuning frequency of the port for a bass-reflex speaker         */
-/*--------------------------------------------------------------------------------------------*/
-{
-    double F;                     // Tuning frequency based on cabinet parameters
-
-	return(0);
-}
-/*--------------------------------------------------------------------------------------------*/
 double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double kappa)
 /*--------------------------------------------------------------------------------------------*/
 /* This function computes the effective port length for the speaker. This is used by all of   */
@@ -480,32 +470,19 @@ void vented_cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, int b
 /* cabinet/subwoofer.                                                                         */
 /*--------------------------------------------------------------------------------------------*/
 {
-    char val[4];
     char sys[4];
-    char pdm[4];
 
     double ap;                    // Aspect ratio of slotted port
-    double Ap;                    // Area of circular port
-    double Alp, Bet;              // alpha value for passive radiator design
     double var1, var2, var3;      // Temp values used to determine Vb and Fb
-
-    double cab_val;               // cabinet val input
 
     double kappa;                 // Scaling factor for Extended base Shelf designs 
 	                              // - default is 2.125
 	double length;                // port length
-    double scalar;                // Scale factor for cabinet alignment - slotted design only 
-	                              // - default is 15
-	double Mma;                   // Mass to add for passive radiator to tune to target frequency
 	double Mttl;                  // Total mass of the passive radiator determined by the Fb value
-    double Qtc;                   // Total system Q - approx 0.37 for stanfard vented design
-	double Vd;                    // Volume of the speaker 'sylinder' itself (pi * r^2 * h))
     double Vbv;                   // non-normlaized volume
 
-    int flag;                     // Decision flag
 	int option;                   // used by switch statment
 
-    flag = 0;
     //Vbv = drvr->Vbv;
     Vbv = drvr->Vbv * 1000.00;
 
@@ -577,7 +554,6 @@ void vented_cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, int b
 		drvr->Volume = drvr->Area * drvr->p_length;
 		
 		drvr->Vd = M_PI * (pow((drvr->b_diam/2), 2) * drvr->depth);
-		//Spkr_Vol = M_PI * (pow((drvr->b_diam/2), 2) * drvr->depth);
 
 		// Gross Volume DOES NOT include the value for bracing. 
 		// That will be added in after the fact and will require
@@ -834,20 +810,13 @@ void power_dynamics(Speaker* drvr, int type)
 {
 	double Fsb;                    // Air displacement Xmx * Sd (piston area)
 	double Qtc;
-	double D;
-	double Q;                     // Used to solve Per based on type of cabinet (sealed or vented)
 	double F;                     // Frequency dependent on cabinet type - sealed or vented.
-	double v1, v2, v3, v4;        // Temp vars for Par/Per calcs
-
-	double PE, Pe, PA, Pa;
-
 	double n;                     // A constant factor to determine the limited power-displacement
+	double v1;
 
 
 	if (type == 1) {
 	    F = drvr->f3_vent;
-		Q = drvr->Qts;
-		D = 3e8;
 		Fsb = drvr->Fs * sqrt(drvr->Vas/drvr->Vbv);
 	    n = (pow(Fsb, 3) * drvr->Vas)/drvr->Qts;
 		Qtc = drvr->Qts * sqrt(drvr->Vas/drvr->Vbv);
@@ -859,8 +828,6 @@ void power_dynamics(Speaker* drvr, int type)
 		drvr->Rh = abs(20 * log((drvr->Fb * drvr->Qts)/(0.4 * Fsb)));
     } else {
 	    F = drvr->f3_seal;
-		Q = drvr->Qts;
-		D = 1.2e9;
 		Fsb = drvr->Fs * sqrt(drvr->Vas/drvr->Vbs);
 	    n = (pow(Fsb, 3) * drvr->Vas)/drvr->Qts;
 		Qtc = drvr->Qts * sqrt(drvr->Vas/drvr->Vbs);
@@ -886,10 +853,6 @@ void frequency_response_sealed(Speaker* drvr, double Qtc, std::string plot)
     double A;              // temporary variable to hold data
 	double Fr;             // Intermediate frequency
 	double R;              // Value of transfer function H(f) at f
-
-	//double Qtc;            // System Q
-
-	double a, b, c, d;     // vars used to store data frm transfer fucntion H(f)
 
 	int freq;              // Loop variable used for H(f)
 
@@ -934,10 +897,6 @@ void high_frequency_sealed(Speaker* drvr, double Qtc, std::string plot)
     double omega;     // the values for omega* are used to compute the transfer function for
 	double omega_c;   // the driver without using Vas since the cabinet is typically too small
 
-	double num, denom;// Used to compute resultant value of H(f) for a fiven frequency (f)
-
-	double R;         // result of transfer function, H(f)
-
 	int freq;         // loop counter used for H(f) calculations
 
 	ofstream datafile;
@@ -977,7 +936,7 @@ void frequency_response_vented(Speaker* drvr, std::string plot)
 	/* The following values are used as temporary storage vars for calculating the freq response */
 	double Fn;             // Normalization of frequency
 	double A, B, C, D, e;  // Intermediate variables used to simplify calculations
-	double a, b, c, d;     
+	double a, c;     
 	double Fsb;            // System Resonance Frequency
 
 	double Fr;             // Interim frequency response
@@ -1009,7 +968,6 @@ void frequency_response_vented(Speaker* drvr, std::string plot)
 
 	    Fn = freq/Fsb;
 		a = C * pow(Fn, 2);
-		b = D * pow(Fn, 2);
 		c = pow((D * pow(Fn, 2) - B), 2);
 
 		Fr = (pow(Fn, 4)/sqrt(pow((pow(Fn, 4) - a + A), 2) + (pow(Fn, 2) * c)));
@@ -1030,14 +988,8 @@ void port_tuning(Speaker* drvr, int val)
 /* design/define the port length of the port vent.                                            */
 /*--------------------------------------------------------------------------------------------*/
 {
-    double k;                          // ESB scaling fctor
-    double Va;                         // used to calculate the value of k(appa)
-
-    Va = sqrt(drvr->Vas/drvr->Vbv);
-
     if (val == 1) {
         // For typical Bass Reflex use k(appa) as a ratio of the sq root of Va to Box Volume
-        //drvr->Vbv = 20 * drvr->Vas * pow(drvr->Qts, 3.3);
         drvr->Fb = 0.42 * drvr->Fs;
     } else if (val == 2) {
         // Moderately aggressive bass response
@@ -1058,14 +1010,9 @@ void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy, Cabinet* box)
 /*--------------------------------------------------------------------------------------------*/
 {
 	char ans[4];                       // Y/N to change Fb
-	double diff, split;                // Difference between PR Fs vs Woof Fs
-	double Fb;                         // New target tuning frequency
-	double Mms;                        // Required mass to meet Fb requirments of Passive Radiator
 	double ms_df;                      // Amount of mass that needs to be added to the 
 	                                   // passive readiator to meet the design goals
-	double Va;                         // used to calculate the value of k(appa)
-
-	double var1, var2, var3;           // values used for determining port tuning
+	double var1, var2;                 // values used for determining port tuning
 
 	int flag;                          // flag used to determine Fb for design
 
@@ -1093,7 +1040,6 @@ void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy, Cabinet* box)
 	
 	box->Mms = SolveMass(drvr->Sd, pasv_cpy->Sd, drvr->Fb, drvr->Vbv);
 
-	//ms_df = Mms - pasv_cpy->Mms;
 	ms_df = box->Mms - pasv_cpy->Mms;
 
 	cout << "Passive Radiator Mass is = " << pasv_cpy->Mms << endl;
@@ -1127,11 +1073,6 @@ void port_length(Speaker* drvr, double ap, double &kappa, int type)
     double Ap;                    // Port area computation A = PI * (Dp/2)^2
     double ar;                    // Port aspect ratio
 
-    //double scale = 0.023562;        // constant value 0.023562 in m 
-    double scale = 23562;        // constant value 0.023562 in m 
-    double length;                // port length calculation
-    
-
     double var1, var2, var3;      // temporary storage values
 
     if ((type == 1) || (type == 2) || (type == 3)) {
@@ -1146,7 +1087,6 @@ void port_length(Speaker* drvr, double ap, double &kappa, int type)
         // Slotted Port design
         aspect_kappa(ar, kappa);
 
-        //drvr->Pd = drvr->Sd/3;
         drvr->Pd = 0.05 * drvr->Vbv;
 
         drvr->w_height = sqrt(drvr->Pd/ar);
@@ -1163,8 +1103,6 @@ void port_length_slot(Speaker* drvr, double ap, double kappa)
 
 	double d, var1, var2;         // intermediate values used for port length calculation
 	double k_cor;                 // Correction value 
-	double Ht;                    // Port height 
-
 
 	// Compute height and width of port via driver surface area
 	Ap = drvr->Sd * 0.10;
@@ -1201,7 +1139,7 @@ void port_dynamics(Speaker* drvr, int type, double& PAR, double& PER)
 /* This procedure is not executed for the passive radiator design option.                     */
 /*--------------------------------------------------------------------------------------------*/
 {
-	double Dp;                // Port diameter
+	//double Dp;
 	double Sv;                // Area of the vent
 	double Vpm;               // Air velocity (max) at the port
 	double Vdm;               // Air velocity (max) at the diaphragm
@@ -1212,7 +1150,7 @@ void port_dynamics(Speaker* drvr, int type, double& PAR, double& PER)
 	    cout << "compute PAR based on ported design..." << endl;
 
 		// Solve port velocity based on a cylindrical port
-		Dp = 2 * sqrt(drvr->Sd/M_PI);
+		//Dp = 2 * sqrt(drvr->Sd/M_PI);
 
 		// Solve for cross sectional area od vent
 		Sv = (M_PI * pow(drvr->v_diam, 2))/4;
@@ -1232,7 +1170,7 @@ void port_dynamics(Speaker* drvr, int type, double& PAR, double& PER)
 	    cout << "compute PAR based on slotted design..." << endl;
 
 		// Solve port velocity based on a cylindrical port
-		Dp = 2 * sqrt(drvr->Sd/M_PI);
+		//Dp = 2 * sqrt(drvr->Sd/M_PI);
 
 		// Solve for cross sectional area od vent
 		Sv = (M_PI * pow(drvr->v_diam, 2))/4;
@@ -1262,8 +1200,6 @@ void cabinet_ripple(Speaker* drvr, Speaker* pasv_cpy, int i)
 /* This function calculate the -3db ripple for all of the vented cabinet designs.             */
 /*--------------------------------------------------------------------------------------------*/
 {
-	double Mair;          // Mass of air in the cabinet
-
     // Determine the proper expresion got -3db ripple
 	if (i == 1) {
 	    drvr->f3_vent = drvr->Fb * sqrt(1 - (1/(4 * pow(drvr->Qts, 2))));
@@ -1308,29 +1244,12 @@ void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign)
 /* to be used for determining the cabinet physical dimensions.                                */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr;     
-    ptr = drvr;
+	//struct Cabinet *temp;
 
-	struct Cabinet *temp, *temp_2, *bptr, *patr;
-	bptr = box;
-    //patr = pass;
-
-	if (box == NULL) {
-	    temp = (struct Cabinet *)malloc(sizeof(struct Cabinet));
-	    bptr = box;
-    }
-
-	/*
-	if (bdesign == 3) {
-	    strcpy(box->Enclosure, "Slotted_Port");
-	} else if (bdesign = 4) {
-	    strcpy(box->Enclosure, "Passive_Radiator");
-	} else if ((bdesign == 1) || (bdesign == 2)) { 
-	    strcpy(box->Enclosure, "Ducted_Port");
-	} else {
-	    strcpy(box->Enclosure, "Sealed");
-	}
-	*/
+	//if (box == NULL) {
+	    //temp = (struct Cabinet *)malloc(sizeof(struct Cabinet));
+	    //bptr = box;
+    //}
 
 	strcpy(box->Part_num, drvr->Part_num);
     strcpy(box->Build, drvr->Build);
@@ -1356,7 +1275,6 @@ void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign)
 	box->Rh = drvr->Rh;
 	box->next = NULL;
 
-	//bptr = temp;
 	sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/

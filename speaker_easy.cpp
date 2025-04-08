@@ -488,21 +488,13 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
 	char fill[4];
 	char l_cmd[8];
 	
-
-	double foo;
-
 	double A1;
-	double L;
-	double alpha;                   //
-	double Qa;                      // These two *values* are used to determine the 'filling'
 	double gamma;                   // constants for a closed-box design. Qa = 10/5 - lambda = 1/1.2
 	double peak;
 
-	double Par, Per, Rh;            // Limited power dynamics
-
+	//double Qa;                    // See note on acoustic modeling below
 	double Qt;                      // Computed Q-factor
 	double Qtc;                     // Value of system Q-factor
-	double Qtcp;                    // 
 
     /* temporary variables used to ease computations */
 	double v1, v2, v3, v4;
@@ -532,12 +524,17 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
         cout << "Use acoustic filling - Y/N? :";
         cin >> fill;
 
+		/* This is used as a method to mark/denote acoustic damping. The code serves */
+		/* no set purpose other than to set the damping factor value. There is no    */
+		/* modeling/computation to takes place at this time, but the prompt will     */
+		/* remain intact for now, pending future work on this feature.               */
+
         if ((strcmp(fill, "Y") == 0) || (strcmp(fill, "y") == 0)) {
             gamma = 1.0;
-            Qa = 10.0;
+            //Qa = 10.0;
         } else {
             gamma = 1.2;
-            Qa = 5.0;
+            //Qa = 5.0;
         }
 
         // used to set the plot name based on driver part number
@@ -563,9 +560,6 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
 				drvr->f3_seal = drvr->Fs * sqrt(v1/v3);
 
 				drvr->Vab = drvr->Vbs * gamma;
-
-				alpha = drvr->Vas/drvr->Vbs;
-				L = sqrt(alpha + 1);
 
 				drvr->Fc = ptr->Fs * sqrt(1 + drvr->Vas/drvr->Vbs);
 
@@ -612,9 +606,6 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
 
 				drvr->Vab = drvr->Vbs * gamma;
 
-				alpha = drvr->Vas/drvr->Vbs;
-				L = sqrt(alpha + 1);
-
 				drvr->Fc = ptr->Fs * sqrt(1 + drvr->Vas/drvr->Vbs);
 
 				drvr->f3_seal = drvr->Fc * sqrt((1/pow(Qtc, 2)) - 1);
@@ -660,9 +651,6 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
 				drvr->f3_seal = drvr->Fs * sqrt(v1/v3);
 
 				drvr->Vab = drvr->Vbs * gamma;
-
-				alpha = drvr->Vas/drvr->Vbs;
-				L = sqrt(alpha + 1);
 
 				drvr->Fc = ptr->Fs * sqrt(1 + drvr->Vas/drvr->Vbs);
 
@@ -718,8 +706,8 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
 	cout << " Low Freq                      : " << drvr->Freq_Low << endl;
 	cout << " High Freq                     : " << drvr->Freq_Hi << endl;
 	cout << " Nominal Impedance             : " << drvr->Z_nom << endl;
-    cout << " Power Efficiency              : " << Per << " % " << endl;
-    cout << " Electrical Power              : " << Par << " W " << endl;
+    cout << " Power Efficiency              : " << drvr->Per << " % " << endl;
+    cout << " Electrical Power              : " << drvr->Par << " W " << endl;
 	cout << " Speaker Height                : " << drvr->b_height << endl;
 	cout << " Speaker Width                 : " << drvr->b_diam << endl;
 	cout << " Speaker Depth                 : " << drvr->depth << endl;
@@ -742,9 +730,9 @@ void closed_box_design(Speaker*& drvr, Cabinet*& cptr)
     temp->depth = drvr->depth;
     temp->port_diam = 0;
     temp->port_length = 0;
-    temp->PER = Per;
-    temp->PAR = Par;
-    temp->Rh = Rh;
+    temp->PER = drvr->Per;
+    temp->PAR = drvr->Par;
+    temp->Rh = drvr->Rh;
     temp->port_area = 0.0;
     temp->port_diam = 0.0;
     temp->port_width = 0.0;
@@ -767,8 +755,8 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 /* are very similar in approach and philosophy (small cabinets, no standing waves, etc)       */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr;
-    ptr = drvr;
+    //struct Speaker *ptr;
+    //ptr = drvr;
 
     //struct Cabinet *midr;
 	//midr = cptr;
@@ -777,21 +765,11 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 
     temp = (struct Cabinet *)malloc(sizeof(struct Cabinet));
 
-	double a, b, c;        // Intermediate placeholders used for calculating rbbon housing
-	double Baffle, Leg;    // used to define triangle/trapezoid construct based on closed vs open 
-	                       // back tweeter/midrange
-	double Depth = 100.0;  // Depth is by default 100 mm.
-	double freq1, freq2;   // intermediate frequency measurements for standing waves
+	//double Depth = 100.0;  // Depth is by default 100 mm.
 	double H, W, D;
-	double lambda;         // Baffle step compensation
 	double Qtc;            // System Q
 	double type;
-	double Par, Per;       // Displacement limited power ratings
-	double Rh;             // Response ripple
-	double volume;         // enclosure volume before gross volume is computed.
 
-	int bdesign;           // carry over from speaker_to_cabinet arguments
-	int flag;              // Status flag - used to determine of design is proper
 	int ratio;
 
 	std::string cab_type;
@@ -848,9 +826,6 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 			D = 2 * drvr->depth;
 			H = drvr->b_height;
 
-			// hypotenuse of the leg of the enclosure
-		    c = sqrt(pow(D, 2) + pow((W/2), 2));
-
 	        temp->Height = H;
 	        temp->Width = W;
 	        temp->Depth = D;
@@ -865,9 +840,6 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 		    W = 2 * drvr->b_diam;
 			D = 2 * drvr->depth;
 			H = drvr->b_height;
-
-			// hypotenuse of the leg of the enclosure
-		    c = sqrt(pow(D, 2) + pow((W/2), 2));
 
 	        temp->Height = H;
 	        temp->Width = W;
@@ -897,7 +869,6 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 		midrange_cabinet_screen();
 	    cin >> ratio;
 
-		bdesign = 0;
 		// Solve the cabinet volume based on the ratio to control standing waves
 		switch (ratio) {
 	        case 1: 
@@ -946,6 +917,12 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 		plot_name = str + "_" + driver + "_" + "dome.plt";
 	}
 
+	// Electrical/Acoustigal measurements
+	power_dynamics(drvr, 2);
+
+	// compute Baffle Step Frequency
+	temp->bfl_freq = C/(M_PI * baffle);
+
     cout << "+-------------------------------------------+" << endl;
     cout << "| Intermediate values for sealed box design |" << endl;
     cout << "+-------------------------------------------+" << endl;
@@ -956,8 +933,8 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 	cout << " Low Freq                      : " << drvr->Freq_Low << endl;
 	cout << " High Freq                     : " << drvr->Freq_Hi << endl;
 	cout << " Nominal Impedance             : " << drvr->Z_nom << endl;
-    cout << " Power Efficiency              : " << Per << " % " << endl;
-    cout << " Electrical Power              : " << Par << " W " << endl;
+    cout << " Power Efficiency              : " << drvr->Per << " % " << endl;
+    cout << " Electrical Power              : " << drvr->Par << " W " << endl;
 	cout << " Driver Height                 : " << drvr->b_height << endl;
 	cout << " Driver Width                  : " << drvr->b_diam << endl;
 	cout << " Driver Depth                  : " << drvr->depth << endl;
@@ -965,11 +942,6 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 	cout << " Gross cabinet volume          : " << drvr->Vol_gross << endl;
     cout << "--------------------------------------------" << endl;
 
-	// Electrical/Acoustigal measurements
-	power_dynamics(drvr, 2);
-
-	// compute Baffle Step Frequency
-	temp->bfl_freq = C/(M_PI * baffle);
 
 	strcpy(temp->Part_num, drvr->Part_num);
 	strcpy(temp->Type, drvr->Type);
@@ -991,9 +963,9 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 	temp->DC_resist = drvr->Re;
 	temp->Fc = drvr->Fc;
 	temp->Qt = drvr->Qts;
-	temp->PER = Per;
-    temp->PAR = Par;
-    temp->Rh = Rh;
+	temp->PER = drvr->Per;
+    temp->PAR = drvr->Par;
+    temp->Rh = drvr->Rh;
 
 	
 	// Set other fields to '0'
@@ -1024,16 +996,20 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 /* drivers.                                                                                   */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr, *pptr, *pasv_copy, *temp;
+    struct Speaker *ptr, *temp;
+    //struct Speaker *pptr;
+    //struct Speaker *pasv_copy;
 	ptr = drvr;
-	pptr = pasv;
-	pasv_copy = pasv_cpy;
+	//pptr = pasv;
+	//pasv_copy = pasv_cpy;
 
 	temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
-	struct Cabinet *bcab, *pcab, *tmp1, *tmp2;
-	bcab = bass;
-	pcab = pass;
+	struct Cabinet *tmp1, *tmp2;
+	//struct Cabinet *bcab;
+	//struct Cabinet *pcab;
+	//bcab = bass;
+	//pcab = pass;
 	
 	// Bass cabinet (if needed)
 	tmp1=(struct Cabinet *)malloc(sizeof(struct Cabinet));
@@ -1046,25 +1022,15 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
     std::string plot_name;
 
 
-    char d_cmd[8];
-    char k_cmd[8];
     char l_cmd[8];
 
-    double Par, Per, Rh;     // Limited power dynamics
-
-    double height, width;    // Values used to compute the slot port
-
 	double Vbv;              // Copy of the base-state of the cabinet default volume
-    int type = 1;            // variable used to pass determine Par or Per
-                             // type = 1 for vented speaker
 
 	int bdesign;             // switch-stmt control value
 
-    int flag, kflag, pflag; // exit flags to exit switch and while loops.
-                                   // '0' state means loop is active in loop scope
+    int flag, pflag;         // exit flags to exit switch and while loops.
+                             // '0' state means loop is active in loop scope
     flag = 0;
-    flag = 0;
-    kflag = 0;
     pflag = 0;
 
 	Vbv = drvr->Vbv;
@@ -1168,7 +1134,7 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 
                 pflag = 1;
 
-				pptr = pasv_cpy;
+				//pptr = pasv_cpy;
 				vented_cabinet_initialize(drvr, pasv_cpy, 0, bdesign);
 
 				power_dynamics(drvr, 1);
@@ -1182,7 +1148,6 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 				strcpy(tmp2->Part_num, drvr->Part_num);
 				pass = tmp2;
 
-                //speaker_to_cabinet(drvr, pcab, bdesign);
                 speaker_to_cabinet(drvr, pass, bdesign);
 
                 cabinet_design(drvr, pass, cab_type);
@@ -1206,13 +1171,11 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
         } 
 
 		if (pflag) {
-		   // if (pptr->Mas <= 0.0) {
-                passive_screen();
+            passive_screen();
 
-                /* exit the procedure to choose a new driver and    */
-                /* discontinue further processing  with this driver */
-                return;
-            //}
+            /* exit the procedure to choose a new driver and    */
+            /* discontinue further processing  with this driver */
+            return;
         }
 
         cout << "Accept results? (Y/N) " << endl;
@@ -1397,7 +1360,7 @@ void read_bass_driver(Speaker*& drvr)
 /*--------------------------------------------------------------------------------------------*/
 {
     struct Speaker *temp;
-    struct Speaker *ptr;
+    //struct Speaker *ptr;
 
     char line[256];
     char *token;
@@ -1507,7 +1470,7 @@ void read_bass_driver(Speaker*& drvr)
     
         sleep(2);
         drvr = temp;
-        ptr = drvr;
+        //ptr = drvr;
     }
 
     //sleep(3);
@@ -1521,7 +1484,7 @@ void read_midrange_driver(Speaker*& midr)
 /*                         reads the complete list of driver elements.                        */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr;
+    //struct Speaker *ptr;
     struct Speaker *temp;
 
     char line[256];
@@ -1629,7 +1592,7 @@ void read_midrange_driver(Speaker*& midr)
     
         sleep(2);
         midr = temp;
-        ptr = midr;
+        //ptr = midr;
     }
 
     //sleep(2);
@@ -1643,7 +1606,8 @@ void read_tweet_driver(Speaker*& tweet)
 /*                         reads the complete list of driver elements.                        */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr, *temp;
+    //struct Speaker *ptr;
+    struct Speaker *temp;
 
     char line[256];
     char *token;
@@ -1755,7 +1719,7 @@ void read_tweet_driver(Speaker*& tweet)
     
         sleep(2);
         tweet = temp;
-        ptr = tweet;
+        //ptr = tweet;
     }
 
     //sleep(3);
@@ -1769,7 +1733,8 @@ void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int f
 /*                         reads the complete list of driver elements.                        */
 /*--------------------------------------------------------------------------------------------*/
 {
-    struct Speaker *ptr, *temp;
+    struct Speaker *temp;
+    //struct Speaker *ptr;
 
     char line[256];
     char *token;
@@ -1779,12 +1744,10 @@ void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int f
     string filesdb = "";
 
 	string driver_filter;       // the tyoe of driver to search for
-	//string driver_filter = "Pass";       // the tyoe of driver to search for
 
     ifstream infile;
     ifstream input;
 
-    //pasv = NULL;
     drvr = NULL;
 
     system("clear");
@@ -1795,7 +1758,6 @@ void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int f
     sleep(3);
 
 	// Old system call to be replaced with python support script throughout
-    //cmd_str = "./driver.csh Pass";
 	
 	if (flag == 1) {
 	   cout << "Check for driver area..." << endl;
@@ -1820,13 +1782,11 @@ void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int f
     cout << "Choose Speaker... : ";
     cin >> drvr_dba;
 
-    //drvr_dba = drvr_dba + ".sdb";
     
     sleep(2);
     
     input.open(drvr_dba, ios::in);
 
-    //system("cat drvr_dba");
     temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
     while (input >> line) {
@@ -1901,7 +1861,7 @@ void read_driver(Speaker*& drvr, Speaker*& drvr_cpy, std::string drv_type, int f
         //pasv = temp;
         //ptr = pasv;
         drvr = temp;
-        ptr = drvr;
+        //ptr = drvr;
     }
 }
 /*--------------------------------------------------------------------------------------------*/
@@ -2174,27 +2134,31 @@ void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& zobel, Filter& lowpa
 /* (future feature) - a 2nd order filter design is a forth coming feature.                    */
 /*--------------------------------------------------------------------------------------------*/
 {
-    char xovr[8];      /* response to modify high pass cut-off frequency. */
-    char loop[8];      /* control parameter to determine correctness of solution. */
-    char lpad[8];      /* Value of potentometer to use in L-pad  */
     char type[12];     /* type of speaker requiring Lpad in the crossover branch */
-
-    double res_freq;   /* resonant frequency of the bandpass filter */
-    double gain;       /* Gain at cut-off frequency for filter.  */
-    double xover;      /* Cross-ver or frequency cut-off for filter(s)  - high/low pass */
-    double f3db1;      /* -3db cut-off frequency for 2-way speaker. */
-
-    double C1, C2;     /* User defined value for capacitance for filter cut-off */
-    double R1, R2;     /* Computed resistance for given capacitance and crossover frequency. */
-    int i;             /* Counter value for storing the values in the number of cascading stages. */
-    int stages;        /* Number of stages used to determine the order of the filter. */
-                       /* Default is 1 (1st order Butterworth Filter). */
 
     string low_parse = "";    /* The following strings are used to store the parsed data from    */
     string high_parse = "";   /* the speaker node passed in to display the part and frequency    */
                               /* band-width.                                                     */
                               
+	// Check to insure that speaker drivers are loaded to prevent a seg fault of the applicaiton
+	if (drvr == nullptr) {
+	    cout << "No bass drivers have been loaded into the application." << endl;
+		cout << "A valid bass driver must be loaded into the application " << endl;
+		cout << "before a crossover network can be designed.             " << endl;
+
+		return;
+    }
+                              
+	if (!tweet) {
+	    cout << "No tweeter drivers have been loaded into the application." << endl;
+		cout << "A valid bass driver must be loaded into the application " << endl;
+		cout << "before a crossover network can be designed.             " << endl;
+
+		return;
+	}
+
     cout << "This is a Butterworth passive crossover for 2 driver speaker. " << endl;
+
     lowpass.xover_type = "Bass";
     highpass.xover_type = "Tweeter";
 
@@ -2256,19 +2220,26 @@ void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& zobel, Filter& lowpa
     lowpass.gain = (pow(1/(sqrt(2)), lowpass.order));
     highpass.gain = (pow(1/(sqrt(2)), highpass.order));
 
-    lowpass.f3db[0] = lowpass.xover[0] * sqrt((pow(2, 1/lowpass.order)) - 1);
+    lowpass.f3db[0] = lowpass.xover[0] * 0.644; //sqrt( -1 + sqrt(2));
+    highpass.f3db[0] = highpass.xover[0] * 1.533; //sqrt( 1 + sqrt(2));
 
 	/*------------------------------------------------*/
 	/* compare driver outputs to design L-pad network */
 	/*------------------------------------------------*/
+
+	lowpass.Z_nom = drvr->Z_nom;
+	highpass.Z_nom = tweet->Z_nom;
+
+	lowpass.Sensitivity = drvr->Sensitivity;
+	highpass.Sensitivity = tweet->Sensitivity;
 
 	cout << "+---------------------------------------+" << endl;
 	cout << "       Bass/Tweeter measurables          " << endl;
 	cout << "+---------------------------------------+" << endl;
 	cout << " Woofer            Tweeter               " << endl;
 	cout << "+---------------------------------------+" << endl;
-	cout << " " << drvr->Z_nom << " Nom Resistance "  << tweet->Z_nom << endl;
-	cout << " " << drvr->Sensitivity << "       SPL      "  << tweet->Sensitivity << endl;
+	cout << " " << lowpass.Z_nom << " Nom Resistance "  << lowpass.Z_nom << endl;
+	cout << " " << lowpass.Sensitivity << "       SPL      "  << lowpass.Sensitivity << endl;
 	cout << "+---------------------------------------+" << endl;
 
 	// Set the value of the woofer Lpad to "0" since Lpads are only for high-frequency drivers
@@ -2293,24 +2264,27 @@ void passive_two_way(Speaker* drvr, Speaker* tweet, Filter& zobel, Filter& lowpa
     cout << " Filter Values " << endl;
     cout << "-----------------------------------------" << endl;
     cout << " Lpad Potentiometer       : " << highpass.lpad << endl;
-    cout << " Filter Order             : " << lowpass.order << endl;
+    cout << " Filter Low Pass Order    : " << lowpass.order << endl;
+    cout << " Filter High PassOrder    : " << highpass.order << endl;
     cout << " Low-Pass Frequency (Hz)  : " << lowpass.xover[0] << endl;
+    cout << " High-Pass Frequency (Hz) : " << highpass.xover[0] << endl;
     cout << " Low-Pass gain (< 1)      : " << lowpass.gain << endl;
+    cout << " High-Pass gain (< 1)     : " << highpass.gain << endl;
     cout << " Low-Pass 3db freq  (Hz)  : " << lowpass.f3db[0]<< endl;
+    cout << " High-Pass 3db freq  (Hz) : " << highpass.f3db[0]<< endl;
+	cout << " Low-Pass Sensitivity     : " << lowpass.Sensitivity << endl;
+	cout << " Low-pass Load            : " << lowpass.Z_nom << endl;
     cout << " Low-Pass Capacitance     : " << lowpass.filt_c[0] << endl;
     cout << " Low-Pass Inductance      : " << lowpass.filt_l[0] << endl;
-    cout << " High-Pass gain (< 1)     : " << highpass.gain << endl;
-    cout << " High-Pass Frequency (Hz) : " << highpass.xover[0] << endl;
-    cout << " High-Pass 3db freq  (Hz) : " << highpass.f3db[0]<< endl;
+	cout << " High-pass Load           : " << highpass.Z_nom << endl;
+	cout << " High-Pass Sensitivity    : " << lowpass.Sensitivity << endl;
     cout << " High-Pass Capacitance    : " << highpass.filt_c[0] << endl;
     cout << " High-Pass Inductance     : " << highpass.filt_l[0] << endl;
     cout << "-----------------------------------------" << endl;
 
     sleep(5);
 
-	cout << "D E B U G - enabled: " << zobel.enabled << endl;
-	cout << "D E B U G - enabled: " << lowpass.enabled << endl;
-	cout << "D E B U G - enabled: " << highpass.enabled << endl;
+	//highpass.enabled = 1;
 }
 /*--------------------------------------------------------------------------------------------*/
 void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobel, Filter& lowpass, Filter& bandpass, Filter& highpass)
@@ -2320,28 +2294,35 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobe
 /* (future feature) - a 2nd order filter design is a forth coming feature.                    */
 /*--------------------------------------------------------------------------------------------*/
 {
-    char xovr[8];      /* response to modify high pass cut-off frequency. */
-    char loop[8];      /* control parameter to determine correctness of solution. */
-    char lpad[8];      /* Value of potentometer to use in L-pad  */
-    char mdle[8];             /* response to modify band pass cut-off frequency. */
-    char high[8];             /* response to modify band pass cut-off frequency. */
     char type[12];     /* type of speaker requiring Lpad in the crossover branch */
 
-    double res_freq;           /* resonant frequency of the bandpass filter */
+	// Check to insure that speaker drivers are loaded to prevent a seg fault of the applicaiton
+	if (drvr == nullptr) {
+	    cout << "No bass drivers have been loaded into the application." << endl;
+		cout << "A valid bass driver must be loaded into the application " << endl;
+		cout << "before a crossover network can be designed.             " << endl;
 
-    double gain;               /* Gain at cut-off frequency for filter. */
-    double xover;              /* Cross-ver or frequency cut-off for filter(s) - high/low pass */
-    double f3db1, f3bd_2;      /* -3db cut-off frequency for 3-way speaker. */
-
-    double C1, C2, C3; /* User defined value for capacitance for filter cut-off */
-    double R1, R2, R3; /* Computed resistance for given capacitance and crossover frequency. */
-
-    int co_1, co_2;   /* crossover point. */
-    int i;            /* Counter value for storing the values in the number of N-order stages.*/
-    int order;       /* Number of order used to determine the order of the filter. */
-                      /* Default is 1 (1st order Butterworth Filter). */
-
+		return;
+    }
                               
+	// Check to insure that speaker drivers are loaded to prevent a seg fault of the applicaiton
+	if (mid == nullptr) {
+	    cout << "No bass drivers have been loaded into the application." << endl;
+		cout << "A valid bass driver must be loaded into the application " << endl;
+		cout << "before a crossover network can be designed.             " << endl;
+
+		return;
+    }
+                              
+	// Check to insure that speaker drivers are loaded to prevent a seg fault of the applicaiton
+	if (tweet == nullptr) {
+	    cout << "No bass drivers have been loaded into the application." << endl;
+		cout << "A valid bass driver must be loaded into the application " << endl;
+		cout << "before a crossover network can be designed.             " << endl;
+
+		return;
+    }
+
     lowpass.xover_type = "Bass";
     bandpass.xover_type = "Midrange";
     highpass.xover_type = "Tweeter";
@@ -2385,8 +2366,10 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobe
     }
 
     freq_crossover_screen();
-    bandpass.xover[0] = mid->Freq_Low + (drvr->Freq_Hi - mid->Freq_Low)/2;
-	bandpass.xover[1] = tweet->Freq_Low + (mid->Freq_Hi - tweet->Freq_Low)/2;
+    lowpass.xover[0] = drvr->Freq_Low + (mid->Freq_Hi - drvr->Freq_Low)/2;
+    bandpass.xover[0] = lowpass.xover[0];
+	bandpass.xover[1] = mid->Freq_Low + (mid->Freq_Hi - tweet->Freq_Low)/2;
+    highpass.xover[0] = bandpass.xover[1];
 
 	cout << "+-----------------------------+" << endl;
     cout << "| Suggested Cross Over Points |" << endl;
@@ -2394,9 +2377,6 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobe
     cout << "  Bass/Midrange : " << bandpass.xover[0] << endl;
     cout << "  Midrange/Tweet: " << bandpass.xover[1] << endl;
     cout << "+---------------------------+" << endl;
-
-    lowpass.xover[0] = bandpass.xover[0];
-    highpass.xover[0] = bandpass.xover[1];
 
 	lowpass.order = 2;      // LC cross-over filters are 2-stage by default
 	bandpass.order = 4;     // LC cross-over network for band-pass is a special case
@@ -2423,24 +2403,35 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobe
 
 	/* Determine stage gain values per crossover stage */
     lowpass.gain = (pow(1/(sqrt(2)), lowpass.order));
-    bandpass.gain = (pow(1/(sqrt(2)), highpass.order));
+    bandpass.gain = (pow(1/(sqrt(2)), bandpass.order));
     highpass.gain = (pow(1/(sqrt(2)), highpass.order));
 
 	/* determine bandpass attenuation */
+    lowpass.f3db[0] = lowpass.xover[0] * sqrt((pow(2, 1/lowpass.order)) - 1);
+
     bandpass.f3db[0] = bandpass.xover[0] * sqrt((pow(2, 1/bandpass.order)) - 1);
     bandpass.f3db[1] = bandpass.xover[1] * sqrt((pow(2, 1/bandpass.order)) - 1);
+
+    highpass.f3db[0] = highpass.xover[0] * sqrt((pow(2, 1/highpass.order)) - 1);
 
 	/*------------------------------------------------*/
     /* compare driver outputs to design L-pad network */
     /*------------------------------------------------*/
+	lowpass.Z_nom = drvr->Z_nom;
+	bandpass.Z_nom = mid->Z_nom;
+	highpass.Z_nom = tweet->Z_nom;
+
+	lowpass.Sensitivity = drvr->Sensitivity;
+	bandpass.Sensitivity = mid->Sensitivity;
+	highpass.Sensitivity = tweet->Sensitivity;
 
     cout << "+-------------------------------------------------------------+" << endl;
     cout << "             Bass/Midrange/Tweeter measurables                 " << endl;
     cout << "+-------------------------------------------------------------+" << endl;
     cout << "                Woofer       Midrange      Tweeter " << endl;
     cout << "+---------------------------------------+" << endl;
-    cout << " Impedance " << drvr->Z_nom << " " <<  mid->Z_nom << " " << tweet->Z_nom << endl;
-    cout << " SPL       " << drvr->Sensitivity << " " << mid->Sensitivity << " " << tweet->Sensitivity << endl;
+    cout << " Impedance " << lowpass.Z_nom << " " <<  bandpass.Z_nom << " " << highpass.Z_nom << endl;
+    cout << " SPL       " << lowpass.Sensitivity << " " << bandpass.Sensitivity << " " << highpass.Sensitivity << endl;
     cout << "+-------------------------------------------------------------+" << endl;
 
 	// Set the value of the woofer Lpad to "0" since Lpads are only for high-frequency drivers
@@ -2468,43 +2459,60 @@ void passive_three_way(Speaker* drvr, Speaker* mid, Speaker* tweet, Filter& zobe
         strcpy(type, "Tweeter");
     }
 
+    cout << " Band-pass Load           : " << bandpass.Z_nom << endl;
+    cout << " Band-Pass Capacitance C1 : " << bandpass.filt_c[0] << endl;
+    cout << " Band-Pass Inductance  L1 : " << bandpass.filt_l[0] << endl;
+    cout << " Band-Pass Capacitance C2 : " << bandpass.filt_c[1] << endl;
+    cout << " Band-Pass Inductance  L2 : " << bandpass.filt_l[1] << endl;
     cout << "-----------------------------------------" << endl;
     cout << " Filter Values " << endl;
     cout << "-----------------------------------------" << endl;
-	cout << " Midrange Lpad Potentiometer: " << bandpass.lpad << endl;
-	cout << " Tweeter Lpad Potentiometer : " << highpass.lpad << endl;
-    cout << " Woofer Filter Order        : " << lowpass.order << endl;
-    cout << " Midrange Filter Order      : " << bandpass.order << endl;
-    cout << " Tweeter Filter Order       : " << highpass.order << endl;
-	cout << " ----------------------------------------" << endl;
-    cout << " Low-Pass gain              : " << lowpass.gain << endl;
-    cout << " Low-Pass 3db freq (Hz)     : " << lowpass.f3db1<< endl;
-    cout << " Low-Pass Capacitance/C1    : " << lowpass.filt_c[0] << endl;
-    cout << " Low-Pass Inductance/L1     : " << lowpass.filt_l[0] << endl;
-	cout << " ----------------------------------------" << endl;
-    cout << " Band-Pass Frequency [Low]  : " << bandpass.xover[0] << endl;
-    cout << " Band-Pass Frequency [High] : " << bandpass.xover[1] << endl;
-    cout << " Band-Pass gain             : " << bandpass.gain << endl;
-    cout << " Band-Pass 3db(l) freq (Hz) : " << bandpass.f3db[0]<< endl;
-    cout << " Band-Pass 3db(h) freq (Hz) : " << bandpass.f3db[1]<< endl;
-    cout << " Band-Pass Capacitance/C1   : " << bandpass.filt_c[0] << endl;
-    cout << " Band-Pass Capacitance/C2   : " << bandpass.filt_c[1] << endl;
-    cout << " Band-Pass Inductance/L1    : " << bandpass.filt_l[0] << endl;
-    cout << " Band-Pass Inductance/L2    : " << bandpass.filt_l[1] << endl;
-	cout << " ----------------------------------------" << endl;
-    cout << " High-Pass gain             : " << highpass.gain << endl;
-    cout << " High-Pass Frequency   (Hz) : " << highpass.xover[0] << endl;
-    cout << " High-Pass 3db freq    (Hz) : " << highpass.f3db[0]<< endl;
-    cout << " High-Pass Capacitance      : " << highpass.filt_c[0] << endl;
-    cout << " High-Pass Inductance       : " << highpass.filt_l[0] << endl;
+    cout << " Lpad Mid Potentiometer   : " << bandpass.lpad << endl;
+    cout << " Lpad Tweet Potentiometer : " << highpass.lpad << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " Filter Low Pass Order    : " << lowpass.order << endl;
+    cout << " Filter Band Pass Order   : " << bandpass.order << endl;
+    cout << " Filter High PassOrder    : " << highpass.order << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " Low-Pass Frequency (Hz)  : " << lowpass.xover[0] << endl;
+    cout << " Bann-Pass Frequency(1)   : " << highpass.xover[0] << endl;
+    cout << " Band-Pass Frequency(2)   : " << highpass.xover[0] << endl;
+    cout << " High-Pass Frequency (Hz) : " << highpass.xover[0] << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " Low-Pass gain (< 1)      : " << lowpass.gain << endl;
+    cout << " Band-Pass gain (< 1)     : " << highpass.gain << endl;
+    cout << " High-Pass gain (< 1)     : " << highpass.gain << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " Low-Pass 3db freq  (Hz)  : " << lowpass.f3db[0]<< endl;
+    cout << " Band-Pass 3db freq  (Hz) : " << lowpass.f3db[0]<< endl;
+    cout << " Band-Pass 3db freq  (Hz) : " << lowpass.f3db[0]<< endl;
+    cout << " High-Pass 3db freq  (Hz) : " << highpass.f3db[0]<< endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " Low-Pass Sensitivity     : " << lowpass.Sensitivity << endl;
+    cout << " Low-pass Load            : " << lowpass.Z_nom << endl;
+    cout << " Low-Pass Capacitance     : " << lowpass.filt_c[0] << endl;
+    cout << " Low-Pass Inductance      : " << lowpass.filt_l[0] << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " Band-pass Load           : " << bandpass.Z_nom << endl;
+    cout << " Band-Pass Sensitivity    : " << bandpass.Sensitivity << endl;
+    cout << " Band-Pass Capacitance C1 : " << bandpass.filt_c[0] << endl;
+    cout << " Band-Pass Inductance  L1 : " << bandpass.filt_l[0] << endl;
+    cout << " Band-Pass Capacitance C2 : " << bandpass.filt_c[1] << endl;
+    cout << " Band-Pass Inductance  L2 : " << bandpass.filt_l[1] << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << " High-pass Load           : " << highpass.Z_nom << endl;
+    cout << " High-Pass Sensitivity    : " << lowpass.Sensitivity << endl;
+    cout << " High-Pass Capacitance    : " << highpass.filt_c[0] << endl;
+    cout << " High-Pass Inductance     : " << highpass.filt_l[0] << endl;
     cout << "-----------------------------------------" << endl;
 
     sleep(5);
 
-	cout << "D E B U G - enabled: " << zobel.enabled << endl;
-	cout << "D E B U G - enabled: " << lowpass.enabled << endl;
-	cout << "D E B U G - enabled: " << bandpass.enabled << endl;
-	cout << "D E B U G - enabled: " << highpass.enabled << endl;
+	//zobel.enabled = 0;
+	//lowpass.enabled = 0;
+	//highpass.enabled = 0;
+	//bandpass.enabled = 1;
+
 }
 /*--------------------------------------------------------------------------------------------*/
 void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
@@ -2515,24 +2523,22 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 /* network(s).                                                                                */
 /*--------------------------------------------------------------------------------------------*/
 {
-	char fixed[4];              // Yes/No answer for filter type: Fixed or variable
+	int i;
 	int input;                  // Selection answer for frequency cut-off
 
-	int f_stops[5];
 	int f_delta;
-	int freq;
 
 	int f_lo, f_hi;             // Frequency bandwidth for filter adjustment
-	int i, j;                   // loop counter
-	int limit;
 
-	double C_z, R_z;            // zobel component values
-	double L1, C1;              // Filter values for low-pass solution. User supplys C1
-	                            // L1 is a tunable inductor based on frequency
+	// Check to insure that speaker drivers are loaded to prevent a seg fault of the applicaiton
+	if (drvr == nullptr) {
+	    cout << "No bass drivers have been loaded into the application." << endl;
+		cout << "A valid bass driver must be loaded into the application " << endl;
+		cout << "before a crossover network can be designed.             " << endl;
 
-	double freq_lo, freq_hi;    // Frequency sweep to determine range for tunable inductor for 
-	                            // low-pass 2nd-order filter.
-
+		return;
+    }
+                              
 	zobel.order = 2;
 	zobel.xover_type = "Subwoofer";
 
@@ -2567,7 +2573,6 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 			zobel.filt_l[i] = solve_inductance(drvr, zobel.xover[i]);
 			zobel.filt_c[i] = solve_capacitance(drvr, zobel.xover[i]);
 
-			lowpass.xover_pts = 1;
 			cout << "+-----------------------------------------------" << endl;
 			cout << "|   Freq       Capacitance      Inductance " << endl;
 			cout << "+-----------------------------------------------" << endl;
@@ -2623,21 +2628,17 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 			// Setup freq limit to start computation loop
 			zobel.freq[0] = f_lo;
 
-			lowpass.xover_pts = j + 1;
 			cout << "+-----------------------------------------------" << endl;
 			cout << "|   Freq       Capacitance      Inductance       Freq " << endl;
 			cout << "+-----------------------------------------------" << endl;
 			
 			for (i = 0; i < zobel.j; i++ ) {
-				//lowpass.freq[i] = lowpass.freq[i] + f_delta;
 				zobel.freq[i] = f_lo + (i * f_delta);
 				
 				zobel.filt_c[i] = solve_capacitance(drvr, zobel.freq[i]);
 
 			    zobel.filt_l[i] = solve_inductance(drvr, zobel.freq[i]);
 
-				// debug check to validate values
-				cout << "| " << zobel.freq[i] << " | " << zobel.filt_c[0] << " | " << zobel.filt_l[i]  << " | " << zobel.freq[i] << endl;
 		    }
 
 			cout << "+-----------------------------------------------" << endl;
@@ -2686,8 +2687,6 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 
 			    zobel.filt_l[i] = solve_inductance(drvr, zobel.freq[i]);
 
-				// debug check to validate values
-				cout << "| " << zobel.freq[i] << " | " << zobel.filt_c[i] << " | " << zobel.filt_l[i] << endl;
 	        }
 
 			sleep(5);
@@ -2702,23 +2701,11 @@ void passive_check(Speaker* drvr, Speaker*& pasv, Speaker*& pasv_cpy)
 /*--------------------------------------------------------------------------------------------*/
 {
 
-    int flag;                     // used to confirm exit from procedure
-	double T1, T2;                // Threshold limits for pasive radiator surface area
-
     if (pasv == NULL)  {
 	    cout << "No passive radiator is loaded into the applicatin. Please select from the following drivers..." << endl;
 		read_driver(pasv, pasv_cpy, "Pass", 1, drvr->Sd);
 		//read_passive_driver(pasv, pasv_cpy, 1, drvr->Sd);
         mem_copy(pasv, pasv_cpy);
-
-		cout << "--------------------------" << endl;
-		cout << "    File Load Debug       " << endl;
-		cout << "--------------------------" << endl;
-		cout << " driver name - primary - " << pasv->Part_num << endl;
-		cout << " driver name - copy    - " << pasv_cpy->Part_num << endl;
-		cout << " Vas - primary         - " << pasv->Vas << endl;
-		cout << " Vas - copy            - " << pasv_cpy->Vas << endl;
-		cout << "--------------------------" << endl;
 
 		sleep(5);
     }
@@ -2853,7 +2840,7 @@ void write_cabinet_data(Cabinet* pass, Cabinet* bass, Cabinet* midr, Cabinet* tr
 	sleep(1);
 }
 /*--------------------------------------------------------------------------------------------*/
-void write_filter_data(Speaker* drvr, Filter zobel, Filter lowpass, Filter bandpass, Filter highpass, std::ofstream& outfile)
+void write_filter_data(Filter zobel, Filter lowpass, Filter bandpass, Filter highpass, std::ofstream& outfile)
 /*--------------------------------------------------------------------------------------------*/
 /* This procedure will print the filter design criteria to the final design document. It uses */
 /* the <filter>.enabled flag on which to print data out.                                      */
@@ -2862,30 +2849,18 @@ void write_filter_data(Speaker* drvr, Filter zobel, Filter lowpass, Filter bandp
 /* writen out to a file.                                                                      */
 /*--------------------------------------------------------------------------------------------*/
 {
-    int i, j;                  // integer loop values for writing data
-
-	//cout << "D E B U G - Enabled filter (zobel)   : " << zobel.enabled << endl;
-	//cout << "D E B U G - Enabled filter (lowpass) : " << lowpass.enabled << endl;
-	//cout << "D E B U G - Enabled filter (highpass): " << highpass.enabled << endl;
-	//cout << "D E B U G - Enabled filter (bandpass): " << bandpass.enabled << endl;
-
 	if (zobel.enabled >= 1) {
 	     print_zobel(zobel, outfile);
 		 return;
 	}
 
 	if (highpass.enabled >= 1) {
-	     //print_crossover(zobel, outfile);
-	     //print_crossover(lowpass, outfile);
-	     //print_crossover(highpass, outfile);
+	     print_twoway_crossover(zobel, lowpass, highpass, outfile);
 		 return;
 	}
 
 	if (bandpass.enabled >= 1) {
-	     //print_crossover(zobel, outfile);
-	     //print_crossover(lowpass, outfile);
-	     //print_crossover(bandpass, outfile);
-	     //print_crossover(highpass, outfile);
+	     print_threeway_crossover(zobel, lowpass, bandpass, highpass, outfile);
 		 return;
 	}
 }
@@ -2969,6 +2944,104 @@ void print_zobel(Filter zobel, std::ofstream& outfile)
 	    return;
 	}
     
+}
+/*--------------------------------------------------------------------------------------------*/
+void print_twoway_crossover(Filter zobel, Filter lowpass, Filter highpass, std::ofstream& outfile)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure will print the filter design criteria to the final design document.         */
+/*--------------------------------------------------------------------------------------------*/
+{
+
+    outfile << "+-----------------------------+" << endl;
+    outfile << "| Suggested Cross Over Points |" << endl;
+    outfile << "+-----------------------------+" << endl;
+    outfile << "  Bass/Tweet: " << lowpass.xover[0] << endl;
+    outfile << "+---------------------------+" << endl;
+
+	outfile << "-----------------------------------------" << endl;
+	outfile << " Zobel filter values " << endl;
+	outfile << "-----------------------------------------" << endl;
+	outfile << " Rz : " << zobel.Rz << endl;
+	outfile << " Lz : " << zobel.Lz << endl;
+	outfile << " Cz : " << zobel.Cz << endl;
+    outfile << "-----------------------------------------" << endl;
+    outfile << " Filter Values " << endl;
+    outfile << "-----------------------------------------" << endl;
+    outfile << " Lpad Potentiometer       : " << highpass.lpad << endl;
+    outfile << " Filter Order             : " << lowpass.order << endl;
+    outfile << " Low-Pass Frequency (Hz)  : " << lowpass.xover[0] << endl;
+    outfile << " High-Pass Frequency (Hz) : " << highpass.xover[0] << endl;
+    outfile << " Low-Pass gain (< 1)      : " << lowpass.gain << endl;
+    outfile << " High-Pass gain (< 1)     : " << highpass.gain << endl;
+    outfile << " Low-Pass 3db freq  (Hz)  : " << lowpass.f3db[0]<< endl;
+    outfile << " High-Pass 3db freq  (Hz) : " << highpass.f3db[0]<< endl;
+	outfile << " Low-pass Load            : " << lowpass.Z_nom << endl;
+	outfile << " Low-Pass Sensitivity     : " << lowpass.Sensitivity << endl;
+    outfile << " Low-Pass Capacitance     : " << lowpass.filt_c[0] << endl;
+    outfile << " Low-Pass Inductance      : " << lowpass.filt_l[0] << endl;
+	outfile << " High-pass Load           : " << highpass.Z_nom << endl;
+	outfile << " High-Pass Sensitivity    : " << lowpass.Sensitivity << endl;
+    outfile << " High-Pass Capacitance    : " << highpass.filt_c[0] << endl;
+    outfile << " High-Pass Inductance     : " << highpass.filt_l[0] << endl;
+    outfile << "-----------------------------------------" << endl;
+
+}
+/*--------------------------------------------------------------------------------------------*/
+void print_threeway_crossover(Filter zobel, Filter lowpass, Filter highpass, Filter bandpass, std::ofstream& outfile)
+/*--------------------------------------------------------------------------------------------*/
+/* This procedure will print the filter design criteria to the final design document.         */
+/*--------------------------------------------------------------------------------------------*/
+{
+
+	outfile << "+-----------------------------+" << endl;
+    outfile << "| Suggested Cross Over Points |" << endl;
+    outfile << "+-----------------------------+" << endl;
+    outfile << "  Bass/Midrange : " << bandpass.xover[0] << endl;
+    outfile << "  Midrange/Tweet: " << bandpass.xover[1] << endl;
+    outfile << "+---------------------------+" << endl;
+
+	outfile << "-----------------------------------------" << endl;
+	outfile << " Zobel filter values " << endl;
+	outfile << "-----------------------------------------" << endl;
+	outfile << " Rz : " << zobel.Rz << endl;
+	outfile << " Lz : " << zobel.Lz << endl;
+	outfile << " Cz : " << zobel.Cz << endl;
+    outfile << "-----------------------------------------" << endl;
+    outfile << " Filter Values " << endl;
+    outfile << "-----------------------------------------" << endl;
+    outfile << " Lpad Potentiometer       : " << highpass.lpad << endl;
+    outfile << " Filter Low Pass Order    : " << lowpass.order << endl;
+    outfile << " Filter Band Pass Order   : " << bandpass.order << endl;
+    outfile << " Filter High PassOrder    : " << highpass.order << endl;
+    outfile << " Low-Pass Frequency (Hz)  : " << lowpass.xover[0] << endl;
+    outfile << " Bann-Pass Frequency(1)   : " << highpass.xover[0] << endl;
+    outfile << " Band-Pass Frequency(2)   : " << highpass.xover[0] << endl;
+    outfile << " High-Pass Frequency (Hz) : " << highpass.xover[0] << endl;
+    outfile << " Low-Pass gain (< 1)      : " << lowpass.gain << endl;
+    outfile << " Band-Pass gain (< 1)     : " << highpass.gain << endl;
+    outfile << " High-Pass gain (< 1)     : " << highpass.gain << endl;
+    outfile << " Low-Pass 3db freq  (Hz)  : " << lowpass.f3db[0]<< endl;
+    outfile << " Band-Pass 3db freq  (Hz) : " << lowpass.f3db[0]<< endl;
+    outfile << " Band-Pass 3db freq  (Hz) : " << lowpass.f3db[0]<< endl;
+    outfile << " High-Pass 3db freq  (Hz) : " << highpass.f3db[0]<< endl;
+    outfile << " Band-pass Load           : " << bandpass.Z_nom << endl;
+    outfile << " High-pass Load           : " << highpass.Z_nom << endl;
+    outfile << " Low-Pass Sensitivity     : " << lowpass.Sensitivity << endl;
+    outfile << " Band-Pass Sensitivity    : " << bandpass.Sensitivity << endl;
+    outfile << " High-Pass Sensitivity    : " << highpass.Sensitivity << endl;
+    outfile << " Low-pass Load            : " << lowpass.Z_nom << endl;
+    outfile << " Low-Pass Capacitance     : " << lowpass.filt_c[0] << endl;
+    outfile << " Low-Pass Inductance      : " << lowpass.filt_l[0] << endl;
+    outfile << " Band-pass Load           : " << bandpass.Z_nom << endl;
+    outfile << " Band-Pass Capacitance C1 : " << bandpass.filt_c[0] << endl;
+    outfile << " Band-Pass Inductance  L1 : " << bandpass.filt_l[0] << endl;
+    outfile << " Band-Pass Capacitance C2 : " << bandpass.filt_c[1] << endl;
+    outfile << " Band-Pass Inductance  L2 : " << bandpass.filt_l[1] << endl;
+    outfile << " High-pass Load           : " << highpass.Z_nom << endl;
+    outfile << " High-Pass Sensitivity    : " << lowpass.Sensitivity << endl;
+    outfile << " High-Pass Capacitance    : " << highpass.filt_c[0] << endl;
+    outfile << " High-Pass Inductance     : " << highpass.filt_l[0] << endl;
+    outfile << "-----------------------------------------" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void purge_data(Speaker* drvr)

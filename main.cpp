@@ -281,6 +281,9 @@ int main()
                     cout << "Passive xover design - Two-way Speaker..." << endl;
 					xover = 1;
 		            passive_two_way(drvr_cpy, tweet_cpy, zobel, lowpass, highpass);
+					zobel.enabled = 0;
+					bandpass.enabled = 0;
+					highpass.enabled = 1;
 		            sleep(2);
                 }
 
@@ -288,14 +291,15 @@ int main()
                     cout << "Passive xover design - Three-way Speaker..." << endl;
 					xover = 2;
 		            passive_three_way(drvr_cpy, mid_cpy, tweet_cpy, zobel, lowpass, bandpass, highpass);
+					zobel.enabled = 0;
+					highpass.enabled = 0;
+					bandpass.enabled = 1;
 		            sleep(2);
                 }
 
                 if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive low-pass design - Subwoofer Speaker..." << endl;
 					xover = 2;
-					//zobel.enabled = 1;
-					//lowpass.enabled = 0;
 		            subwoofer_passive(drvr_cpy, lowpass, zobel);
 		            sleep(2);
                 }
@@ -389,7 +393,7 @@ int main()
 	        write_design_data(Passive, Bass, Midrange, Tweeter, outfile);
 
 			/* Need a scheme to determine what kind of filter is being used */
-			write_filter_data(drvr, zobel, lowpass, bandpass, highpass, outfile);
+			write_filter_data(zobel, lowpass, bandpass, highpass, outfile);
         }
 
         if ((strcmp(t_cmd, "P") == 0) || (strcmp(t_cmd, "p") == 0) || (strcmp(t_cmd, "9") == 0)) {

@@ -98,11 +98,11 @@ void crossover_screen()
     cout << "    |      (Use numerical selection only)      |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) 2-way - passive speaker              |" << endl;
-    cout << "    |  2) 2-way - active speaker               |" << endl;
-    cout << "    |  3) 3-way - passive speaker              |" << endl;
-    cout << "    |  4) 3-way - active speaker               |" << endl;
-    cout << "    |  5) Subwoofer - lowpass speaker          |" << endl;
-    cout << "    |  6) Exit                                 |" << endl;
+    //cout << "    |  2) 2-way - active speaker               |" << endl;
+    cout << "    |  2) 3-way - passive speaker              |" << endl;
+    //cout << "    |  4) 3-way - active speaker               |" << endl;
+    cout << "    |  3) Subwoofer - lowpass speaker          |" << endl;
+    cout << "    |  4) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
 }
