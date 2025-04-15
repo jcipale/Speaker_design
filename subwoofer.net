@@ -1,0 +1,31 @@
+subwoofer
+*----------------------------------------------
+*	GNUCAP - NETLIST
+.options OUT=120 
+*------------- Models -------------------------
+*------------- Circuit Description-------------
+L_Le 2 6 0.56m
+R_Rz 2 3 6.2
+C_Cz 3 0 0.0156u
+C_C1 1 0 0.2487u
+*V_V1 4 0 dc 0.0 ac 1.0 *sin(0.0 1.0 1.0 0 0)
+V_V1 4 0 ac 1 
+L_L1 4 1 15.9m
+R_Re 6 5 6.2
+R_Rl 5 0 8
+
+* Wire node 1 to 2
+Rwire 1 2 1m
+
+* Source Description
+* V_node 2 0
+*----------------------------------------------
+*.print dc  v(5)
+*.dc V1 0 0 0
+.print op v(nodes)
+.op
+*.print tran  v(5)
+*.tran 0.005 0.0001
+.ac dec 1000 20 3k
+.print ac v(5)
+.end

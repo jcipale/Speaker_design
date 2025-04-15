@@ -1,0 +1,22 @@
+* Subwoofer AC Test Circuit
+
+* Signal source (AC analysis only)
+V1 in 0 AC 1
+
+* Low-pass filter
+L1 in xover 15.9m
+C1 xover 0 0.2487u
+
+* Speaker model: Re/Le in series with Rl
+L_Le xover x1 0.56m
+R_Re x1 x2 6.2
+R_Rl x2 0 8
+
+* Zobel network across speaker terminals
+R_Rz xover z1 6.2
+C_Cz z1 0 0.0156u
+
+* Frequency sweep
+.ac dec 1000 20 3k
+.print ac v(x2)
+.end

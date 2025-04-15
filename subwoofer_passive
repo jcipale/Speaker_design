@@ -1,0 +1,434 @@
+Script started on 2025-04-15 09:15:31-07:00 [TERM="xterm" TTY="/dev/pts/13" COLUMNS="100" LINES="50"]
+joec@royal> SpeakEasy
+[H[2J[3J    +-------------------------------------------------------------------------+
+    |                                                                         |
+    | SSSSSS                                           EEEEEE                 |
+    | S                       k                        E                      |
+    | S                       k                        E                      |
+    | S                       k   k                    E                      |
+    | SSSSSS  ppp  eee  aaa   k  k    eee  r rr  ===   EEEE   aaa   sss  y  y |
+    |      S  p  p e  e   a   k k     e  e rr  r       E        a   s     y y |
+    |      S  p  p eee    a   k k     exe  rr  r       E        a   s     y y |
+    |      S  pp   e    a a   k   k   e    r           E      a a     s    y  |
+    | SSSSSS  p    eee  aaaa  k    k  eee  r           EEEEEE aaaa  sss  y    |
+    |         p                                                               |
+    |         p                                                               |
+    |                                                                         |
+    +-------------------------------------------------------------------------+
+    |                           Version 1.0.0-alpha                           |
+    +-------------------------------------------------------------------------+
+[H[2J[3J
+    +------------------------------------------+
+    |               Program Menu               |
+    +------------------------------------------+
+    |  1) (B)uild Parameters                   |
+    |  2) (L)ist Speaker Parts                 |
+    |  3) (C)abinet Design                     |
+    |  4) (X)over Design                       |
+    |  5) (G)raph Performance                  |
+    |  6) (S)ave Speaker Data                  |
+    |  7) (R)ead Speaker Data                  |
+    |  8) (W)rite Design Parameters            |
+    |  9) (P)urge                              |
+    |  0) (Q)uit                               |
+    +------------------------------------------+
+    SpeakEasy: r
+[H[2J[3J
+    +------------------------------------------+
+    |          Driver Selection Menu           |
+    +------------------------------------------+
+    |  1) (B)ass Driver                        |
+    |  2) (M)id-range Driver                   |
+    |  3) (T)weeter Driver                     |
+    |  4) (P)assive Driver                     |
+    |  5) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: b
+Bass selection menu 1...
+[H[2J[3J-------------------------------
+Select a speaker from the list below...
++-----------------------------
+Dayton_RSS210HO-4.sdb 
+Tang-W5-1138SMF.sdb 
+Accuton_S220-6222-8-mod.sdb 
+Dayton-DC300­8.sdb 
+SB-SB29NRX75-6.sdb 
+Accuton_S220-6.sdb 
+Satori_WO24TX-8.sdb 
+SEAS-Excel_W18NX-001.sdb 
+Dayton-RSS315HF-4-12.sdb 
+Morel_TiCW.sdb 
+Accuton_S220-6222-8.sdb 
+EPIQUE-E150HE-4.sdb 
+
+Choose Speaker... : Accuton_S220-6222-8-mod.sdb
+Cloning the data for normalization
+[H[2J[3J
+    +------------------------------------------+
+    |          Driver Selection Menu           |
+    +------------------------------------------+
+    |  1) (B)ass Driver                        |
+    |  2) (M)id-range Driver                   |
+    |  3) (T)weeter Driver                     |
+    |  4) (P)assive Driver                     |
+    |  5) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: e
+Parts menu - Exit sub-menu...
+[H[2J[3J
+    +------------------------------------------+
+    |               Program Menu               |
+    +------------------------------------------+
+    |  1) (B)uild Parameters                   |
+    |  2) (L)ist Speaker Parts                 |
+    |  3) (C)abinet Design                     |
+    |  4) (X)over Design                       |
+    |  5) (G)raph Performance                  |
+    |  6) (S)ave Speaker Data                  |
+    |  7) (R)ead Speaker Data                  |
+    |  8) (W)rite Design Parameters            |
+    |  9) (P)urge                              |
+    |  0) (Q)uit                               |
+    +------------------------------------------+
+    SpeakEasy: l
+Display current speakers...
++-----------------------------
+       Avalable Speaker Parts:...     
+ (Measurements normalized to meters)  
+Part Number            : Accuton_S220-6222-8-mod
+Type                   : Woof
+Build                  : cone
+Vas (L || dm^3)        : 0.139
+Cms                    : 1.95
+Mms                    : 0.03
+Bl                     : 11.55
+Qts                    : 0.2
+Qes                    : 0.21
+Qms                    : 4.4
+Sd                     : 0.0224
+Fs (Hz)                : 21
+Re (Ohms)              : 6.7
+Rms                    : 0.89
+Z_nom (Ohms)           : 8
+Le (mH)                : 1.01
+Xmax (m)               : 0.005
+Diam (m)               : 0.055
+Nom_Pwr (W)            : 100
+Max_Pwr (W)            : 300
+Freq_Low (Hz)          : 30
+Freq_Hi (Hz)           : 3500
+Sensitivity            : 92.5
+- - - - Default Data Sheet Values - - - -
+Vol Sealed (L || dm^3) : 0.025
+Vol Vented (L || dm^3) : 0.035
+f3_seal (Hz)           : 33
+f3_vent (Hz)           : 33
+vent diam  (m)         : 0.07
+vent length (m)        : 0.23
+speaker diam (m)       : 0.191
+speaker ht/length (m)  : 0.191
+speaker depth (m)      : 0.113
++-----------------------------
+[H[2J[3J
+    +------------------------------------------+
+    |               Program Menu               |
+    +------------------------------------------+
+    |  1) (B)uild Parameters                   |
+    |  2) (L)ist Speaker Parts                 |
+    |  3) (C)abinet Design                     |
+    |  4) (X)over Design                       |
+    |  5) (G)raph Performance                  |
+    |  6) (S)ave Speaker Data                  |
+    |  7) (R)ead Speaker Data                  |
+    |  8) (W)rite Design Parameters            |
+    |  9) (P)urge                              |
+    |  0) (Q)uit                               |
+    +------------------------------------------+
+    SpeakEasy: c
+Cabinet Design...
+[H[2J[3J
+    +------------------------------------------+
+    |           Cabinet Design Menu            |
+    +------------------------------------------+
+    |  1) (S)ub-woofer Design                  |
+    |  2) (2)-way Speaker Design               |
+    |  3) (3)-way Speaker Design               |
+    |  4) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: s
+
+    +------------------------------------------+
+    |          Sub-woofer Design Menu          |
+    +------------------------------------------+
+    |             Cabinet Design               |
+    +------------------------------------------+
+    |  1) (S)ealed Cabinet                     |
+    |  2) (V)ented Cabinet                     |
+    |  3) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: v
+Choose design based on:
+    1) Standard Bass Reflex - Balanced system response
+    2) Extended Bass Shelf - 
+    3) Slotted Port Design 
+    4) Passive Radiator Design 
+-------------------------------------
+1
+Bass Reflex design...
+Bass Reflex design
+Recommended cabinet size is 35 Liters. 
+ * Choose a new cabinet value? (Y/N) : n\
++-----------------------------------+
+| Specify the port diam in m :      |
+| 1 cm <==> 10 m                    |
++-----------------------------------+
+45
++-------------------------------------------------------------------------+
+|   Select the port diffusion value:                                      |
++-------------------------------------------------------------------------+
+|   diffusion value (kappa) = 0.435 : 1 flanged and 1 unflanged port      |
+|   diffusion value (kappa) = 0.732 : 2 flanged ports - internal/external |
+|   diffusion value (kappa) = 0.85  : 2 unflanged ports                   |
++-------------------------------------------------------------------------+
+ kappa: 0.435
+Use Metric (M) or Imperial (I) units of measure? (Metric is default): i
+Driver dimensions: 
+ Part Number       : Accuton_S220-6222-8-mod
+ Nominal impedance : 8
+ Frequency - low   : 30
+ Frequency - high  : 3500
+ Frequency rolloff : 0
+ Resonant frequency: 21
+ Cabinet volume: 1525.5 in^3
+ Total volume  : 2338.87 in^3
+ Vent area     : 2.46517 in^2 
+ Vent ht/diam  : 1.77165 inches 
+ Vent width    : 1.77165 inches 
+ Vent length   : 2.27341 inches 
+ Driver diameter  : 7.51967 inches 
+ Driver depth     : 4.44881 inches 
+ Driver height    : 7.51967 inches 
++--------------------------+
+|   Cabinet measurements   |
++--------------------------+
+| Width         : 13.4209 in
+| Depth         : 8.05256 in
+| Height        : 21.4735 in
+| Vent diameter : 1.77165 in 
+| Vent length   : 2.27341 in 
++---------------------------+
+Accept dimensions? (Y/N): 
+y
+Speaker Design completed...
+--------------------------------------------
+            Speaker Dimensions              
+--------------------------------------------
+  Width:  13.4209
+  Depth:  8.05256
+  Height: 21.4735
+--------------------------------------------
+Accept results? (Y/N) 
+y
+ Frequeny Response H(f) for Accuton_S220-6222-8-mod
+ -------|---------------
+  Freq  : H(f) 
+ -------|---------------
+  30 | 19.6795
+  80 | 4.74645
+  130 | 2.34167
+  180 | 1.34148
+  230 | 0.857462
+  280 | 0.591887
+  330 | 0.431905
+  380 | 0.328548
+  430 | 0.258089
+  480 | 0.207981
+  530 | 0.171109
+  580 | 0.143207
+  630 | 0.121594
+  680 | 0.104516
+  730 | 0.0907909
+  780 | 0.079597
+  830 | 0.070349
+  880 | 0.0626214
+  930 | 0.0560988
+  980 | 0.0505434
+  1030 | 0.0457732
+  1080 | 0.041647
+  1130 | 0.0380542
+  1180 | 0.0349065
+  1230 | 0.0321335
+  1280 | 0.0296781
+  1330 | 0.0274935
+  1380 | 0.0255413
+  1430 | 0.0237899
+  1480 | 0.0222124
+  1530 | 0.0207868
+  1580 | 0.019494
+  1630 | 0.0183182
+  1680 | 0.0172455
+  1730 | 0.0162644
+  1780 | 0.0153646
+  1830 | 0.0145375
+  1880 | 0.0137753
+  1930 | 0.0130716
+  1980 | 0.0124204
+  2030 | 0.0118167
+  2080 | 0.0112559
+  2130 | 0.0107341
+  2180 | 0.0102478
+  2230 | 0.00979375
+  2280 | 0.00936923
+  2330 | 0.00897172
+  2380 | 0.00859898
+  2430 | 0.00824899
+  2480 | 0.00791993
+  2530 | 0.00761018
+  2580 | 0.00731824
+  2630 | 0.00704278
+  2680 | 0.00678259
+  2730 | 0.00653655
+  2780 | 0.00630366
+  2830 | 0.00608299
+  2880 | 0.00587371
+  2930 | 0.00567504
+  2980 | 0.00548629
+  3030 | 0.00530679
+  3080 | 0.00513596
+  3130 | 0.00497325
+  3180 | 0.00481815
+  3230 | 0.00467019
+  3280 | 0.00452894
+  3330 | 0.00439401
+  3380 | 0.00426502
+  3430 | 0.00414162
+  3480 | 0.0040235
+  3530 | 0.00391036
+ -------|---------------
+
+    +------------------------------------------+
+    |          Sub-woofer Design Menu          |
+    +------------------------------------------+
+    |             Cabinet Design               |
+    +------------------------------------------+
+    |  1) (S)ealed Cabinet                     |
+    |  2) (V)ented Cabinet                     |
+    |  3) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: e
+Exit subwoofer design...
+[H[2J[3J
+    +------------------------------------------+
+    |           Cabinet Design Menu            |
+    +------------------------------------------+
+    |  1) (S)ub-woofer Design                  |
+    |  2) (2)-way Speaker Design               |
+    |  3) (3)-way Speaker Design               |
+    |  4) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: e
+Exit cabinet design
+[H[2J[3J
+    +------------------------------------------+
+    |               Program Menu               |
+    +------------------------------------------+
+    |  1) (B)uild Parameters                   |
+    |  2) (L)ist Speaker Parts                 |
+    |  3) (C)abinet Design                     |
+    |  4) (X)over Design                       |
+    |  5) (G)raph Performance                  |
+    |  6) (S)ave Speaker Data                  |
+    |  7) (R)ead Speaker Data                  |
+    |  8) (W)rite Design Parameters            |
+    |  9) (P)urge                              |
+    |  0) (Q)uit                               |
+    +------------------------------------------+
+    SpeakEasy: x
+[H[2J[3J
+    +------------------------------------------+
+    |          Crossover Design Menu           |
+    |      (Use numerical selection only)      |
+    +------------------------------------------+
+    |  1) Subwoofer - lowpass speaker          |
+    |  2) 2-way - passive speaker              |
+    |  3) 3-way - passive speaker              |
+    |  4) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: 1
+Passive low-pass design - Subwoofer Speaker...
+    +-------------------------------------------------------------+
+    |                    Frequnecy Cut-off Menu                   |
+    +-------------------------------------------------------------+
+    | 1) Simple frequency stop                                    |
+    | 2) Fixed-stop selector                                      |
+    | 3) Variable-switch selector                                 |
+    +-------------------------------------------------------------+
+2
+Specify the number of freq breaks (2 - 4): 3
+Specify frequency range: 
+Enter the bandwidth for the effective filter width (freq_lo/freq_hi): 100 150
++-----------------------------------------------
+|   Freq       Capacitance      Inductance       Freq 
++-----------------------------------------------
++-----------------------------------------------
+[H[2J[3J
+    +------------------------------------------+
+    |          Crossover Design Menu           |
+    |      (Use numerical selection only)      |
+    +------------------------------------------+
+    |  1) Subwoofer - lowpass speaker          |
+    |  2) 2-way - passive speaker              |
+    |  3) 3-way - passive speaker              |
+    |  4) Exit                                 |
+    +------------------------------------------+
+    SpeakEasy: e
+Crossover design menu - Exit sub-menu...
+[H[2J[3J
+    +------------------------------------------+
+    |               Program Menu               |
+    +------------------------------------------+
+    |  1) (B)uild Parameters                   |
+    |  2) (L)ist Speaker Parts                 |
+    |  3) (C)abinet Design                     |
+    |  4) (X)over Design                       |
+    |  5) (G)raph Performance                  |
+    |  6) (S)ave Speaker Data                  |
+    |  7) (R)ead Speaker Data                  |
+    |  8) (W)rite Design Parameters            |
+    |  9) (P)urge                              |
+    |  0) (Q)uit                               |
+    +------------------------------------------+
+    SpeakEasy: w
+Save design data...
+Enter a destination file: : subwoofer-turorial      torial
+Display current speakers...
++-----------------------------
+ Subwoofer values determined by SpeakEasy: 
+[H[2J[3J
+    +------------------------------------------+
+    |               Program Menu               |
+    +------------------------------------------+
+    |  1) (B)uild Parameters                   |
+    |  2) (L)ist Speaker Parts                 |
+    |  3) (C)abinet Design                     |
+    |  4) (X)over Design                       |
+    |  5) (G)raph Performance                  |
+    |  6) (S)ave Speaker Data                  |
+    |  7) (R)ead Speaker Data                  |
+    |  8) (W)rite Design Parameters            |
+    |  9) (P)urge                              |
+    |  0) (Q)uit                               |
+    +------------------------------------------+
+    SpeakEasy: q
+Terinatating program...
+
+    +-------------------------------------------------------------------------+
+    |                                                                         |
+    |                                                                         |
+    |                 Thank you! For using Speak-Easy!                        |
+    |                                                                         |
+    |                                                                         |
+    +-------------------------------------------------------------------------+
+[H[2J[3Jjoec@royal> exit
+
+Script done on 2025-04-15 09:32:10-07:00 [COMMAND_EXIT_CODE="0"]

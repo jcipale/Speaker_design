@@ -288,8 +288,9 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass)
         if (i == 0 ) {
             ptr = drvr;  
 
-            if (ptr == NULL) {
+            if (ptr == nullptr) {
                 sleep(1);
+				continue;
             } else {
                 print_part(ptr);
                 sleep(1);
@@ -299,8 +300,9 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass)
         if (i == 1) { 
             ptr = mid; 
     
-            if (ptr == NULL) {
+            if (ptr == nullptr) {
                 sleep(1);
+				continue;
             } else {
                 print_part(ptr);
                 sleep(1);
@@ -310,8 +312,9 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass)
         if (i == 2) { 
             ptr = tweet;
     
-            if (ptr == NULL) {
+            if (ptr == nullptr) {
                 sleep(1);
+				continue;
             } else {
                 print_part(ptr);
                 sleep(1);
@@ -321,8 +324,9 @@ void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass)
         if (i == 3) { 
             ptr = pass;
     
-            if (ptr == NULL) {
+            if (ptr == nullptr) {
                 sleep(1);
+				continue;
             } else {
                 print_part(ptr);
                 sleep(1);

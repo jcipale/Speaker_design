@@ -27,8 +27,6 @@ double compute_qt(double Qes, double Qms);
 /*--------------------------------------------------------------------------------------------*/
 double convert_units(double& target, double conversion);
 /*--------------------------------------------------------------------------------------------*/
-double tuning_frequency(Speaker* drvr, std::string cab_type);
-/*--------------------------------------------------------------------------------------------*/
 double effective_port(Speaker* drvr, double Vbv, double Dp, double Fb, double kappa);
 /*--------------------------------------------------------------------------------------------*/
 void vented_cabinet_initialize(Speaker* drvr, Speaker* pasv, double coeff, int bdesign);
