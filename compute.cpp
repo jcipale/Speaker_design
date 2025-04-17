@@ -333,7 +333,7 @@ void tweeter_cabinet_design(Speaker* drvr, Cabinet* box)
 	    spkr_depth = ptr->depth * m_to_inch;
 	    spkr_height = ptr->b_height * m_to_inch;
     } else {
-        vol = vol;
+        vol = vol * 1.0;
 	    spkr_diam = ptr->b_diam;
 	    spkr_depth = ptr->depth;
 	    spkr_height = ptr->b_height;
@@ -1226,6 +1226,18 @@ double SolveMass(double drvr, double pr, double Fb, double Vb)
 	var3 = pr/Vb;
 
 	return(var1/(var2 * var3));
+}
+/*--------------------------------------------------------------------------------------------*/
+double SolveVbs(Speaker* drvr)
+/*--------------------------------------------------------------------------------------------*/
+/* Function to compute the Vas of a cone tweeter based on tweeter dimensions.                 */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double Vbs;
+    double coeff = 0.004;
+
+    Vbs = (drvr->depth * drvr->b_height * drvr->b_diam) * coeff;
+    return Vbs;
 }
 /*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr)

@@ -55,6 +55,8 @@ void cabinet_ripple(Speaker* drvr, Speaker* pasv_cpy, int i);
 /*--------------------------------------------------------------------------------------------*/
 double SolveMass(double drvr, double pr, double Fb, double Vb);
 /*--------------------------------------------------------------------------------------------*/
+double SolveVbs(Speaker* drvr);
+/*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign);

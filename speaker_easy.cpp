@@ -855,12 +855,21 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 		}
 
 		plot_name = str + "_" + driver + "_" + "ribbon.plt";
-	} else if (strcmp(drvr->Build, "cone") == 0) {
+	} 
+
+        if (strcmp(drvr->Build, "cone") == 0) {
 		cab_type = "sealed";
 
 		temp->sw_freq = C/(2 * temp->Depth);
 
-		drvr->Vbs = drvr->Vas * 0.2;
+                //W = temp->b_diam * 0.1587;
+                //H = temp->b_height * 0.1597;
+                //D = temp->depth * 0.1597
+
+                if (drvr->Vbs <= 0) {
+                    drvr->Vbs = SolveVbs(drvr);
+                }
+		//drvr->Vbs = drvr->Vas * 0.2;
 
 		drvr->Fc = drvr->Fs * (sqrt((drvr->Vas/drvr->Vbs) + 1));
 
