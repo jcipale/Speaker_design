@@ -181,9 +181,7 @@ int main()
 					    }
 
                         if ((strcmp(w_cmd, "V") == 0) || (strcmp(w_cmd, "v") == 0) || (strcmp(w_cmd, "2") == 0)) {
-					        cout << "In vented design space..." << endl;
 							vented_box_design(drvr_cpy, pasv, pasv_cpy, bass, pass);
-							cout << "leaving vented case" << endl;
 						    sleep(2);
 					    }
 
@@ -278,6 +276,13 @@ int main()
 		        cin >> x_cmd;
 
                 if (strcmp(x_cmd, "1") == 0) {
+                    cout << "Passive low-pass design - Subwoofer Speaker..." << endl;
+					xover = 2;
+		            subwoofer_passive(drvr_cpy, lowpass, zobel);
+		            sleep(2);
+                }
+
+                if (strcmp(x_cmd, "2") == 0) {
                     cout << "Passive xover design - Two-way Speaker..." << endl;
 					xover = 1;
 		            passive_two_way(drvr_cpy, tweet_cpy, zobel, lowpass, highpass);
@@ -287,7 +292,7 @@ int main()
 		            sleep(2);
                 }
 
-                if (strcmp(x_cmd, "2") == 0) {
+                if (strcmp(x_cmd, "3") == 0) {
                     cout << "Passive xover design - Three-way Speaker..." << endl;
 					xover = 2;
 		            passive_three_way(drvr_cpy, mid_cpy, tweet_cpy, zobel, lowpass, bandpass, highpass);
@@ -296,14 +301,6 @@ int main()
 					bandpass.enabled = 1;
 		            sleep(2);
                 }
-
-                if (strcmp(x_cmd, "3") == 0) {
-                    cout << "Passive low-pass design - Subwoofer Speaker..." << endl;
-					xover = 2;
-		            subwoofer_passive(drvr_cpy, lowpass, zobel);
-		            sleep(2);
-                }
-
 
                 if ((strcmp(x_cmd, "E") == 0) || (strcmp(x_cmd, "e") == 0) || (strcmp(x_cmd, "4") == 0)) {
                     cout << "Crossover design menu - Exit sub-menu..." << endl;

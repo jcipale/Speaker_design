@@ -97,11 +97,9 @@ void crossover_screen()
     cout << "    |          Crossover Design Menu           |" << endl;
     cout << "    |      (Use numerical selection only)      |" << endl;
     cout << "    +------------------------------------------+" << endl;
-    cout << "    |  1) 2-way - passive speaker              |" << endl;
-    //cout << "    |  2) 2-way - active speaker               |" << endl;
-    cout << "    |  2) 3-way - passive speaker              |" << endl;
-    //cout << "    |  4) 3-way - active speaker               |" << endl;
-    cout << "    |  3) Subwoofer - lowpass speaker          |" << endl;
+    cout << "    |  1) Subwoofer - lowpass speaker          |" << endl;
+    cout << "    |  2) 2-way - passive speaker              |" << endl;
+    cout << "    |  3) 3-way - passive speaker              |" << endl;
     cout << "    |  4) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
@@ -337,7 +335,7 @@ void aspect_kappa(double &ar, double &kappa)
     cout << "    | 3 - 5 medium  |               0.732 : 2 flanged ports                      |" << endl;
     cout << "    | 6+ long       |               0.85  : 2 unflanged ports                    |" << endl;
     cout << "    +---------------+------------------------------------------------------------+" << endl;
-    cout << "    | Aspect Raio always breaks down into a x:y ratio -                          |" << endl;
+    cout << "    | Aspect Ratio always breaks down into a x:y ratio -                         |" << endl;
     cout << "    | where y = 1, x = value from left column such as '4'.                       |" << endl;
     cout << "    +----------------------------------------------------------------------------+" << endl;
 

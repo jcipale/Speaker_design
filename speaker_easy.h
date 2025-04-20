@@ -38,7 +38,7 @@
 extern struct Speaker
 {
     char Part_num[64];        // Product part number
-    char Type[64];            // Speaker type. One of Woof, Pass, Twet or Midr
+    char Type[64];            // Speaker type. One of Woof, Pass, Tweet or Midr
     char Build[64];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
 	double Vab;               // Compliance value of a sealed speaker

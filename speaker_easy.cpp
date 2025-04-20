@@ -759,22 +759,17 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 /* are very similar in approach and philosophy (small cabinets, no standing waves, etc)       */
 /*--------------------------------------------------------------------------------------------*/
 {
-    //struct Speaker *ptr;
-    //ptr = drvr;
-
-    //struct Cabinet *midr;
-	//midr = cptr;
-
     struct Cabinet *temp;
 
     temp = (struct Cabinet *)malloc(sizeof(struct Cabinet));
 
-	//double Depth = 100.0;  // Depth is by default 100 mm.
+	double coeff;          // Value used to determine the cabinet space of a 
+	                       // midrange/tweeter cabinet/enclosure
 	double H, W, D;
 	double Qtc;            // System Q
 	double type;
 
-	int ratio;
+	//int ratio;
 
 	std::string cab_type;
 	std::string driver;
@@ -795,11 +790,11 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 	    drvr->Vbs = 0.0;
 	    drvr->Fc = drvr->Fs;
 		driver = "Tweeter";
+		coeff = 0.01;
 	} else {
 	    type = 1;
-	    drvr->Vbs = drvr->Vas/(pow(Qtc/drvr->Qts, 2) - 1);
-	    drvr->Fc = drvr->Fs * sqrt((drvr->Vas/drvr->Vbs) + 1);
 		driver = "Midrange";
+		coeff = 0.02;
     }
 
 	std::string str(drvr->Part_num);
@@ -813,7 +808,6 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 
 		// for ribbon/electrostatic tweeter against the overall baffle size of the cabinet
 		drvr->f3_seal = C/(2 * M_PI * baffle);
-		//temp->sw_freq = 0;
 		
 		drvr->Vd = drvr->Sd * drvr->Xmax;
 
@@ -857,75 +851,34 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 		plot_name = str + "_" + driver + "_" + "ribbon.plt";
 	} 
 
-        if (strcmp(drvr->Build, "cone") == 0) {
+    if (strcmp(drvr->Build, "cone") == 0) {
 		cab_type = "sealed";
 
 		temp->sw_freq = C/(2 * temp->Depth);
 
-                //W = temp->b_diam * 0.1587;
-                //H = temp->b_height * 0.1597;
-                //D = temp->depth * 0.1597
-
-                if (drvr->Vbs <= 0) {
-                    drvr->Vbs = SolveVbs(drvr);
-                }
-		//drvr->Vbs = drvr->Vas * 0.2;
-
+        //if (drvr->Vbs <= 0) {
+        //    drvr->Vbs = SolveVbs(drvr);
+        //}
+		
 		drvr->Fc = drvr->Fs * (sqrt((drvr->Vas/drvr->Vbs) + 1));
 
-		//freq1 = 115/drvr->b_diam;
-		
 		drvr->f3_seal = drvr->Fs * sqrt(1 + 2 * pow(Qtc, 2));
 
 		drvr->Vd = M_PI * pow((drvr->b_diam/2), 2) * drvr->Xmax;
 	    
-		midrange_cabinet_screen();
-	    cin >> ratio;
+		//midrange_cabinet_screen();
+	    //cin >> ratio;
 
-		// Solve the cabinet volume based on the ratio to control standing waves
-		switch (ratio) {
-	        case 1: 
-	            H = pow((drvr->Vbs/2), 0.33);
-                W = H * 1.25;
-		        D = H * 1.6;
-        
-	            temp->Height = H;
-	            temp->Width = W;
-	            temp->Depth = D;
-		        drvr->Vbs = W * D * H;
-		        drvr->Vol_gross = drvr->Vd + drvr->Vbs;
-	            temp->cab_volume = drvr->Vol_gross;
+	    temp->Height = drvr->b_height = (drvr->b_height + coeff);
+	    temp->Width = drvr->b_diam = (drvr->b_diam + coeff);
+	    temp->Depth = drvr->depth = (drvr->depth + coeff);
 
-			    break;
-	        case 2:
-	            H = pow((drvr->Vbs/2.8), 0.33);
-                W = H * 1.4;
-		        D = H * 2.0;
+		drvr->Vbs = pow(temp->Width, 2) * temp->Depth;
+	    drvr->Fc = drvr->Fs * sqrt((drvr->Vas/drvr->Vbs) + 1);
+		drvr->Vol_gross = drvr->Vd + drvr->Vbs;
+	    temp->cab_volume = drvr->Vol_gross;
 
-			    // Allocated memory for the cabinet structure!!!
-
-	            temp->Height = H;
-	            temp->Width = W;
-	            temp->Depth = D;
-		        drvr->Vbs = W * D * H;
-		        drvr->Vol_gross = drvr->Vd + drvr->Vbs;
-	            temp->cab_volume = drvr->Vol_gross;
-
-			    break;
-	        default:
-	            H = pow((drvr->Vbs/4.16), 0.33);
-                W = H * 1.6;
-		        D = H * 2.6;
-
-	            temp->Height = H;
-	            temp->Width = W;
-	            temp->Depth = D;
-		        drvr->Vbs = W * D * H;
-		        drvr->Vol_gross = drvr->Vd + drvr->Vbs;
-	            temp->cab_volume = drvr->Vol_gross;
-    
-		        break;
-	    }
+		sleep(5);
 
 		plot_name = str + "_" + driver + "_" + "dome.plt";
 	}
@@ -991,15 +944,13 @@ void closed_midrange_design(Speaker*& drvr, Cabinet*& cptr, double baffle)
 
 	cptr = temp;
 
-    speaker_to_cabinet(drvr, cptr, 1);
+    speaker_to_cabinet(drvr, cptr, cab_type, 1);
 
     cabinet_design(drvr, cptr, cab_type);
 
 	// Calculate frequency response
 	frequency_response_sealed(drvr, Qtc, plot_name);
 	cout << "-------------------------------" << endl;
-	//plot_name = "freq_resp_curve2.plt";
-	//high_frequency_sealed(drvr, Qtc, plot_name);
 }
 /*--------------------------------------------------------------------------------------------*/
 void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabinet*& bass, Cabinet*& pass)
@@ -1010,19 +961,11 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 /*--------------------------------------------------------------------------------------------*/
 {
     struct Speaker *ptr, *temp;
-    //struct Speaker *pptr;
-    //struct Speaker *pasv_copy;
 	ptr = drvr;
-	//pptr = pasv;
-	//pasv_copy = pasv_cpy;
 
 	temp = (struct Speaker *)malloc(sizeof(struct Speaker));
 
 	struct Cabinet *tmp1, *tmp2;
-	//struct Cabinet *bcab;
-	//struct Cabinet *pcab;
-	//bcab = bass;
-	//pcab = pass;
 	
 	// Bass cabinet (if needed)
 	tmp1=(struct Cabinet *)malloc(sizeof(struct Cabinet));
@@ -1078,17 +1021,13 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 
                 plot_name = str + "Bass-Reflex.plt";
 
-                speaker_to_cabinet(drvr, bass, bdesign);
+                speaker_to_cabinet(drvr, bass, cab_type, bdesign);
 
                 cabinet_design(drvr, bass, cab_type);
 
                 break;
             case 2:
                 cout << "Extended-Bass Shelf design..." << endl;
-
-				// Need to trick the applicatin for now
-				//strcpy(tmp1->Part_num, drvr->Part_num);
-				//bass = tmp1;
 
                 cab_type = "vented";
                 pflag = 0;
@@ -1099,17 +1038,13 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 
                 plot_name = str + "Extended-Shelf.plt";
 
-                speaker_to_cabinet(drvr, bass, bdesign);
+                speaker_to_cabinet(drvr, bass, cab_type, bdesign);
 
                 cabinet_design(drvr, bass, cab_type);
 
                 break;
             case 3:
                 cout << "Slotted Port design..." << endl;
-
-				// Need to trick the applicatin for now
-				//strcpy(tmp1->Part_num, drvr->Part_num);
-				//bass = tmp1;
 
                 cab_type = "slotted";
 
@@ -1120,17 +1055,13 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 
                 plot_name = str + "Slotted-Port.plt";
 
-                speaker_to_cabinet(drvr, bass, bdesign);
+                speaker_to_cabinet(drvr, bass, cab_type, bdesign);
 
                 cabinet_design(drvr, bass, cab_type);
 
                 break;
             case 4:
                 cout << "Passive Radiator design..." << endl;
-
-				// Need to trick the applicatin for now
-				//strcpy(tmp1->Part_num, drvr->Part_num);
-				//bass = tmp1;
 
                 // If a passive radiator hasnt been loaded into memeory,
                 // prompt the user to select one of the available drivers.
@@ -1154,14 +1085,14 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
 
                 plot_name = str + "Passive-Radiator.plt";
 
-                speaker_to_cabinet(drvr, bass, bdesign);
+                speaker_to_cabinet(drvr, bass, cab_type, bdesign);
 
                 cab_type = "passive";
 
 				strcpy(tmp2->Part_num, drvr->Part_num);
 				pass = tmp2;
 
-                speaker_to_cabinet(drvr, pass, bdesign);
+                speaker_to_cabinet(drvr, pass, cab_type, bdesign);
 
                 cabinet_design(drvr, pass, cab_type);
 
@@ -1213,7 +1144,7 @@ void vented_box_design(Speaker*& drvr, Speaker*& pasv, Speaker*& pasv_cpy, Cabin
     //strcpy(tmp1->Part_num, drvr->Part_num);
     strcpy(bass->Build, drvr->Build);
     strcpy(bass->Enclosure, "Sealed");
-    bass->cab_volume = drvr->Vbs;
+    bass->cab_volume = drvr->Vbv;
     bass->gross_volume = drvr->Vol_gross;
     bass->freq_lo = drvr->Freq_Low;
     bass->freq_hi = drvr->Freq_Hi;
@@ -2642,7 +2573,7 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 			zobel.freq[0] = f_lo;
 
 			cout << "+-----------------------------------------------" << endl;
-			cout << "|   Freq       Capacitance      Inductance       Freq " << endl;
+			cout << "|   Freq       Capacitance      Inductance      " << endl;
 			cout << "+-----------------------------------------------" << endl;
 			
 			for (i = 0; i < zobel.j; i++ ) {
@@ -2651,6 +2582,7 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 				zobel.filt_c[i] = solve_capacitance(drvr, zobel.freq[i]);
 
 			    zobel.filt_l[i] = solve_inductance(drvr, zobel.freq[i]);
+				cout << "|  " << zobel.freq[i] << "    " << zobel.filt_c[i] << "    " << zobel.filt_l[i] << endl;
 
 		    }
 
@@ -2699,6 +2631,7 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
 				}
 
 			    zobel.filt_l[i] = solve_inductance(drvr, zobel.freq[i]);
+				cout << "|  " << zobel.freq[i] << "    " << zobel.filt_c[i] << "    " << zobel.filt_l[i] << endl;
 
 	        }
 

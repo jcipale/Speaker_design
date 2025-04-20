@@ -19,8 +19,6 @@ double compute_efficiency(Speaker* drvr, double type);
 /*--------------------------------------------------------------------------------------------*/
 void cabinet_design(Speaker* drvr, Cabinet*& cptr, std::string cab_type);
 /*--------------------------------------------------------------------------------------------*/
-void tweeter_cabinet_design(Speaker* drvr, Cabinet* box);
-/*--------------------------------------------------------------------------------------------*/
 void center_field(char *field_data);
 /*--------------------------------------------------------------------------------------------*/
 double compute_qt(double Qes, double Qms);
@@ -55,11 +53,9 @@ void cabinet_ripple(Speaker* drvr, Speaker* pasv_cpy, int i);
 /*--------------------------------------------------------------------------------------------*/
 double SolveMass(double drvr, double pr, double Fb, double Vb);
 /*--------------------------------------------------------------------------------------------*/
-double SolveVbs(Speaker* drvr);
-/*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
-void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign);
+void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, std::string cab_type, int bdesign);
 /*--------------------------------------------------------------------------------------------*/
 double solve_inductance(Speaker* drvr, int freq);
 /*--------------------------------------------------------------------------------------------*/

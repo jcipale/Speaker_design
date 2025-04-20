@@ -122,28 +122,15 @@ double compute_efficiency(Speaker* drvr, double type)
 void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type)
 /*--------------------------------------------------------------------------------------------*/
 {
-    //struct Speaker *ptr;
-    //struct Cabinet *cptr;
-
-    //ptr = drvr;
-    //cptr = box;
-   
     char flag[4];
     char unit[4];
+	char measure[8];
 	
     double width;
 
 	double met_to_in;
 	double cubm_to_cubin;
 	double sqm_to_sqi;
-	/*
-    double vol;
-    double spkr_diam;
-    double spkr_depth;
-    double spkr_height;
-    double port_length;
-    double port_diam;
-	*/
 
     int done;
 
@@ -155,10 +142,12 @@ void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type)
 	    met_to_in = 39.37;
 	    cubm_to_cubin = 61020.00;
 	    sqm_to_sqi = 1550;
+		strcpy(measure, "inch");
     } else {
 	    met_to_in = 1;
 	    cubm_to_cubin = 1;
 	    sqm_to_sqi = 1;
+		strcpy(measure, "meter");
 	}
 
 	// Copy over data from speaker to cabinet strcuture
@@ -180,98 +169,52 @@ void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type)
 	// Compute baffle width
 
     while (!done) {
-        // Loop to determine box dimensions
-        cout << "Driver dimensions: " << endl;
-        cout <<" Part Number       : " << box->Part_num << endl;
-        cout <<" Nominal impedance : " << box->imp_Nom << endl;
-        cout <<" Frequency - low   : " << box->freq_lo << endl;
-        cout <<" Frequency - high  : " << box->freq_hi << endl;
-        cout <<" Frequency rolloff : " << box->rolloff << endl;
-        cout <<" Resonant frequency: " << box->res_freq << endl;
+	    if (strcmp(drvr->Type, "Woof") == 0) {
+			cout <<" Cabinet volume: " << box->cab_volume << " " << measure << "^3" << endl;
+            cout <<" Total volume  : " << box->gross_volume << " " << measure << "^3" << endl;
 
-        if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0 )) {
-            cout <<" Cabinet volume: " << box->cab_volume << " in^3" << endl;
-            cout <<" Total volume  : " << box->gross_volume << " in^3" << endl;
-
-            if ((cab_type == "vented") || (cab_type == "slotted")) {
-                cout <<" Vent area     : " << box->port_area << " in^2 " << endl;
-                cout <<" Vent ht/diam  : " << box->port_diam << " inches " << endl;
+		    if ((cab_type == "vented") || (cab_type == "slotted")) {
+                cout <<" Vent area     : " << box->port_area << " " << measure << "^2 " << endl;
+                cout <<" Vent ht/diam  : " << box->port_diam << " " << measure << endl;
                 if (box->port_width > 0) {
-                    cout <<" Vent width    : " << box->port_width << " inches " << endl;
+                    cout <<" Vent width    : " << box->port_width << " " << measure << endl;
                 }
-                cout <<" Vent length   : " << box->port_length << " inches " << endl;
-            }
-            cout << " Driver diameter  : " << box->diam << " inches " << endl;
-            cout << " Driver depth     : " << box->depth << " inches " << endl;
-            cout << " Driver height    : " << box->height << " inches " << endl;
-        } else {
-            cout <<" Cabinet volume: " << box->cab_volume << " m^3" << endl;
-            cout <<" Total volume: " << box->gross_volume << " m^3" << endl;
+                cout <<" Vent length   : " << box->port_length << " " << measure << endl;
 
-            if ((cab_type == "vented") || (cab_type == "slotted")) {
-                cout <<" Vent area     : " << box->port_area << " m^2 " << endl;
-                cout <<" Vent ht/diam  : " << box->port_diam << " meters " << endl;
-                if (box->port_width > 0) {
-                    cout <<" Vent width    : " << box->port_width << " meters " << endl;
-                }
-                cout <<" Vent length   : " << box->port_length << " meters " << endl;
-            }
-            cout << " Speaker diameter : " << box->diam << " meters " << endl;
-            cout << " Speaker depth    : " << box->depth << " meters " << endl;
-            cout << " Speaker height   : " << box->height << " meters " << endl;
-        }
+				// Compute baffle width
+				width = pow((box->gross_volume/0.96), 0.333);
+                box->Width = width;
+                box->Depth = 0.6 * width;
+                box->Height = 1.6 * width;
 
-        // Compute baffle width
-        if ((cab_type == "slotted") || (cab_type == "vented")) {
-            width = pow((box->gross_volume/0.96), 0.333);
-            box->Width = width;
-            box->Depth = 0.6 * width;
-            box->Height = 1.6 * width;
-        /*} else if (strcmp(box->Type, "cone") == 0) {*/
-        } else if (cab_type == "sealed") {
-            //width = pow((box->cab_volume/0.96), 0.333);
-            sleep(5);
-            width = pow((box->gross_volume/1.12), 0.333);
-            box->Width = width;
-            box->Depth = 0.8 * width;
-            box->Height = 1.4 * width;
-        } else {
-            cout << "Electrostatic/Ribbon speaker..." << endl;
-            box->Height = box->Height * met_to_in;
+			} else {
+			    width = pow((box->gross_volume/1.12), 0.333);
+                box->Width = width;
+                box->Depth = 0.8 * width;
+                box->Height = 1.4 * width;
+			}
+		    
+			cout << " Cabinet dimensions: " << endl;
+			cout << " Front             : " << box->Width << " " << measure << endl;
+			cout << " Height            : " << box->Height << " " << measure << endl;
+			cout << " Depth             : " << box->Depth << " " << measure << endl;
+		}      // End woofer build
+
+		if ((strcmp(drvr->Type, "Midr") == 0) || (strcmp(drvr->Type, "Tweet") == 0)) {
             box->Width = box->Width * met_to_in;
             box->Depth = box->Depth * met_to_in;
-        }
+            box->Height = box->Height * met_to_in;
 
-        cout << "+--------------------------+" << endl;
-        cout << "|   Cabinet measurements   |" << endl;
-        cout << "+--------------------------+" << endl;
-        if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0 )) {
-            cout << "| Width         : " << box->Width << " in" << endl;
-            cout << "| Depth         : " << box->Depth << " in" << endl;
-            cout << "| Height        : " << box->Height << " in" << endl;
-            if (cab_type == "vented") {
-                cout << "| Vent diameter : " << box->port_diam << " in " << endl;
-                cout << "| Vent length   : " << box->port_length << " in " << endl;
-            } else if (cab_type == "slotted") {
-                cout << "| Vent ht/width : " << box->port_width << " in " << endl;
-                cout << "| Vent length   : " << box->port_length << " in " << endl;
-                cout << "| Vent diameter : " << box->port_diam << " in " << endl;
-            }
-        } else {
-            cout << "| Width         : " << box->Width << " m " << endl;
-            cout << "| Depth         : " << box->Depth << " m " << endl;
-            cout << "| Height        : " << box->Height << " m " << endl;
-            if (cab_type == "vented") {
-                cout << "| Vent diameter : " << box->port_diam << " m  " << endl;
-                cout << "| Vent length   : " << box->port_length << " m  " << endl;
-            } else if (cab_type == "slotted") {
-                cout << "| Vent ht/width : " << box->port_width << " m  " << endl;
-                cout << "| Vent length   : " << box->port_length << " m  " << endl;
-                cout << "| Vent diameter : " << box->port_diam << " m  " << endl;
-            }
-        }
+			cout <<" Cabinet volume: " << box->cab_volume << " " << measure << "^3" << endl;
+            cout <<" Total volume  : " << box->gross_volume << " " << measure << "^3" << endl;
 
-        cout << "+---------------------------+" << endl;
+			cout << " Cabinet dimensions: " << endl;
+			cout << " Front             : " << box->Width << " " << measure << endl;
+			cout << " Height            : " << box->Height << " " << measure << endl;
+			cout << " Depth             : " << box->Depth << " " << measure << endl;
+		}      // End midrange/tweeter build
+
+	    cout << "+---------------------------+" << endl;
         cout << "Accept dimensions? (Y/N): " << endl;
         cin >> flag;
 
@@ -282,6 +225,7 @@ void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type)
             cout << "compute box design..." << endl;
             return;
         }
+
     }
 
     cout << "--------------------------------------------" << endl;
@@ -292,112 +236,8 @@ void cabinet_design(Speaker* drvr, Cabinet*& box, std::string cab_type)
     cout << "  Height: " << box->Height << endl;
     cout << "--------------------------------------------" << endl;
 
-    //box = cptr;
-
     sleep(2);
 
-}
-/*--------------------------------------------------------------------------------------------*/
-void tweeter_cabinet_design(Speaker* drvr, Cabinet* box)
-/*--------------------------------------------------------------------------------------------*/
-{
-    struct Speaker *ptr;
-    struct Cabinet *cptr;
-
-    ptr = drvr;
-    cptr = box;
-   
-    char flag[4];
-    //char type[4];
-    char unit[4];
-	
-    double vol;
-    double spkr_diam;
-    double spkr_depth;
-    double spkr_height;
-    double Depth;
-    double Front;
-    double Height;
-
-    int done;
-
-    /* The 3rd argument determines what speaker type is being built (sealed vs vented) */
-    vol = ptr->Vbs;
-
-    cout << "Use Metric (M) or Imperial (I) units of measure? (Metric is default): ";
-    cin >> unit;
-	
-    if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0)) {
-        vol = vol * liter_to_cubicInch;
-	    spkr_diam = ptr->b_diam * m_to_inch;
-	    spkr_depth = ptr->depth * m_to_inch;
-	    spkr_height = ptr->b_height * m_to_inch;
-    } else {
-        vol = vol * 1.0;
-	    spkr_diam = ptr->b_diam;
-	    spkr_depth = ptr->depth;
-	    spkr_height = ptr->b_height;
-    }
-
-	done = 0;
-
-    while (!done) {
-        // Loop to determine box dimensions
-        cout << "Driver dimensions: " << endl;
-        cout <<" Part Number: " << cptr->Part_num << endl;
-        cout <<" Nominal impedance: " << cptr->imp_Nom << endl;
-        cout <<" Frequency - low: " << cptr->freq_lo << endl;
-        cout <<" Frequency - high: " << cptr->freq_hi << endl;
-        cout <<" Frequency rolloff: " << cptr->rolloff << endl;
-        cout <<" Resonant frequncy: " << cptr->res_freq << endl;
-		if ((strcmp(unit, "I") == 0) || (strcmp(unit, "i") == 0 )) {
-            cout <<" Cabinet volume: " << vol << " in^3" << endl;
-            cout << " Speaker diameter: " << spkr_diam << " inches " << endl;
-            cout << " Speaker depth: " << spkr_depth << " inches " << endl;
-            cout << " Speaker height: " << spkr_height << " inches " << endl;
-
-		} 
-
-        /* Compute baffle width */
-		/* Since the tweeter doesnt need a large cabinet space, the height/width are identical */
-        Depth = spkr_depth + (spkr_depth/2.0);
-        Height = Depth;
-        Front = spkr_diam + (spkr_diam/8);
-
-		cout << "+--------------------------+" << endl;
-		cout << "|   Speaker measurements   |" << endl;
-		cout << "+--------------------------+" << endl;
-		cout << "| Width  : " << Front << endl;
-		cout << "| Depth  : " << Depth << endl;
-		cout << "| Height : " << Height << endl;
-		cout << "+---------------------------+" << endl;
-        cout << "Accept dimensions? (Y/N): " << endl;
-        cin >> flag;
-
-        if ((strcmp(flag, "Y") == 0) || (strcmp(flag, "y") == 0)) {
-            cout << "Speaker Design completed..." << endl;
-            done = 1;
-        } else {
-            cout << "compute closed box design..." << endl;
-			//done = 0;
-        }
-    }
-
-    cptr->Depth = Depth;
-    cptr->Width = Front;
-    cptr->Height = Height;
-
-    cout << "--------------------------------------------" << endl;
-    cout << "            Speaker Dimensions              " << endl;
-    cout << "--------------------------------------------" << endl;
-    cout << "  Width:  " << cptr->Width << endl;
-    cout << "  Depth:  " << cptr->Depth << endl;
-    cout << "  Height: " << cptr->Height << endl;
-    cout << "--------------------------------------------" << endl;
-
-	box = cptr;
-
-    sleep(2);
 }
 /*--------------------------------------------------------------------------------------------*/
 void center_field(char *field_data)
@@ -1228,18 +1068,6 @@ double SolveMass(double drvr, double pr, double Fb, double Vb)
 	return(var1/(var2 * var3));
 }
 /*--------------------------------------------------------------------------------------------*/
-double SolveVbs(Speaker* drvr)
-/*--------------------------------------------------------------------------------------------*/
-/* Function to compute the Vas of a cone tweeter based on tweeter dimensions.                 */
-/*--------------------------------------------------------------------------------------------*/
-{
-    double Vbs;
-    double coeff = 0.004;
-
-    Vbs = (drvr->depth * drvr->b_height * drvr->b_diam) * coeff;
-    return Vbs;
-}
-/*--------------------------------------------------------------------------------------------*/
 void data_normalize(Speaker* drvr)
 /*--------------------------------------------------------------------------------------------*/
 {
@@ -1250,29 +1078,35 @@ void data_normalize(Speaker* drvr)
     sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/
-void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, int bdesign)
+void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, std::string cab_type, int bdesign)
 /*--------------------------------------------------------------------------------------------*/
 /* This procedure will copy over some of the contents from the driver to the cabinet structure*/
 /* to be used for determining the cabinet physical dimensions.                                */
 /*--------------------------------------------------------------------------------------------*/
 {
-	//struct Cabinet *temp;
-
-	//if (box == NULL) {
-	    //temp = (struct Cabinet *)malloc(sizeof(struct Cabinet));
-	    //bptr = box;
-    //}
 
 	strcpy(box->Part_num, drvr->Part_num);
     strcpy(box->Build, drvr->Build);
     strcpy(box->Type, drvr->Type);
-    box->cab_volume = drvr->Vbv;
+	if (cab_type == "sealed") {
+        box->cab_volume = drvr->Vbs;
+        box->cab_volume = 0.0;
+        box->port_volume = 0.0;
+        box->port_diam = 0.0;
+        box->port_width = 0.0;
+        box->port_area = 0.0;
+        box->port_length = 0.0;
+	} else {
+        box->cab_volume = 0.0;
+        box->cab_volume = drvr->Vbv;
+        box->port_volume = drvr->Volume;
+        box->port_diam = drvr->w_height;
+        box->port_width = drvr->w_width;
+        box->port_area = drvr->Area;
+        box->port_length = drvr->p_length;
+	}
     box->port_volume = drvr->Volume;
     box->gross_volume = drvr->Vol_gross;
-    box->port_diam = drvr->w_height;
-    box->port_width = drvr->w_width;
-    box->port_area = drvr->Area;
-    box->port_length = drvr->p_length;
     box->diam = drvr->b_height;
     box->height = drvr->b_height;
     box->depth = drvr->depth;
