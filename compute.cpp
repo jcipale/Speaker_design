@@ -865,9 +865,6 @@ void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy, Cabinet* box)
 
 	drvr->Fb = drvr->Fs;
 
-	cout << "Debug Resoance Frequency comparison for Mms computation..." << endl;
-	cout << "Bass Fs - " << drvr->Fs << " Passive Fs - " << pasv_cpy->Fs << endl;
-
 	while (!flag) {
 	    cout << "Recommended Fb is " << drvr->Fb << " Hz. Keep or specify a new Fb value? (Y/N)" << endl;
 		cin >> ans;
