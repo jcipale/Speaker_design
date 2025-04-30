@@ -154,6 +154,7 @@ int main()
 
         if ((strcmp(t_cmd, "L") == 0) || (strcmp(t_cmd, "l") == 0) || (strcmp(t_cmd, "2") == 0)) {
             parts_list(drvr_cpy, mid_cpy, tweet_cpy, pasv_cpy);
+            //display_parts_info(drvr_cpy, mid_cpy, tweet_cpy, pasv_cpy);
         }
 
         if ((strcmp(t_cmd, "C") == 0) || (strcmp(t_cmd, "c") == 0) || (strcmp(t_cmd, "3") == 0)) {
@@ -327,7 +328,7 @@ int main()
 		        cin >> s_cmd;
 
                 if ((strcmp(s_cmd, "B") == 0) || (strcmp(s_cmd, "b") == 0) || (strcmp(s_cmd, "1") == 0)) {
-                    cout << "Bass selection menu 1..." << endl;
+                    cout << "Bass selection menu..." << endl;
 					speaker = "Woof";
 			        read_driver(drvr, drvr_cpy, "Woof", 0, 0);
 			        mem_copy(drvr, drvr_cpy);
@@ -336,7 +337,7 @@ int main()
                 }
 
                 if ((strcmp(s_cmd, "M") == 0) || (strcmp(s_cmd, "m") == 0) || (strcmp(s_cmd, "2") == 0)) {
-                    cout << "Midrange selection menu 2..." << endl;
+                    cout << "Midrange selection menu..." << endl;
 			        read_driver(mid, mid_cpy, "Midr", 0, 0);
 			        mem_copy(mid, mid_cpy);
 
@@ -344,7 +345,7 @@ int main()
                 }
 
                 if ((strcmp(s_cmd, "T") == 0) || (strcmp(s_cmd, "t") == 0) || (strcmp(s_cmd, "3") == 0)) {
-                    cout << "Tweeter selection menu 3..." << endl;
+                    cout << "Tweeter selection menu..." << endl;
 			        read_driver(tweet, tweet_cpy, "Tweet", 0, 0);
 			        mem_copy(tweet, tweet_cpy);
 
@@ -352,7 +353,7 @@ int main()
                 }
 
                 if ((strcmp(s_cmd, "P") == 0) || (strcmp(s_cmd, "p") == 0) || (strcmp(s_cmd, "4") == 0)) {
-                    cout << "Passive Radiator selection menu 4..." << endl;
+                    cout << "Passive Radiator selection menu..." << endl;
 					// if reading in from primary, pass flag = 0 and Surface area of driver = 0
 			        read_driver(pasv, pasv_cpy, "Pass", 0, 0);
 			        mem_copy(pasv, pasv_cpy);

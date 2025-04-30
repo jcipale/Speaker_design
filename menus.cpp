@@ -60,7 +60,7 @@ void splash_screen()
     cout << "    |         p                                                               |" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    |                           " << VERSION << "                           |" << endl;
+	cout << "    |                           " << VERSION << "                                 |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
 
     // This is used to define the wait time to display the splash screen
@@ -373,9 +373,19 @@ void frequency_limit_screen()
 void freq_crossover_screen()
 /*--------------------------------------------------------------------------------------------*/
 {
-    cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    | Crossover point based on the band-overlap of chosen specified drivers:  |" << endl;
-    cout << "    +-------------------------------------------------------------------------+" << endl;
+    cout << "    +---------------------------------------------------------------+" << endl;
+	cout << "    | Crossover point based on the band-overlap of chosen drivers:  |" << endl;
+    cout << "    +---------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
+void inductor_selection()
+/*--------------------------------------------------------------------------------------------*/
+{
+    cout << "    +---------------------------------------------------------------------+" << endl;
+	cout << "    | Enter the inductor value based on the type of filter being created: |" << endl;
+	cout << "    | 1 - low-pass (1mH)                                                  |" << endl;
+	cout << "    | 2 - band-pass (1uH)                                                 |" << endl;
+    cout << "    +---------------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 //void lpad_msg(Speaker* drvr, char lpad, char type)
@@ -385,7 +395,7 @@ void lpad_msg(Speaker* drvr, Filter crossover, char* type)
     cout << "-----------------------------------------------------------------------------------" << endl;
     cout << "The load for the " << drvr->Part_num << " requires a " << crossover.lpad << " ohm Dual-ganged " << endl;
     cout << "potentiometer wired into the " << type << " portion of the cross-over network to provide  " << endl;
-    cout << "proper load matching between Woofer and Tweeter.                                   " << endl;
+    cout << "proper load matching between circuits.                                                    " << endl;
     cout << "-----------------------------------------------------------------------------------" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
@@ -404,5 +414,22 @@ void exit_screen()
     unsigned int sleep(unsigned int seconds);
     
     system("clear");
+}
+/*--------------------------------------------------------------------------------------------*/
+double gain_value()
+/*--------------------------------------------------------------------------------------------*/
+{
+    double db_gain;              // user supplied gain value
+
+	cout  << "+------------------------------------------+" << endl;
+	cout  << "| Choose level of attentuation from below: |" << endl;
+	cout  << "+------------------------------------------+" << endl;
+	cout  << "| 3 db                                     |" << endl;
+	cout  << "| 6 db                                     |" << endl;
+	cout  << "| 12 db                                    |" << endl;
+	cout  << "+------------------------------------------+" << endl;
+	cin >> db_gain;
+
+	return db_gain;
 }
 /*--------------------------------------------------------------------------------------------*/

@@ -8,6 +8,11 @@
 /* Began code development of classes, methods and objects                                     */
 /* Begin development of field_pad() functions.                                                */
 /*--------------------------------------------------------------------------------------------*/
+/* 04/20/2025:                                                                                */
+/* Completed creation/debug/verification of capacitance and inductance functions for speaker  */
+/* crossover creation/design.                                                                 */
+/* Cleaned up code base of debug and exrtaneous code.                                         */
+/*--------------------------------------------------------------------------------------------*/
 #include <cmath>
 #include <complex>
 #include <iomanip>
@@ -892,13 +897,14 @@ void port_tuning_pr(Speaker* drvr, Speaker* pasv_cpy, Cabinet* box)
 	var2 = sqrt(1/(box->Mms * box->Cms));
 	box->Fb = var1 * var2;
 
-	cout << "DEBUG " << endl;
 	cout << "-------------------------------------" << endl;
 	cout << "Passive Fb    : " << pasv_cpy->Fb << endl;
 	cout << "Bass Fb       : " << drvr->Fb << endl;
 	cout << "PassRad Mass  : " << pasv_cpy->Mms << endl;
 	cout << "Pass init mass: " << drvr->Mms << endl;
 	cout << "PassRad Cms   : " << pasv_cpy->Cms << endl;
+
+	sleep(3);
 }
 /*--------------------------------------------------------------------------------------------*/
 void port_length(Speaker* drvr, double ap, double &kappa, int type)
@@ -962,7 +968,7 @@ void port_length_slot(Speaker* drvr, double ap, double kappa)
 
 	drvr->p_length = var2 - k_cor;
 
-	cout << "---------- DEBUG -------- " << endl;
+	cout << "---------- Data Check -------- " << endl;
 	cout << " kappa       : "<< kappa << endl;
 	cout << " Sd          : "<< drvr->Sd << endl;
 	cout << " Fb (tune)   : "<< drvr->Fb << endl;
@@ -971,6 +977,8 @@ void port_length_slot(Speaker* drvr, double ap, double kappa)
 	cout << " port length : "<< drvr->p_length << endl;
 	cout << " port width  : "<< drvr->w_width << endl;
 	cout << " port height : "<< drvr->w_height << endl;
+
+	sleep(3);
 }
 /*--------------------------------------------------------------------------------------------*/
 void port_dynamics(Speaker* drvr, int type, double& PAR, double& PER)
@@ -1074,7 +1082,6 @@ void data_normalize(Speaker* drvr)
 	cout << "Normalize data... " << endl;
 
     drvr->Vas = drvr->Vas/1000.00;
-    cout << "DEBUG: Vas(normalized) - " << drvr->Vas << endl;
     sleep(5);
 }
 /*--------------------------------------------------------------------------------------------*/
@@ -1137,7 +1144,7 @@ double solve_inductance(Speaker* drvr, int freq)
 	return induct;
 }
 /*--------------------------------------------------------------------------------------------*/
-double solve_capacitance(Speaker* drvr, int freq)
+double solve_capacitance(double freq, double inductance)
 /*--------------------------------------------------------------------------------------------*/
 /* this function passes in the frequency and inductance of the LC filter and returns the      */
 /* capacitance required to make the filter circuit.                                           */
@@ -1145,8 +1152,29 @@ double solve_capacitance(Speaker* drvr, int freq)
 {
     double cap;          // Value of capacitance returned
 
-	cap = 1/(pow((2 * M_PI * freq), 2) * drvr->Z_nom);
+	cap = 1/(pow((2 * M_PI * freq), 2) * inductance);
 
 	return cap;
+}
+/*--------------------------------------------------------------------------------------------*/
+double lpad_ratio(Speaker* drvr, double gain)
+/*--------------------------------------------------------------------------------------------*/
+/* This function returns the value of the Lpad computed from the desired gain specified by    */
+/* the user for the Lpad potentiometer.                                                       */
+/*--------------------------------------------------------------------------------------------*/
+{
+    double Rstor;
+	double var;
+	double k;
+
+	var = -1.0 * (gain/20.0);
+
+	k = pow(10.0, var);
+
+	Rstor = drvr->Z_nom * (k - 1.0);
+
+	return Rstor;
+
+
 }
 /*--------------------------------------------------------------------------------------------*/
