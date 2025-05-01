@@ -41,7 +41,7 @@ extern struct Speaker
     char Type[64];            // Speaker type. One of Woof, Pass, Tweet or Midr
     char Build[64];           // Construction type: cone or ribbon/electrostatic
     double Vas;               // Equivalent Volume of cabinet dm^3
-	double Vab;               // Compliance value of a sealed speaker
+    double Vab;               // Compliance value of a sealed speaker
     double Cms;               // Compliance
     double Mms;               // Derived from Cms, Fs used primarily for Passive drivers
     double Mas;               // Added mass to meet design needs, primarily for Passive drivers
@@ -69,23 +69,23 @@ extern struct Speaker
     double Vbv;               // Vented Volume (user define liters)
     double f3_seal;           // 3db down point (rolloff)
     double f3_vent;           // 3db down point (rolloff)
-	double Pd;                // Port diameter - either a cylinder or slot
-	double Area;              // Port/slot area;
-	double Volume;            // Volume of port: HxWxL for slot or pi*r*L for cylnder port
-	double Spkr_Vol;          // Volume of air moved by the speker (cone)
-	double Vol_gross;         // Total volume of the box (Vb), the Driver (Vdrv) and the port/slot
-	                          // (if a vented design).
-	double Per;               // Displacement limited power rating
-	double Par;               // Displacement limited power rating
-	double Rh;                // Response ripple
+    double Pd;                // Port diameter - either a cylinder or slot
+    double Area;              // Port/slot area;
+    double Volume;            // Volume of port: HxWxL for slot or pi*r*L for cylnder port
+    double Spkr_Vol;          // Volume of air moved by the speker (cone)
+    double Vol_gross;         // Total volume of the box (Vb), the Driver (Vdrv) and the port/slot
+                              // (if a vented design).
+    double Per;               // Displacement limited power rating
+    double Par;               // Displacement limited power rating
+    double Rh;                // Response ripple
     double v_diam;            // vent diameter - aka vertical diam or port height
-	double w_height;          // port height - aka horizontal diam or port height
-	double w_width;           // port width - used ONLY for slotted designs
+    double w_height;          // port height - aka horizontal diam or port height
+    double w_width;           // port width - used ONLY for slotted designs
     double p_length;          // vent length (from data sheet - default)
     double b_diam;            // Overall basket diameter or diaphragm width if 
-	                          // ribbon - used for designing physical cabinet
+                              // ribbon - used for designing physical cabinet
     double b_height;          // driver height. Used primarily for ribbon tweeters. 
-	                          // defaults to b_diam for mid/bass/cone tweeters
+                              // defaults to b_diam for mid/bass/cone tweeters
     double depth;             // Overall driver depth - used for designing physical cabinet
     Speaker *next;
 };
@@ -96,41 +96,41 @@ extern struct Cabinet
 /*--------------------------------------------------------------------------------------------*/
 {
     char Part_num[64]; 
-	char Type[64];                // Speaker type. One of Woof, Pass, Twet or Midr
-	char Build[64];               // Construction type: cone or ribbon/electrostatic 
-	char Enclosure[64];           // Sealed or Ported
-	double Cms;                   // Complianc value of the PR driver (passive radiator specifically)
-	double Mms;                   // Total mass of driver (passive radiator specifically)
-	double port_area;             // Area of slot/port opening in mm^2
+    char Type[64];                // Speaker type. One of Woof, Pass, Twet or Midr
+    char Build[64];               // Construction type: cone or ribbon/electrostatic 
+    char Enclosure[64];           // Sealed or Ported
+    double Cms;                   // Complianc value of the PR driver (passive radiator specifically)
+    double Mms;                   // Total mass of driver (passive radiator specifically)
+    double port_area;             // Area of slot/port opening in mm^2
     double port_diam;             // Can be used for port height if used as a ducted port
     double port_width;            // Can be used for port width if used as a ducted port
     double port_length;
     double diam;                  // Overall basket diameter - used for designing physical cabinet
     double depth;                 // Overall driver depth - used for designing physical cabinet
-	double height;                // overall driver height - used for designing physical cabinet
+    double height;                // overall driver height - used for designing physical cabinet
     double cab_volume;            // This includes the volume for ducted/ported designs as well
-	double port_volume;           // Volume of the port - circular or slotted
-	double gross_volume;          // This covers all aspects of space consumption (drivers, ports, etc)
-	double Fb;                    // Resoance frequnecy of vented box
-	double Fc;                    // Resonace frequency of sealed box
-	double lambda;                // Baffle step compensation
-	double sw_freq;               // standing wave frequency
-	double bfl_freq;              // Baffle frequency
+    double port_volume;           // Volume of the port - circular or slotted
+    double gross_volume;          // This covers all aspects of space consumption (drivers, ports, etc)
+    double Fb;                    // Resoance frequnecy of vented box
+    double Fc;                    // Resonace frequency of sealed box
+    double lambda;                // Baffle step compensation
+    double sw_freq;               // standing wave frequency
+    double bfl_freq;              // Baffle frequency
     double freq_lo;
     double freq_hi;
     double imp_Nom;
     double res_freq;
     double DC_resist;
-	double Qt;                    // Total damping factor - Closed or Ported
+    double Qt;                    // Total damping factor - Closed or Ported
     double Sensitivity;
     double rolloff;
     double crossover_lo;
     double crossover_hi;
-	double Ma;                    // Mass to add for passive radiator in addition to the 
-	                              // speaker mass
-	double PAR;                   // Acostic power
-	double PER;                   // Electirical efficiency
-	double Rh;                    // 3db ripple
+    double Ma;                    // Mass to add for passive radiator in addition to the 
+                                  // speaker mass
+    double PAR;                   // Acostic power
+    double PER;                   // Electirical efficiency
+    double Rh;                    // 3db ripple
     double Height, Width, Depth;  // Cabinet INTERNAL measurements.
     Cabinet *next;
 };
@@ -140,27 +140,31 @@ extern struct Filter
 /* struct crossover is used to store and display the components needs for crossover design.   */
 /*--------------------------------------------------------------------------------------------*/
 {
-	int i, j;                   // Used to determine specific number of loop constraints
-	int enabled;                // Is a given filter used? 1 is enabled or used. 0 is ignore filter.
+    int i, j;                   // Used to determine specific number of loop constraints
+    int enabled;                // Is a given filter used? 1 is enabled or used. 0 is ignore filter.
     int order;                  // Order of the crossover circuit (i.e. 2nd order, 4th order)
-	int xover_pts;              // Used for low-pass filter ONLY, but may be used to control loops in 
-	                            // in other aspects of filer design.
-	char lpad[8];               // Potentiometer value for lpad
+    int xover_pts;              // Used for low-pass filter ONLY, but may be used to control loops in 
+                                // in other aspects of filer design.
     std::string xover_type;     // sets the type of crossover network: Subwoofer/Bass/Bandpass/Tweeter
-	                            // for the final design report
-	std::string vind;           // Variable (adjustable) inductor used to adjust frequuncy stop
-	std::string vcap;           // Variable (adjustable) capacitor used to adjust frequency stop
+                                // for the final design report
+    std::string vind;           // Variable (adjustable) inductor used to adjust frequuncy stop
+    std::string vcap;           // Variable (adjustable) capacitor used to adjust frequency stop
 
+    double db_val;              // Value of decible attentuation - selection of 3, 6, 12 decibels
+    double lpad;                // Lpad potentiometer value - determined within crossover creation
+    double Rl;                  // Load resistor - used to present a parallel load to the filter
+    double R1, R2;              // Resistor ratio ued for Lpad computation:
+                                // R2 = drvr->Z_nom, R1 = tapped value of Lpad
     double gain;                // gain is computed by Vg = 1 + R2/R1 where R1 is significantly 
-	                            // larger than R2 
-	double Rz, Lz, Cz;          // Zobel filter values
-	double Z_nom;
-	double Sensitivity;
-	double xover1, xover2;
-	double xover[5];
+                                // larger than R2 
+    double Rz, Lz, Cz;          // Zobel filter values
+    double Z_nom;
+    double Sensitivity;
+    double xover1, xover2;
+    double xover[5];
     double freq[5];
     double FB_R1, FB_R2;        // Feedback values used in active filter design Vg = 1 + R2/R1 
-	                            // where R1 -> infinity 
+                                // where R1 -> infinity 
     double filt_c[5];
     double filt_r[5];
     double filt_l[5];           
@@ -178,7 +182,7 @@ extern struct Field_Pad
 {
     char Part_num[64];       // Product part number
     char Type[64];           // Speaker type. One of Woof, Pass, Twet or Midr
-	char Build[64];          // Construction type: cone or ribbon/electrostatic
+    char Build[64];          // Construction type: cone or ribbon/electrostatic
     char Vas[23];            // Equivalent Volume of cabinet dm^3
     char Cms[23];            // Compliance
     char Mms[23];            // Moving mass of driver
@@ -205,11 +209,11 @@ extern struct Field_Pad
     char v_diam[23];         // vent diameter (from data sheet - default)
     char p_length[23];       // vent length (from data sheet - default)
     char b_diam[23];         // Overall basket diameter or diaphragm width if 
-	                         // ribbon - used for designing physical cabinet
+                             // ribbon - used for designing physical cabinet
     char b_height[23];       // driver height. Used primarily for ribbon tweeters. 
-	                         // defaults to b_diam for mid/bass/cone tweeters
+                             // defaults to b_diam for mid/bass/cone tweeters
     char depth[23];          // Overall driver depth - used for designing physical cabinet
-	Field_Pad *next;
+    Field_Pad *next;
 };
 /*--------------------------------------------------------------------------------------------*/
 extern struct Cab_Pad
@@ -218,14 +222,14 @@ extern struct Cab_Pad
 /*--------------------------------------------------------------------------------------------*/
 {
     char Part_num[64]; //*
-	char Build[64]; //*           // Construction type: cone or ribbon/electrostatic 
-	char Enclosure[23];           // Sealed or Ported
+    char Build[64]; //*           // Construction type: cone or ribbon/electrostatic 
+    char Enclosure[23];           // Sealed or Ported
     char port_area[23];
     char port_diam[23];
     char port_length[23];
     char diam[23]; //*              // Overall basket diameter - used for designing physical cabinet
     char depth[23]; //*             // Overall driver depth - used for designing physical cabinet
-	char height[23]; //*            // overall driver height - used for designing physical cabinet
+    char height[23]; //*            // overall driver height - used for designing physical cabinet
     char cab_volume[23]; //*
     char freq_lo[23];
     char freq_hi[23];
@@ -236,11 +240,11 @@ extern struct Cab_Pad
     char rolloff[23];
     char crossover_lo[23];
     char crossover_hi[23];
-	char PAR[23];                   // Acostic power
-	char PER[23];                   // Electirical efficiency
-	char Rh[23];                    // 3db ripple
+    char PAR[23];                   // Acostic power
+    char PER[23];                   // Electirical efficiency
+    char Rh[23];                    // 3db ripple
     char Height[23], Width[23], Depth[23];
-	Cab_Pad *next;
+    Cab_Pad *next;
 };
 /*--------------------------------------------------------------------------------------------*/
 /*                                         Constants                                          */
@@ -280,7 +284,7 @@ const int HEADR_LGTH = 9;
 const std::string FIELD = "-----------------------";
 const int FIELD_LGTH = 23;
 
-const std::string VERSION = "Version 1.0.0-alpha";
+const std::string VERSION = "Version 1.0.0";
 /*--------------------------------------------------------------------------------------------*/
 void build(Speaker*& drvr, Speaker*& mid, Speaker*& tweet, Speaker*& pass);
 /*--------------------------------------------------------------------------------------------*/
@@ -293,6 +297,8 @@ void save_data_ptr(Speaker* drvr);
 void parts_list(Speaker* drvr, Speaker* mid, Speaker* tweet, Speaker* pass);
 /*--------------------------------------------------------------------------------------------*/
 void print_part(Speaker* drvr);
+/*--------------------------------------------------------------------------------------------*/
+void show_part(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void print_speaker(Field_Pad* speaker, std::ofstream& output);
 /*--------------------------------------------------------------------------------------------*/
@@ -334,13 +340,13 @@ void write_design_data(Field_Pad* P0, Field_Pad* P1, Field_Pad* P2, Field_Pad* P
 /*--------------------------------------------------------------------------------------------*/
 void write_cabinet_data(Cabinet* P0, Cabinet* P1, Cabinet* P2, Cabinet* P3, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void write_filter_data(Filter zobel, Filter lowpass, Filter bandpass, Filter highpass, std::ofstream& outfile);
+void write_filter_data(Filter& zobel, Filter& lowpass, Filter& bandpass, Filter& highpass, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void print_zobel(Filter zobel, std::ofstream& outfile);
+void print_zobel(Filter& zobel, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void print_twoway_crossover(Filter zobel, Filter lowpass, Filter highpass, std::ofstream& outfile);
+void print_twoway_crossover(Filter& zobel, Filter& lowpass, Filter& highpass, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
-void print_threeway_crossover(Filter zobel, Filter lowpass, Filter highpass, Filter bandpass, std::ofstream& outfile);
+void print_threeway_crossover(Filter& zobel, Filter& lowpass, Filter& bandpass, Filter& highpass, std::ofstream& outfile);
 /*--------------------------------------------------------------------------------------------*/
 void purge_data(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/

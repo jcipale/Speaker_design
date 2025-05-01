@@ -59,5 +59,7 @@ void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, std::string cab_type, int 
 /*--------------------------------------------------------------------------------------------*/
 double solve_inductance(Speaker* drvr, int freq);
 /*--------------------------------------------------------------------------------------------*/
-double solve_capacitance(Speaker* drvr, int freq);
+double solve_capacitance(double freq, double inductance);
+/*--------------------------------------------------------------------------------------------*/
+double lpad_ratio(Speaker* drvr, double gain);
 /*--------------------------------------------------------------------------------------------*/

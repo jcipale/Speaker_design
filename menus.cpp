@@ -60,7 +60,7 @@ void splash_screen()
     cout << "    |         p                                                               |" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    |                           " << VERSION << "                           |" << endl;
+    cout << "    |                           " << VERSION << "                                 |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
 
     // This is used to define the wait time to display the splash screen
@@ -92,7 +92,7 @@ void menu_screen()
 void crossover_screen()
 {
     system("clear");
-	cout << endl;
+    cout << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |          Crossover Design Menu           |" << endl;
     cout << "    |      (Use numerical selection only)      |" << endl;
@@ -108,7 +108,7 @@ void crossover_screen()
 void driver_selection_screen()
 {
     system("clear");
-	cout << endl;
+    cout << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |          Driver Selection Menu           |" << endl;
     cout << "    +------------------------------------------+" << endl;
@@ -124,13 +124,13 @@ void driver_selection_screen()
 void cabinet_screen()
 {
     system("clear");
-	cout << endl;
+    cout << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |           Cabinet Design Menu            |" << endl;
     cout << "    +------------------------------------------+" << endl;
-	cout << "    |  1) (S)ub-woofer Design                  |" << endl;
-	cout << "    |  2) (2)-way Speaker Design               |" << endl;
-	cout << "    |  3) (3)-way Speaker Design               |" << endl;
+    cout << "    |  1) (S)ub-woofer Design                  |" << endl;
+    cout << "    |  2) (2)-way Speaker Design               |" << endl;
+    cout << "    |  3) (3)-way Speaker Design               |" << endl;
     cout << "    |  4) Exit                                 |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    SpeakEasy: ";
@@ -140,21 +140,21 @@ void cabinet_screen()
 void midrange_cabinet_screen()
 {
     system("clear");
-	cout << endl;
+    cout << endl;
     cout << "    +------------------------------------------+" << endl;
-	cout << "    |      Midrange Cabinet Design Ratio       |" << endl;
+    cout << "    |      Midrange Cabinet Design Ratio       |" << endl;
     cout << "    +------------------------------------------+" << endl;
-	cout << "    | 1) 1:1.25:1.6 - Minimizes standing waves |" << endl;
-	cout << "    | 2) 1:1.4:2.0  - Compact cabinet space    |" << endl;
-	cout << "    | 3) 1:1.6:2.6  - Maximum resonance conrol |" << endl;
+    cout << "    | 1) 1:1.25:1.6 - Minimizes standing waves |" << endl;
+    cout << "    | 2) 1:1.4:2.0  - Compact cabinet space    |" << endl;
+    cout << "    | 3) 1:1.6:2.6  - Maximum resonance conrol |" << endl;
     cout << "    +------------------------------------------+" << endl;
-	cout << "    SpeakEasy: :";
+    cout << "    SpeakEasy: :";
 }
 /*--------------------------------------------------------------------------------------------*/
 void cabinet_design_screen()
 {
     cout << "    +------------------------------------------+" << endl;
-	cout << "    |             Cabinet Design               |" << endl;
+    cout << "    |             Cabinet Design               |" << endl;
     cout << "    +------------------------------------------+" << endl;
     cout << "    |  1) (S)ealed Cabinet                     |" << endl;
     cout << "    |  2) (V)ented Cabinet                     |" << endl;
@@ -176,24 +176,24 @@ void closed_design_menu()
 /*--------------------------------------------------------------------------------------------*/
 void Qtc_design_menu()
 {
-	cout << "+-------------------------------------------------------+" << endl;
-	cout << "|                Qt Design Options:                     |" << endl;
-	cout << "+-------------------------------------------------------+" << endl;
-	cout << "| 0.5 - Critically damped, slow roll-off (lowest F3).   |" << endl;
-	cout << "| 0.577 - Bessel-like response. Smoothest response.     |" << endl;
-	cout << "| 0.707 - Maximum flat response. Flattest response.     |" << endl;
-	cout << "| 1.2+ - Boomier response. More resonant. Loose bass.   |" << endl;
-	cout << "+-------------------------------------------------------+" << endl;
+    cout << "+-------------------------------------------------------+" << endl;
+    cout << "|                Qt Design Options:                     |" << endl;
+    cout << "+-------------------------------------------------------+" << endl;
+    cout << "| 0.5 - Critically damped, slow roll-off (lowest F3).   |" << endl;
+    cout << "| 0.577 - Bessel-like response. Smoothest response.     |" << endl;
+    cout << "| 0.707 - Maximum flat response. Flattest response.     |" << endl;
+    cout << "| 1.2+ - Boomier response. More resonant. Loose bass.   |" << endl;
+    cout << "+-------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void midrange_Qdesign_menu()
 {
-	cout << "+-------------------------------------------------------+" << endl;
+    cout << "+-------------------------------------------------------+" << endl;
     cout << "| Specify System Damping Factor Qt between 0.5 and 0.9  |" << endl;
     cout << "| Qtc < 0.5 - to much damping/weak bass                 |" << endl;
     cout << "| Qtc > 0.9 - system is 'boomy' and lacks definition    |" << endl;
     cout << "| Qtc = 0.707 - best value for flattest response        |" << endl;
-	cout << "+-------------------------------------------------------+" << endl;
+    cout << "+-------------------------------------------------------+" << endl;
     cout << " Qtc default is 0.707: ";
 
 }
@@ -201,14 +201,14 @@ void midrange_Qdesign_menu()
 void ribbon_design()
 {
     cout << "+---------------------------------------------------------+" << endl;
-	cout << "|                   Speaker Ribbon Type                   |" << endl;
+    cout << "|                   Speaker Ribbon Type                   |" << endl;
     cout << "+---------------------------------------------------------+" << endl;
-	cout << "| 1) Open-back (dipole) construction (example):           |" << endl;
-	cout << "| (Raal Dipole, Mundorf AMT19CM1.1-C, etc)                |" << endl;
-	cout << "| 2) Closed back (monopole) construction (example):       |" << endl;
-	cout << "| (Fountek NeoCd2.0M-blk, LCY-K100. etc)                  |" << endl;
+    cout << "| 1) Open-back (dipole) construction (example):           |" << endl;
+    cout << "| (Raal Dipole, Mundorf AMT19CM1.1-C, etc)                |" << endl;
+    cout << "| 2) Closed back (monopole) construction (example):       |" << endl;
+    cout << "| (Fountek NeoCd2.0M-blk, LCY-K100. etc)                  |" << endl;
     cout << "+---------------------------------------------------------+" << endl;
-	cout << " Type : ";
+    cout << " Type : ";
 }
 /*--------------------------------------------------------------------------------------------*/
 void diffusion_menu(double &kappa)
@@ -229,18 +229,18 @@ void diffusion_menu(double &kappa)
 double design_constant_bass_reflex(double &kappa)
 {
     cout << "+-------------------------------------------------------------------------+" << endl;
-	cout << "|  Standard Bass Reflex design constant:                                  |" << endl;
+    cout << "|  Standard Bass Reflex design constant:                                  |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
-	cout << "| Choose the design constant from the following range of values:          |" << endl;
-	cout << "| Deep Bass  design  - Br: 0.6 - 0.7                                      |" << endl;
-	cout << "| Balanced design    - Br: 0.8 - 1.0                                      |" << endl;
-	cout << "| High-output design - Br: 1.1 - 1.2                                      |" << endl;
+    cout << "| Choose the design constant from the following range of values:          |" << endl;
+    cout << "| Deep Bass  design  - Br: 0.6 - 0.7                                      |" << endl;
+    cout << "| Balanced design    - Br: 0.8 - 1.0                                      |" << endl;
+    cout << "| High-output design - Br: 1.1 - 1.2                                      |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
 
-	cout << "Beta: ";
-	cin >> kappa;
+    cout << "Beta: ";
+    cin >> kappa;
 
-	return(kappa);
+    return(kappa);
 }
 /*--------------------------------------------------------------------------------------------*/
 double butterworth_constant(double &kappa)
@@ -251,10 +251,10 @@ double butterworth_constant(double &kappa)
     cout << "| Choose the design constant from 0.7 <= Bb <= 0.9 (default = 0.8)        |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
 
-	cout << "kappa: ";
-	cin >> kappa;
+    cout << "kappa: ";
+    cin >> kappa;
 
-	return(kappa);
+    return(kappa);
 }
 /*--------------------------------------------------------------------------------------------*/
 void butterworth_cabinet_mulitplier()
@@ -262,10 +262,10 @@ void butterworth_cabinet_mulitplier()
     cout << "+-------------------------------------------------------------------------+" << endl;
     cout << "|  Butterworth cabient multiplier:                                        |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
-	cout << "| Chose a value from 0.5 <= Sb <= 1.0 (default = 0.8)                     |" << endl;
+    cout << "| Chose a value from 0.5 <= Sb <= 1.0 (default = 0.8)                     |" << endl;
     cout << "+-------------------------------------------------------------------------+" << endl;
-	
-	cout << "S-mulitplier: ";
+    
+    cout << "S-mulitplier: ";
 }
 /*--------------------------------------------------------------------------------------------*/
 void bass_shelf_multiplier(int &ESB)
@@ -303,11 +303,11 @@ void confirm_screen()
 void passive_screen()
 {
     cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    | The amount of weight needed to adjust the passive radiator is negative. |" << endl;
-	cout << "    | Choose feom the following solutions:                                    |" << endl;
-	cout << "    |    - A different passive radiator                                       |" << endl;
-	cout << "    |    - A different vented design                                          |" << endl;
-	cout << "    |    - A diffent bass driver.                                             |" << endl;
+    cout << "    | The amount of weight needed to adjust the passive radiator is negative. |" << endl;
+    cout << "    | Choose feom the following solutions:                                    |" << endl;
+    cout << "    |    - A different passive radiator                                       |" << endl;
+    cout << "    |    - A different vented design                                          |" << endl;
+    cout << "    |    - A diffent bass driver.                                             |" << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
@@ -364,34 +364,43 @@ void frequency_limit_screen()
     cout << "    +-------------------------------------------------------------+" << endl;
     cout << "    |                    Frequnecy Cut-off Menu                   |" << endl;
     cout << "    +-------------------------------------------------------------+" << endl;
-	cout << "    | 1) Simple frequency stop                                    |" << endl;
-	cout << "    | 2) Fixed-stop selector                                      |" << endl;
-	cout << "    | 3) Variable-switch selector                                 |" << endl;
+    cout << "    | 1) Simple frequency stop                                    |" << endl;
+    cout << "    | 2) Fixed-stop selector                                      |" << endl;
+    cout << "    | 3) Variable-switch selector                                 |" << endl;
     cout << "    +-------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void freq_crossover_screen()
 /*--------------------------------------------------------------------------------------------*/
 {
-    cout << "    +-------------------------------------------------------------------------+" << endl;
-	cout << "    | Crossover point based on the band-overlap of chosen specified drivers:  |" << endl;
-    cout << "    +-------------------------------------------------------------------------+" << endl;
+    cout << "    +---------------------------------------------------------------+" << endl;
+    cout << "    | Crossover point based on the band-overlap of chosen drivers:  |" << endl;
+    cout << "    +---------------------------------------------------------------+" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
-//void lpad_msg(Speaker* drvr, char lpad, char type)
+void inductor_selection()
+/*--------------------------------------------------------------------------------------------*/
+{
+    cout << "    +---------------------------------------------------------------------+" << endl;
+    cout << "    | Enter the inductor value based on the type of filter being created: |" << endl;
+    cout << "    | 1 - low-pass (1mH)                                                  |" << endl;
+    cout << "    | 2 - band-pass (1uH)                                                 |" << endl;
+    cout << "    +---------------------------------------------------------------------+" << endl;
+}
+/*--------------------------------------------------------------------------------------------*/
 void lpad_msg(Speaker* drvr, Filter crossover, char* type)
 /*--------------------------------------------------------------------------------------------*/
 {
     cout << "-----------------------------------------------------------------------------------" << endl;
     cout << "The load for the " << drvr->Part_num << " requires a " << crossover.lpad << " ohm Dual-ganged " << endl;
     cout << "potentiometer wired into the " << type << " portion of the cross-over network to provide  " << endl;
-    cout << "proper load matching between Woofer and Tweeter.                                   " << endl;
+    cout << "proper load matching between circuits.                                                    " << endl;
     cout << "-----------------------------------------------------------------------------------" << endl;
 }
 /*--------------------------------------------------------------------------------------------*/
 void exit_screen()
 {
-	cout << endl;
+    cout << endl;
     cout << "    +-------------------------------------------------------------------------+" << endl;
     cout << "    |                                                                         |" << endl;
     cout << "    |                                                                         |" << endl;
@@ -404,5 +413,22 @@ void exit_screen()
     unsigned int sleep(unsigned int seconds);
     
     system("clear");
+}
+/*--------------------------------------------------------------------------------------------*/
+double gain_value()
+/*--------------------------------------------------------------------------------------------*/
+{
+    double db_gain;              // user supplied gain value
+
+    cout  << "+------------------------------------------+" << endl;
+    cout  << "| Choose level of attentuation from below: |" << endl;
+    cout  << "+------------------------------------------+" << endl;
+    cout  << "| 3 db                                     |" << endl;
+    cout  << "| 6 db                                     |" << endl;
+    cout  << "| 12 db                                    |" << endl;
+    cout  << "+------------------------------------------+" << endl;
+    cin >> db_gain;
+
+    return db_gain;
 }
 /*--------------------------------------------------------------------------------------------*/
