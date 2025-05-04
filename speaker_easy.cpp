@@ -1892,12 +1892,15 @@ void create_data_fields(Speaker* ptr, Field_Pad*& datum, std::ofstream& outfile)
         tmp_str = to_string(temp->Rms);
         strcpy(parse->Rms, tmp_str.c_str());
         center_field(parse->Rms);
+        outfile << "| RMS    | " << parse->Rms << "|" << endl;
         tmp_str = to_string(temp->Z_nom);
         strcpy(parse->Z_nom, tmp_str.c_str());
         center_field(parse->Z_nom);
+        outfile << "| Z Nom  | " << parse->Z_nom << "|" << endl;
         tmp_str = to_string(temp->Le);
         strcpy(parse->Le, tmp_str.c_str());
         center_field(parse->Le);
+        outfile << "| Le     | " << parse->Le << "|" << endl;
         tmp_str = to_string(temp->Xmax);
         strcpy(parse->Xmax, tmp_str.c_str());
         center_field(parse->Xmax);
@@ -1909,45 +1912,55 @@ void create_data_fields(Speaker* ptr, Field_Pad*& datum, std::ofstream& outfile)
         tmp_str = to_string(temp->Nom_Pwr);
         strcpy(parse->Nom_Pwr, tmp_str.c_str());
         center_field(parse->Nom_Pwr);
+        outfile << "| Nom Pwr| " << parse->Nom_Pwr << "|" << endl;
         tmp_str = to_string(temp->Max_Pwr);
         strcpy(parse->Max_Pwr, tmp_str.c_str());
         center_field(parse->Max_Pwr);
+        outfile << "| Max Pwr| " << parse->Max_Pwr << "|" << endl;
         tmp_str = to_string(temp->Freq_Low);
         strcpy(parse->Freq_Low, tmp_str.c_str());
         center_field(parse->Freq_Low);
+        outfile << "| Lo Freq| " << parse->Freq_Low << "|" << endl;
         tmp_str = to_string(temp->Freq_Hi);
         strcpy(parse->Freq_Hi, tmp_str.c_str());
         center_field(parse->Freq_Hi);
-        tmp_str = to_string(temp->Sensitivity);
-        strcpy(parse->Sensitivity, tmp_str.c_str());
-        center_field(parse->Sensitivity);
+        outfile << "| Hi Freq| " << parse->Freq_Hi << "|" << endl;
         tmp_str = to_string(temp->Vbs);
         strcpy(parse->Vbs, tmp_str.c_str());
         center_field(parse->Vbs);
+        outfile << "| Vbs    | " << parse->Vbs << "|" << endl;
         tmp_str = to_string(temp->Vbv);
         strcpy(parse->Vbv, tmp_str.c_str());
         center_field(parse->Vbv);
+        outfile << "| Vbv    | " << parse->Vbv << "|" << endl;
         tmp_str = to_string(temp->f3_seal);
         strcpy(parse->f3_seal, tmp_str.c_str());
         center_field(parse->f3_seal);
+        outfile << "| F3 Seal| " << parse->f3_seal << "|" << endl;
         tmp_str = to_string(temp->f3_vent);
         strcpy(parse->f3_vent, tmp_str.c_str());
         center_field(parse->f3_vent);
+        outfile << "| F3 Vent| " << parse->f3_vent << "|" << endl;
         tmp_str = to_string(temp->v_diam);
         strcpy(parse->v_diam, tmp_str.c_str());
         center_field(parse->v_diam);
+        outfile << "| V Diam | " << parse->v_diam << "|" << endl;
         tmp_str = to_string(temp->p_length);
         strcpy(parse->p_length, tmp_str.c_str());
         center_field(parse->p_length);
+        outfile << "|V Length| " << parse->p_length << "|" << endl;
         tmp_str = to_string(temp->b_diam);
         strcpy(parse->b_diam, tmp_str.c_str());
         center_field(parse->b_diam);
+        outfile << "|Diameter| " << parse->b_diam << "|" << endl;
         tmp_str = to_string(temp->b_height);
         strcpy(parse->b_height, tmp_str.c_str());
         center_field(parse->b_height);
+        outfile << "| Height | " << parse->b_height << "|" << endl;
         tmp_str = to_string(temp->depth);
         strcpy(parse->depth, tmp_str.c_str());
         center_field(parse->depth);
+        outfile << "| Depth | " << parse->depth << "|" << endl;
         parse->next = NULL;
         datum = parse;
         outfile << "+--------+-----------------------+" << endl;
@@ -2567,11 +2580,11 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
             cout << "Specify the cut-off frequency F: ";
             cin >> zobel.xover[i];
 
-            zobel.filt_l[i] = 1e-3;
-            zobel.filt_c[i] = solve_capacitance(zobel.freq[i], zobel.filt_l[i]);
+            zobel.filt_c[i] = 100e-6;        // Set the capcitance value to 100uF
+            zobel.filt_l[i] = solve_inductance(zobel.freq[i], zobel.filt_c[i]);
 
             cout << "+-----------------------------------------------" << endl;
-            cout << "|   Freq       Capacitance      Inductance " << endl;
+            cout << "|    Freq         Capacitance        Inductance " << endl;
             cout << "+-----------------------------------------------" << endl;
             cout << "| " << zobel.xover[i] << " | " << zobel.filt_c[i] << " | " << zobel.filt_l[i] << endl;
             cout << "+-----------------------------------------------" << endl;
@@ -2632,7 +2645,8 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
             for (i = 0; i < zobel.j; i++ ) {
                 zobel.freq[i] = f_lo + (i * f_delta);
                 
-                zobel.filt_c[i] = solve_capacitance(zobel.freq[i], zobel.filt_l[i]);
+                zobel.filt_c[i] = 100e-6;        // Set the capcitance value to 100uF
+                zobel.filt_l[i] = solve_inductance(zobel.freq[i], zobel.filt_c[i]);
 
                 cout << "|  " << zobel.freq[i] << "    " << zobel.filt_c[i] << "    " << zobel.filt_l[i] << endl;
 
@@ -2669,23 +2683,21 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
             zobel.freq[1] = f_hi;
 
             cout << "+-----------------------------------------------" << endl;
-            cout << "|   Freq       Capacitance      Inductance " << endl;
+            cout << "|  Freq     Capacitance     Inductance (ganged)" << endl;
             cout << "+-----------------------------------------------" << endl;
 
             zobel.xover_pts = 2;
             for (i = 0; i < zobel.j; i++ ) {
                 // Fixed capacitor value is solved for the initial freq value.
                 // while the inductance is adjustable for the range of frequency
-                if (i == 0) {
-                    zobel.filt_c[i] = solve_capacitance(zobel.freq[i], zobel.filt_l[i]);
-                } else {
-                    zobel.filt_c[i] = zobel.filt_c[i - 1];
-                }
+                zobel.filt_c[i] = 100e-6;        // Set the capcitance value to 100uF
+                zobel.filt_l[i] = solve_inductance(zobel.freq[i], zobel.filt_c[i]);
 
-                zobel.filt_l[i] = solve_inductance(drvr, zobel.freq[i]);
+                //zobel.filt_l[i] = solve_inductance(drvr, zobel.freq[i]);
                 cout << "|  " << zobel.freq[i] << "    " << zobel.filt_c[i] << "    " << zobel.filt_l[i] << endl;
 
             }
+            cout << "+-----------------------------------------------" << endl;
 
             sleep(5);
             break;

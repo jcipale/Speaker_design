@@ -57,7 +57,7 @@ void data_normalize(Speaker* drvr);
 /*--------------------------------------------------------------------------------------------*/
 void speaker_to_cabinet(Speaker* drvr, Cabinet*& box, std::string cab_type, int bdesign);
 /*--------------------------------------------------------------------------------------------*/
-double solve_inductance(Speaker* drvr, int freq);
+double solve_inductance(double freq, double capacitance);
 /*--------------------------------------------------------------------------------------------*/
 double solve_capacitance(double freq, double inductance);
 /*--------------------------------------------------------------------------------------------*/
