@@ -7,7 +7,7 @@ echo "---------------------------------------------------------"
 
 if [ "$1" = "debug" ]; then
     g++ -Wall -std=gnu++17 -g *.cpp -o ./sandbox/SpeakEasy
-	cp ./*.py ./sandbox/.
+	#cp ./driver.csh ./sandbox/.
 	cd ./sandbox
 	echo "Build is good..."
 

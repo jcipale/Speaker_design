@@ -1960,7 +1960,7 @@ void create_data_fields(Speaker* ptr, Field_Pad*& datum, std::ofstream& outfile)
         tmp_str = to_string(temp->depth);
         strcpy(parse->depth, tmp_str.c_str());
         center_field(parse->depth);
-        outfile << "| Depth | " << parse->depth << "|" << endl;
+        outfile << "| Depth  | " << parse->depth << "|" << endl;
         parse->next = NULL;
         datum = parse;
         outfile << "+--------+-----------------------+" << endl;
@@ -2560,8 +2560,8 @@ void subwoofer_passive(Speaker* drvr, Filter& lowpass, Filter& zobel)
         sleep(3);
     } else {
         zobel.Rz = drvr->Re;    // zobel resistance is the same value as the driver DC Resistance
-        zobel.Cz = drvr->Le/(pow(zobel.Rz, 2));
         zobel.Lz = drvr->Le;
+        zobel.Cz = drvr->Le/(pow(zobel.Rz, 2));
 
         sleep(3);
     }
@@ -2893,14 +2893,13 @@ void print_zobel(Filter& zobel, std::ofstream& outfile)
         outfile << " Filter Order = " << zobel.order << endl;
         outfile << "           Rz = " << zobel.Rz << endl;
         outfile << "           Cz = " << zobel.Cz << endl;
-        outfile << "           Lz = " << zobel.Lz << endl;
         
         outfile << "-----------------------------------------------" << endl;
-        outfile << "  Freq   Capacitance  Inductance" << endl;
+        outfile << "  Freq         Capacitance  " << endl;
         outfile << "-----------------------------------------------" << endl;
 
         for (i = 1; i < j; i++) {
-            outfile << "| " << zobel.freq[i] << " | " << zobel.filt_c[0] << " | " << zobel.filt_l[i] << endl;
+            outfile << "| " << zobel.freq[i] << " | " << zobel.filt_c[0] << endl;
         }
         outfile << "+-----------------------------------------------" << endl;
 
@@ -2915,16 +2914,15 @@ void print_zobel(Filter& zobel, std::ofstream& outfile)
         outfile << " Filter Order = " << zobel.order << endl;
         outfile << "           Rz = " << zobel.Rz << endl;
         outfile << "           Cz = " << zobel.Cz << endl;
-        outfile << "           Lz = " << zobel.Lz << endl;
         
         outfile << "-----------------------------------------------" << endl;
         outfile << "            Component LRC Values               " << endl;
         outfile << "-----------------------------------------------" << endl;
-        outfile << "  Freq   Capacitance  Inductance" << endl;
+        outfile << "  Freq         Capacitance  " << endl;
         outfile << "-----------------------------------------------" << endl;
 
         for (i = 0; i < j; i++) {
-            outfile << "| " << zobel.freq[i] << " | " << zobel.filt_c[i] << " | " << zobel.filt_l[i] << endl;
+            outfile << "| " << zobel.freq[i] << " | " << zobel.filt_c[i] << endl;
         }
         outfile << "-----------------------------------------------" << endl;
 
@@ -2939,16 +2937,15 @@ void print_zobel(Filter& zobel, std::ofstream& outfile)
         outfile << " Filter Order = " << zobel.order << endl;
         outfile << "           Rz = " << zobel.Rz << endl;
         outfile << "           Cz = " << zobel.Cz << endl;
-        outfile << "           Lz = " << zobel.Lz << endl;
         
         outfile << "-----------------------------------------------" << endl;
         outfile << "            Component LRC Values               " << endl;
         outfile << "-----------------------------------------------" << endl;
-        outfile << "  Freq   Capacitance  Inductance" << endl;
+        outfile << "  Freq         Capacitance  " << endl;
         outfile << "-----------------------------------------------" << endl;
 
         for (i = 0; i < j; i++) {
-            outfile << "| " << zobel.freq[i] << " | " << zobel.filt_c[i] << " | " << zobel.filt_l[i] << endl;
+            outfile << "| " << zobel.freq[i] << " | " << zobel.filt_c[i] << endl;
         }
         outfile << "-----------------------------------------------" << endl;
         return;
@@ -2972,7 +2969,6 @@ void print_twoway_crossover(Filter& zobel, Filter& lowpass, Filter& highpass, st
     outfile << " Zobel filter values " << endl;
     outfile << "-----------------------------------------" << endl;
     outfile << " Rz : " << zobel.Rz << endl;
-    outfile << " Lz : " << zobel.Lz << endl;
     outfile << " Cz : " << zobel.Cz << endl;
     outfile << "-----------------------------------------" << endl;
     outfile << " Filter Values " << endl;
@@ -3016,7 +3012,6 @@ void print_threeway_crossover(Filter& zobel, Filter& lowpass, Filter& bandpass, 
     outfile << " Zobel filter values " << endl;
     outfile << "-----------------------------------------" << endl;
     outfile << " Rz : " << zobel.Rz << endl;
-    outfile << " Lz : " << zobel.Lz << endl;
     outfile << " Cz : " << zobel.Cz << endl;
     outfile << "-----------------------------------------" << endl;
     outfile << " Filter Values " << endl;
