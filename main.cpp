@@ -410,7 +410,7 @@ int main()
         }
 
         if ((strcmp(t_cmd, "Q") == 0) || (strcmp(t_cmd, "q") == 0) || (strcmp(t_cmd, "0") == 0)) {
-            cout << "Terinatating program..." << endl;
+            cout << "Terminating program..." << endl;
             strcpy(t_cmd, "Q\n");
         }
     }

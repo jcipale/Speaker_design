@@ -710,12 +710,12 @@ void frequency_response_sealed(Speaker* drvr, double Qtc, std::string plot)
 
     A = (1/pow(Qtc, 2)) - 2;
 
-    cout << " Frequeny Response H(f) for " << drvr->Part_num << endl;
+    //cout << " Frequeny Response H(f) for " << drvr->Part_num << endl;
     datafile << " Frequeny Response H(f) for " << drvr->Part_num << endl;
-    cout << " -------|---------------" << endl;
-    cout << "  Freq  : H(f) " << endl;
+    //cout << " -------|---------------" << endl;
+    //cout << "  Freq  : H(f) " << endl;
     datafile << "Freq ; H(f)" << endl;
-    cout << " -------|---------------" << endl;
+    //cout << " -------|---------------" << endl;
 
     for (freq = drvr->Freq_Low; freq <= (drvr->Freq_Hi + 50) ; freq += 50) {
 
@@ -725,10 +725,11 @@ void frequency_response_sealed(Speaker* drvr, double Qtc, std::string plot)
 
         R = abs(Fr);
 
-        cout << "  " << freq << " | " << R << endl;
+        //cout << "  " << freq << " | " << R << endl;
         datafile << "  " << freq << " ; " << R << endl;
         }
-    cout << " -------|---------------" << endl;
+    //cout << " -------|---------------" << endl;
+    datafile << " -------|---------------" << endl;
 
     datafile.close();
 }
@@ -747,12 +748,12 @@ void high_frequency_sealed(Speaker* drvr, double Qtc, std::string plot)
     ofstream datafile;
     datafile.open(plot);
 
-    cout << " Frequeny Response H(f) for " << drvr->Part_num << endl;
+    //cout << " Frequeny Response H(f) for " << drvr->Part_num << endl;
     datafile << " Frequeny Response H(f) for " << drvr->Part_num << endl;
-    cout << " -------|---------------" << endl;
-    cout << "  Freq  : H(f) " << endl;
+    //cout << " -------|---------------" << endl;
+    //cout << "  Freq  : H(f) " << endl;
     datafile << "Freq ; H(f)" << endl;
-    cout << " -------|---------------" << endl;
+    //cout << " -------|---------------" << endl;
     sleep(5);
 
     for (freq = drvr->Freq_Low; freq <= (drvr->Freq_Hi + 50); freq += 50) {
@@ -764,11 +765,12 @@ void high_frequency_sealed(Speaker* drvr, double Qtc, std::string plot)
 
         complex<double> R = 20 * log10(abs(num/denom));
 
-        cout << "  " << freq << " | " << R << endl;
+        //cout << "  " << freq << " | " << R << endl;
         datafile << "  " << freq << " ; " << R << endl;
 
     }
-    cout << " -------|---------------" << endl;
+    //cout << " -------|---------------" << endl;
+    datafile << " -------|---------------" << endl;
 
     datafile.close();
 }
@@ -803,12 +805,12 @@ void frequency_response_vented(Speaker* drvr, std::string plot)
     C = (1 - A + drvr->Vas/drvr->Vbv + (e * 1/drvr->Qts));
     D = (1/drvr->Qts) + e;
     
-    cout << " Frequeny Response H(f) for " << drvr->Part_num << endl;
+    //cout << " Frequeny Response H(f) for " << drvr->Part_num << endl;
     datafile << " Frequeny Response H(f) for " << drvr->Part_num << endl;
-    cout << " -------|---------------" << endl;
-    cout << "  Freq  : H(f) " << endl;
+    //cout << " -------|---------------" << endl;
+    //cout << "  Freq  : H(f) " << endl;
     datafile << "Freq ; H(f)" << endl;
-    cout << " -------|---------------" << endl;
+    //cout << " -------|---------------" << endl;
     for (freq = drvr->Freq_Low; freq <= (drvr->Freq_Hi + 50) ; freq += 50) {
 
         Fn = freq/Fsb;
@@ -819,10 +821,11 @@ void frequency_response_vented(Speaker* drvr, std::string plot)
 
         R = abs(20 * log (Fr));
         
-        cout << "  " << freq << " | " << R << endl;
+        //cout << "  " << freq << " | " << R << endl;
         datafile << "  " << freq << " ; " << R << endl;
     }
-    cout << " -------|---------------" << endl;
+    //cout << " -------|---------------" << endl;
+    datafile << " -------|---------------" << endl;
 
     datafile.close();
 }

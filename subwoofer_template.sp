@@ -30,8 +30,8 @@ L_LeB 2 3 Lexx
 R_ReB 3 4 Rexx
 
 *-- Zobel Filter Values (optional based on Le --
-C_Cz 4 5 0.0224994
-R_Rz 5 0 6.7
+C_Cz 4 5 Czxxx
+R_Rz 5 0 Rzxxx
 
 *---------------- Analysis --------------------
 .ac dec 100 20 50000
